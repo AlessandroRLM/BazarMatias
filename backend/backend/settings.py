@@ -10,10 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import django_mongodb_backend
-<<<<<<< HEAD
 from decouple import config
-=======
->>>>>>> a64db59b1f6e7fa3e53de33573a249e48dcb3f2e
 
 from pathlib import Path
 
@@ -36,15 +33,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-<<<<<<< HEAD
     'backend.apps.MongoAdminConfig',
     'backend.apps.MongoAuthConfig',
     'backend.apps.MongoContentTypesConfig',
-=======
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
->>>>>>> a64db59b1f6e7fa3e53de33573a249e48dcb3f2e
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',

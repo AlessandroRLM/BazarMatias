@@ -1,10 +1,11 @@
-import { Box, List, ListItem, ListItemButton, ListItemContent, Sheet, Typography } from "@mui/joy"
+import { Avatar, Box, IconButton, List, ListItem, ListItemButton, ListItemContent, Sheet, Typography } from "@mui/joy"
 import { Dispatch, SetStateAction, ReactNode, useState } from "react"
 import { closeSidebar } from "../../../utils/sidebar.utils"
 import LockIcon from '@mui/icons-material/Lock'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import WorkIcon from '@mui/icons-material/Work'
+import LogoutIcon from '@mui/icons-material/Logout';
 import { KeyboardArrowDown } from "@mui/icons-material"
 import SidebarLink from "./SidebarLink"
 
@@ -304,6 +305,48 @@ const SidebarContent = () => {
     )
 }
 
+const SidebarFooter = () => {
+    return (
+        <Box
+            sx={{
+                width: '100%',
+                height: 'fit-content',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0,
+                borderTop: '1px solid var(--joy-palette-divider)',
+                padding: 1,
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 0.5,
+                    padding: 0,
+                    alignItems: 'center',
+                    flexDirection: 'row'
+                }}
+            >
+                <Avatar variant="soft" color="primary" size="md" >AA</Avatar>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.5,
+                        padding: 0,
+                    }}
+                >
+                    <Typography level='body-sm' fontWeight='bold'>Administrador</Typography>
+                    <Typography level='body-xs'> Admin </Typography>
+                </Box>
+            </Box>
+            <IconButton>
+                <LogoutIcon/>
+            </IconButton>
+        </Box>
+    )
+}
+
 const Sidebar = () => {
     return (
         <Sheet
@@ -331,6 +374,7 @@ const Sidebar = () => {
             <SidebarOverlay />
             <SidebarHeader />
             <SidebarContent />
+            <SidebarFooter />
 
         </Sheet>
     )

@@ -2,6 +2,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 import re
 
+# Modelo que representa a un usuario en el bazar
+# Almacena información como nombre, correo, etc.
+# El modelo hereda de AbstractUser para incluir campos adicionales
+# y funcionalidades de autenticación de Django
 class User(AbstractUser):
     national_id = models.CharField(max_length=12, unique=True, verbose_name="National ID")
     position = models.CharField(max_length=100, verbose_name="Position")

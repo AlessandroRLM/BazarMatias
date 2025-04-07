@@ -1,9 +1,16 @@
-import { ListItemButton } from '@mui/joy'
+import { ListItemButton, ExtendListItemButton, ListItemButtonTypeMap } from '@mui/joy'
 import { createLink, LinkComponent } from '@tanstack/react-router'
+import { forwardRef } from 'react'
 
-const CreatedLinkComponent = createLink(ListItemButton)
+type props = ExtendListItemButton<ListItemButtonTypeMap<{}, "div">>
 
-const SidebarLink: LinkComponent<typeof ListItemButton> = (props) => {
+const ListItemButtonLink = forwardRef<HTMLAnchorElement, props>((props, ref) => {
+  return <ListItemButton {...props} ref={ref} component='a' />
+})
+
+const CreatedLinkComponent = createLink(ListItemButtonLink)
+
+const SidebarLink: LinkComponent<typeof ListItemButtonLink> = (props) => {
   return <CreatedLinkComponent preload={'intent'} {...props} />
 }
 

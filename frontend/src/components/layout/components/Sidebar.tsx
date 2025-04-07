@@ -116,7 +116,7 @@ const SidebarAdminList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to="/administracion/perfil">
+                        <SidebarLink to="/administracion/perfil" >
                             Gestión de Perfil
                         </SidebarLink>
                     </ListItem>

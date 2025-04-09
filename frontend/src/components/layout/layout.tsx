@@ -24,6 +24,10 @@ const layout = () => {
                     flexDirection: 'column',
                     minWidth: 0,
                     height: '100dvh',
+                    maxHeight: {
+                        lg: '100dvh',
+                    },
+                    overflowY: 'auto',
                     gap: 1,
                 }}
             >

@@ -116,7 +116,12 @@ const SidebarAdminList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/administracion/perfil" >
+                            Gestión de Perfil
+                        </SidebarLink>
+                    </ListItem>
+                    <ListItem>
+                        <SidebarLink to="/administracion/dashboard">
                             Dashboard
                         </SidebarLink>
                     </ListItem>
@@ -339,10 +344,10 @@ const SidebarFooter = () => {
                     <Typography level='body-sm' fontWeight='bold'>Administrador</Typography>
                     <Typography level='body-xs'> Admin </Typography>
                 </Box>
+                <IconButton>
+                    <LogoutIcon/>
+                </IconButton>
             </Box>
-            <IconButton>
-                <LogoutIcon/>
-            </IconButton>
         </Box>
     )
 }

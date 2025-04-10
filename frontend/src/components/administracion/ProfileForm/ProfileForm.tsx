@@ -22,21 +22,23 @@ const ProfileForm = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '70%'}}>
             <FormField
                 name='firstName'
                 control={control}
                 label='Nombre'
                 placeholder='Nombre'
+                size='lg'
+                fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.firstName}
-                
             />
             <FormField
                 name='lastName'
                 control={control}
                 label='Apellido'
                 placeholder='Apellido'
+                fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.lastName} 
             />
@@ -45,6 +47,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Rut'
                 placeholder='Rut'
+                fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.nationalId} 
             />
@@ -53,6 +56,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Correo'
                 placeholder='Correo'
+                fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.email} 
             />
@@ -61,6 +65,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Cargo'
                 disabled={!isEditMode}
+                fullWidht={true}
                 error={errors.position}
                 options={[
                     {value: 'admin', label: 'Administrador'},

@@ -20,13 +20,14 @@ const ProfileForm = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '70%'}}>
             <FormField
                 name='password'
                 control={control}
                 label='Contraseña'
                 placeholder='Contraseña'
                 type='password'
+                fullWidht={true}
                 error={errors.password}
             />
             <FormField
@@ -35,6 +36,7 @@ const ProfileForm = () => {
                 label='Confirmar Contraseña'
                 placeholder='Confirmar Contraseña'
                 type='password'
+                fullWidht={true}
                 error={errors.confirmPassword}
             /> 
             <Button type='submitt' variant='solid' size='lg'>Confirmar</Button>

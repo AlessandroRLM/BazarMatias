@@ -14,7 +14,6 @@ const ProfilePage = () => {
             color="neutral"
             sx={{
                 display: 'flex',
-                flexDirection: 'column',
                 maxHeight: '840px',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -25,6 +24,8 @@ const ProfilePage = () => {
         >
             <Box
                 sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
                     position: 'relative',
                     width: '-webkit-fill-available',
                     height: '792px',

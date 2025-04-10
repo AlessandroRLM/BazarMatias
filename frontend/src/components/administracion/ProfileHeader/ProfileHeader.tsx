@@ -50,7 +50,6 @@ const ProfileHeader = () => {
                     </MenuItem>
                 </Menu>
             </Dropdown>
-
         </Box>
 
     )

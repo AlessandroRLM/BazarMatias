@@ -1,10 +1,14 @@
 from rest_framework import serializers
+from pymongo.errors import DuplicateKeyError
+from django.db import IntegrityError
+from bson import ObjectId
 from .models import User
 import re
 
 class UserSerializer(serializers.ModelSerializer):
     profile_picture_url = serializers.SerializerMethodField()
     formatted_national_id = serializers.SerializerMethodField()
+    id = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -18,9 +22,18 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'position',
             'profile_picture',
-            'profile_picture_url'
+            'profile_picture_url',
+            'is_staff',
+            'is_active'
         ]
-        read_only_fields = ['formatted_national_id']
+        read_only_fields = ['formatted_national_id', 'is_staff', 'is_active']
+
+    def to_representation(self, instance):
+        """Convertir ObjectId a string en la representación"""
+        data = super().to_representation(instance)
+        if isinstance(instance.id, ObjectId):
+            data['id'] = str(instance.id)
+        return data
 
     def get_profile_picture_url(self, obj):
         """Retorna la URL completa de la imagen si existe"""
@@ -86,3 +99,22 @@ class UserSerializer(serializers.ModelSerializer):
             return 'K'
         else:
             return str(remainder)
+
+    def create(self, validated_data):
+        try:
+            # Verifica si el RUT ya existe en la base de datos
+            if User.objects.filter(national_id=validated_data.get('national_id')).exists():
+                raise serializers.ValidationError({
+                    'national_id': ['Este RUT ya está registrado en el sistema.']
+                })
+                
+            return super().create(validated_data)
+            
+        except (DuplicateKeyError, IntegrityError) as e:
+            if 'national_id' in str(e):
+                raise serializers.ValidationError({
+                    'national_id': ['Este RUT ya está registrado en el sistema.']
+                })
+            raise serializers.ValidationError({
+                'non_field_errors': ['Error al crear el usuario en la base de datos.']
+            })

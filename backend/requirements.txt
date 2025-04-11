@@ -5,3 +5,4 @@ python-decouple==3.8
 django-mongodb-backend
 pymongo==4.11
 Pillow
+django-filter

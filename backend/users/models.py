@@ -1,4 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django_mongodb_backend.fields import ObjectIdField
 from django.db import models
 import re
 
@@ -62,3 +66,52 @@ class User(AbstractUser):
             return 'K'
         else:
             return str(remainder)
+
+User = get_user_model()
+
+class UserActivity(models.Model):
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
+    
+    # Tipo de acción realizada por el usuario, agregar más tipos si es necesario
+    ACTION_TYPES = (
+        ('CREATE', 'Crear'),
+        ('UPDATE', 'Actualizar'),
+        ('DELETE', 'Eliminar'),
+        ('VIEW', 'Ver'),
+        ('LOGIN', 'Iniciar sesión'),
+        ('LOGOUT', 'Cerrar sesión'),
+        ('OTHER', 'Otro'),
+    )
+    action_type = models.CharField(max_length=10, choices=ACTION_TYPES)
+    
+    # Descripción de la acción
+    description = models.TextField()
+    
+    # Referencia dinámica al objeto sobre el que se realiza la acción, content_type captura el modelo y object_id el id del objeto
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = ObjectIdField(null=True, blank=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+    
+    # Datos adicionales
+    data = models.JSONField(null=True, blank=True)
+    
+    # IP y User Agent (chrome, edge, ...etc) del usuario
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'Actividad de usuario'
+        verbose_name_plural = 'Actividades de usuarios'
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['action_type']),
+            models.Index(fields=['timestamp']),
+            models.Index(fields=['content_type', 'object_id']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.action_type} - {self.timestamp}"

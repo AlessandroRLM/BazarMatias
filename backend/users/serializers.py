@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, UserActivity
 import re
 
 class UserSerializer(serializers.ModelSerializer):
@@ -86,3 +86,14 @@ class UserSerializer(serializers.ModelSerializer):
             return 'K'
         else:
             return str(remainder)
+
+
+class UserActivitySerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+    content_type_name = serializers.ReadOnlyField(source='content_type.model')
+    
+    class Meta:
+        model = UserActivity
+        fields = ['id', 'username', 'action_type', 'description', 
+                  'content_type_name', 'object_id', 'data', 
+                  'ip_address', 'user_agent', 'timestamp']

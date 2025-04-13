@@ -1,19 +1,28 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from 'react';
 import { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
 import Avatar from '@mui/joy/Avatar';
 import Chip from '@mui/joy/Chip';
+import Link from '@mui/joy/Link';
+import Divider from '@mui/joy/Divider';
+import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemContent from '@mui/joy/ListItemContent';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListDivider from '@mui/joy/ListDivider';
+import Menu from '@mui/joy/Menu';
+import MenuButton from '@mui/joy/MenuButton';
+import MenuItem from '@mui/joy/MenuItem';
+import Dropdown from '@mui/joy/Dropdown';
 
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 const listItems = [
   {
@@ -49,14 +58,54 @@ const listItems = [
   {
     id: 'INV-1231',
     date: 'Feb 3, 2023',
-    status: 'Cancelled',
+    status: 'Refunded',
     customer: {
       initial: 'M',
       name: 'Maria Macdonald',
       email: 'maria.mc@email.com',
     },
   },
+  {
+    id: 'INV-1230',
+    date: 'Feb 3, 2023',
+    status: 'Cancelled',
+    customer: {
+      initial: 'C',
+      name: 'Charles Fulton',
+      email: 'fulton@email.com',
+    },
+  },
+  {
+    id: 'INV-1229',
+    date: 'Feb 3, 2023',
+    status: 'Cancelled',
+    customer: {
+      initial: 'J',
+      name: 'Jay Hooper',
+      email: 'hooper@email.com',
+    },
+  },
 ];
+
+function RowMenu() {
+  return (
+    <Dropdown>
+      <MenuButton
+        slots={{ root: IconButton }}
+        slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+      >
+        <MoreHorizRoundedIcon />
+      </MenuButton>
+      <Menu size="sm" sx={{ minWidth: 140 }}>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuItem>Move</MenuItem>
+        <Divider />
+        <MenuItem color="danger">Delete</MenuItem>
+      </Menu>
+    </Dropdown>
+  );
+}
 
 export default function OrderList() {
   return (
@@ -94,6 +143,12 @@ export default function OrderList() {
                   <Typography level="body-xs">&bull;</Typography>
                   <Typography level="body-xs">{listItem.id}</Typography>
                 </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Link level="body-sm" component="button">
+                    Download
+                  </Link>
+                  <RowMenu />
+                </Box>
               </div>
             </ListItemContent>
             <Chip
@@ -120,6 +175,30 @@ export default function OrderList() {
           <ListDivider />
         </List>
       ))}
+      <Box
+        className="Pagination-mobile"
+        sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', py: 2 }}
+      >
+        <IconButton
+          aria-label="previous page"
+          variant="outlined"
+          color="neutral"
+          size="sm"
+        >
+          <KeyboardArrowLeftIcon />
+        </IconButton>
+        <Typography level="body-sm" sx={{ mx: 'auto' }}>
+          Page 1 of 10
+        </Typography>
+        <IconButton
+          aria-label="next page"
+          variant="outlined"
+          color="neutral"
+          size="sm"
+        >
+          <KeyboardArrowRightIcon />
+        </IconButton>
+      </Box>
     </Box>
   );
 }

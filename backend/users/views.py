@@ -1,19 +1,20 @@
 from rest_framework import viewsets, permissions, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth import login
 from .models import User, UserActivity
 from .serializers import UserSerializer, UserActivitySerializer
 from .decorators import log_activity
 from .pagination import CustomPagination
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Asegura que solo usuarios autenticados puedan acceder
+    permission_classes = (permissions.IsAdminUser,)  # Cambiar a IsAdmin cuando se implemente autenticación
 
     # Filtros y búsqueda
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [ filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['is_active', 'is_staff']  # Aquí los campos para filtrar
     search_fields = ['username', 'email', 'first_name', 'last_name']  # Campos para búsqueda
     ordering_fields = ['id', 'username', 'email']
@@ -74,11 +75,14 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = UserActivity.objects.all()
     serializer_class = UserActivitySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = (permissions.IsAdminUser,) #cambiar a IsAdmin cuando se implemente autenticación
+    pagination_class = CustomPagination
+    
+    # Filtros y búsqueda
     filter_backends = [ filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['user', 'action_type', 'timestamp', 'content_type']
     ordering_fields = ['timestamp', 'user', 'action_type']
-    search_fields = ['description', 'user__username', 'user__email']
+    search_fields = ['description', 'user__email']
     
     def get_queryset(self):
         queryset = super().get_queryset()

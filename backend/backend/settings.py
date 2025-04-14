@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+from datetime import timedelta
 import django_mongodb_backend
 from decouple import config
 
@@ -40,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
     'django_filters',
+    'corsheaders',
+    'knox',
     'users',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'users.middleware.UserActivityMiddleware',
+    'authentication.middleware.KnoxActivityMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -134,10 +138,23 @@ DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",  # Backend por defecto
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+        'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
 }
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # URL del frontend en desarrollo
 ]
+
+REST_KNOX = {
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64, 
+    'TOKEN_TTL': timedelta(hours=10), # The default is 10 hours i.e., timedelta(hours=10)).
+    'USER_SERIALIZER': 'users.serializers.UserSerializer',
+    'TOKEN_LIMIT_PER_USER': None, # By default, this option is disabled and set to None -- thus no limit.
+    'AUTO_REFRESH': True, # This defines if the token expiry time is extended by TOKEN_TTL each time the token is used.
+}

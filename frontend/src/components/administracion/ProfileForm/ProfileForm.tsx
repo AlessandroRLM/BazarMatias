@@ -38,6 +38,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Apellido'
                 placeholder='Apellido'
+                size="lg"
                 fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.lastName} 
@@ -47,6 +48,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Rut'
                 placeholder='Rut'
+                size="lg"
                 fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.nationalId} 
@@ -56,6 +58,7 @@ const ProfileForm = () => {
                 control={control}
                 label='Correo'
                 placeholder='Correo'
+                size="lg"
                 fullWidht={true}
                 readonly={!isEditMode}
                 error={errors.email} 
@@ -64,6 +67,7 @@ const ProfileForm = () => {
                 name='position'
                 control={control}
                 label='Cargo'
+                size="lg"
                 disabled={!isEditMode}
                 fullWidht={true}
                 error={errors.position}

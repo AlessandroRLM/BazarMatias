@@ -1,32 +1,54 @@
-import * as React from 'react';
-import { Box, Typography, TextField, Button } from '@mui/joy';
+import { Box, Sheet, Avatar } from "@mui/joy";
+import HeaderUserCreation from "../../components/administracion/HeaderUserCreation/HeaderUserCreation";
+import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 
-export default function UserCreation() {
+const UserCreation = () => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        gap: 2,
-        px: 2,
-      }}
-    >
-      <Typography level="h2" component="h1">
-        Crear Usuario
-      </Typography>
-      <TextField label="Nombre" placeholder="Ingrese el nombre" fullWidth />
-      <TextField label="Correo" placeholder="Ingrese el correo" fullWidth />
-      <TextField label="Rol" placeholder="Ingrese el rol" fullWidth />
-      <Button
-        color="primary"
-        size="md"
-        onClick={() => console.log('Usuario creado')}
+      <Sheet
+          variant="outlined"
+          color="neutral"
+          sx={{
+              display: 'flex',
+              flexDirection: 'column', // Asegura que los elementos se apilen verticalmente
+              alignItems: 'center',
+              justifyContent: 'flex-start', // Alinea el contenido al inicio
+              position: 'relative',
+              borderRadius: 'var(--joy-radius-md)',
+              boxShadow: 'var(--joy-shadow-md)',
+              width: '100%', // Asegura que ocupe todo el ancho disponible
+              height: 'auto', // Cambiado de altura fija a dinámica
+              maxHeight: '100vh', // Limita la altura al tamaño de la ventana
+              overflow: 'auto', // Permite desplazamiento si el contenido excede la altura
+          }}
       >
-        Crear Usuario
-      </Button>
-    </Box>
+          <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                width: '100%', // Asegura que ocupe todo el ancho disponible
+                height: 'auto', // Cambiado de altura fija a dinámica
+                backgroundColor: '#ffffff',
+                borderRadius: 'var(--joy-radius-md)',
+                overflow: 'visible', // Permite que el contenido se ajuste dinámicamente
+                gap: 2,
+                border: '1px solid var(--theme-divider)',
+                boxShadow: 'var(--joy-shadow-md)',
+                paddingBottom: '16px', // Espacio en blanco debajo del formulario
+            }}
+          > 
+            {/* Header */}
+            <HeaderUserCreation />
+            <Box
+                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, padding: 0 }}
+            >
+                <Avatar variant="soft" color="primary" size="profile" >AA</Avatar>
+            </Box>
+            {/* Formulario */}
+            <FormUserCreation />
+          </Box>  
+      </Sheet>
   );
-}
+};
+
+export default UserCreation;

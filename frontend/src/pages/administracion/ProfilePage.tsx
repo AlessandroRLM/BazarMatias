@@ -14,12 +14,16 @@ const ProfilePage = () => {
             color="neutral"
             sx={{
                 display: 'flex',
-                maxHeight: '840px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                borderRadius: 'var(--joy-radius-md)',
-                boxShadow: 'var(--joy-shadow-md)',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start', 
+              position: 'relative',
+              borderRadius: 'var(--joy-radius-md)',
+              boxShadow: 'var(--joy-shadow-md)',
+              width: '100%', 
+              height: 'auto', 
+              maxHeight: '100vh', 
+              overflow: 'auto', 
             }}
         >
             <Box
@@ -27,14 +31,15 @@ const ProfilePage = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
-                    width: '-webkit-fill-available',
-                    height: '792px',
+                    width: '100%', // Asegura que ocupe todo el ancho disponible
+                    height: 'auto', // Cambiado de altura fija a dinámica
                     backgroundColor: '#ffffff',
                     borderRadius: 'var(--joy-radius-md)',
-                    overflow: 'hidden',
+                    overflow: 'visible', // Permite que el contenido se ajuste dinámicamente
                     gap: 2,
                     border: '1px solid var(--theme-divider)',
                     boxShadow: 'var(--joy-shadow-md)',
+                    paddingBottom: '16px',
                 }}
             >
                 <ProfileHeader />

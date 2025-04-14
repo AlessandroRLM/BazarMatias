@@ -32,7 +32,7 @@ const ProfileHeader = () => {
                 <ArrowBackIcon />
             </IconButton>
             <Typography level='h2'>
-                Mí Perfil
+                Mi Perfíl
             </Typography>
             <Dropdown>
                 <MenuButton

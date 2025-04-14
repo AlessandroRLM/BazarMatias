@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
 import Checkbox from '@mui/joy/Checkbox';
 import Table from '@mui/joy/Table';
@@ -17,6 +16,7 @@ import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link as RouterLink } from '@tanstack/react-router'; // Importa el componente Link
 
 const rows = [
   { rut: '12345678-9', name: 'Olivia Ryhe', email: 'olivia@email.com', role: 'Admin', status: 'Active' },
@@ -276,11 +276,12 @@ export default function OrderTable() {
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
+                      component={RouterLink}
+                      to={`/administracion/usuarios/editar-usuario/${row.rut}`}
                       variant="plain"
                       color="neutral"
                       size="sm"
                       aria-label="Edit"
-                      onClick={() => console.log('Edit clicked')}
                     >
                       <EditIcon />
                     </IconButton>

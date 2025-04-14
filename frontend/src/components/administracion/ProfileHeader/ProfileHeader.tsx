@@ -4,7 +4,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import useUserProfileFormContext from "../../../hooks/administracion/useUserProfileFormContext"
 
 const ProfileHeader = () => {
-    const { setIsProfile, isEditMode, setIsEditMode, setIsChangePassword } = useUserProfileFormContext()
+    const { setIsProfile, isEditMode, setIsEditMode, setIsChangePassword } = useUserProfileFormContext();
 
     const handleProfileForm = () => {
         setIsChangePassword(false)
@@ -23,15 +23,15 @@ const ProfileHeader = () => {
             sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'space-around',
+                justifyContent: 'space-between', // Cambiado de "space-around" a "space-between"
                 alignItems: 'center',
-                paddingTop: '8px'
+                padding: '8px 16px', // Añade padding horizontal para separar los elementos del borde
             }}
         >
             <IconButton onClick={() => window.history.back()} variant='plain' color='neutral' size='lg'>
                 <ArrowBackIcon />
             </IconButton>
-            <Typography level='h2'>
+            <Typography level='h2' sx={{ flex: 1, textAlign: 'center' }}>
                 Mi Perfíl
             </Typography>
             <Dropdown>
@@ -51,8 +51,8 @@ const ProfileHeader = () => {
                 </Menu>
             </Dropdown>
         </Box>
-
-    )
+    
+)
 }
 
 export default ProfileHeader

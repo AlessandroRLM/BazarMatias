@@ -2,7 +2,7 @@ import { Box, Sheet, Avatar } from "@mui/joy";
 import HeaderUserCreation from "../../components/administracion/HeaderUserCreation/HeaderUserCreation";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 
-const UserCreation = () => {
+const EditUser = () => {
   return (
       <Sheet
           variant="outlined"
@@ -21,7 +21,7 @@ const UserCreation = () => {
               overflow: 'auto', // Permite desplazamiento si el contenido excede la altura
           }}
       >
-          <Box
+        <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -36,19 +36,19 @@ const UserCreation = () => {
                 boxShadow: 'var(--joy-shadow-md)',
                 paddingBottom: '16px', // Espacio en blanco debajo del formulario
             }}
-          > 
-            {/* Header */}
-            <HeaderUserCreation />
+        >
+            {/* Header con título personalizado */}
+            <HeaderUserCreation title="Editar Usuario" />
             <Box
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, padding: 0 }}
             >
                 <Avatar variant="soft" color="primary" size="profile" ></Avatar>
             </Box>
             {/* Formulario */}
-            <FormUserCreation />
-          </Box>  
+            <FormUserCreation isEditMode={true} />
+        </Box>
       </Sheet>
   );
 };
 
-export default UserCreation;
+export default EditUser;

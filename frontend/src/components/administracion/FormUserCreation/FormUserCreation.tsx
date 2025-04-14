@@ -6,7 +6,12 @@ import { userCreationSchema, UserCreationFormValues } from "../../../schemas/adm
 import FormField from "../../core/FormField/FormField";
 import FormSelect from "../../core/FormSelect/FormSelect";
 
-const FormUserCreation = () => {
+// Agrega la propiedad isEditMode
+interface FormUserCreationProps {
+  isEditMode?: boolean;
+}
+
+const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
   const { control, handleSubmit, formState: { errors } } = useForm<UserCreationFormValues>({
     resolver: zodResolver(userCreationSchema),
     mode: "onBlur",
@@ -20,7 +25,7 @@ const FormUserCreation = () => {
   });
 
   const onSubmit: SubmitHandler<UserCreationFormValues> = (data) => {
-    alert(`Usuario creado: ${data.name} ${data.lastName}, ${data.email}, ${data.role}`);
+    alert(`Usuario ${isEditMode ? "editado" : "creado"}: ${data.name} ${data.lastName}, ${data.email}, ${data.role}`);
   };
 
   return (
@@ -60,6 +65,7 @@ const FormUserCreation = () => {
         size="lg"
         fullWidht={true}
         error={errors.rut}
+        disabled={isEditMode} // Deshabilita el campo si está en modo de edición
       />
       <FormField
         name="email"
@@ -85,7 +91,7 @@ const FormUserCreation = () => {
         ]}
       />
       <Button type="submit" variant="solid" size="lg">
-        Confirmar
+        {isEditMode ? "Guardar Cambios" : "Crear Usuario"}
       </Button>
     </form>
   );

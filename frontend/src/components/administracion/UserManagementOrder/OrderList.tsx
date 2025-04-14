@@ -3,115 +3,53 @@ import { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
 import Avatar from '@mui/joy/Avatar';
 import Chip from '@mui/joy/Chip';
-import Link from '@mui/joy/Link';
-import Divider from '@mui/joy/Divider';
-import IconButton from '@mui/joy/IconButton';
 import Typography from '@mui/joy/Typography';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemContent from '@mui/joy/ListItemContent';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListDivider from '@mui/joy/ListDivider';
-import Menu from '@mui/joy/Menu';
-import MenuButton from '@mui/joy/MenuButton';
-import MenuItem from '@mui/joy/MenuItem';
-import Dropdown from '@mui/joy/Dropdown';
 
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 const listItems = [
   {
-    id: 'INV-1234',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'O',
-      name: 'Olivia Ryhe',
-      email: 'olivia@email.com',
-    },
+    rut: '12345678-9',
+    name: 'Olivia Ryhe',
+    email: 'olivia@email.com',
+    role: 'Admin',
+    status: 'Active',
   },
   {
-    id: 'INV-1233',
-    date: 'Feb 3, 2023',
-    status: 'Paid',
-    customer: {
-      initial: 'S',
-      name: 'Steve Hampton',
-      email: 'steve.hamp@email.com',
-    },
+    rut: '98765432-1',
+    name: 'Steve Hampton',
+    email: 'steve.hamp@email.com',
+    role: 'Bodegero',
+    status: 'Active',
   },
   {
-    id: 'INV-1232',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'C',
-      name: 'Ciaran Murray',
-      email: 'ciaran.murray@email.com',
-    },
+    rut: '45678901-2',
+    name: 'Ciaran Murray',
+    email: 'ciaran.murray@email.com',
+    role: 'Bodegero',
+    status: 'Inactive',
   },
   {
-    id: 'INV-1231',
-    date: 'Feb 3, 2023',
-    status: 'Refunded',
-    customer: {
-      initial: 'M',
-      name: 'Maria Macdonald',
-      email: 'maria.mc@email.com',
-    },
-  },
-  {
-    id: 'INV-1230',
-    date: 'Feb 3, 2023',
-    status: 'Cancelled',
-    customer: {
-      initial: 'C',
-      name: 'Charles Fulton',
-      email: 'fulton@email.com',
-    },
-  },
-  {
-    id: 'INV-1229',
-    date: 'Feb 3, 2023',
-    status: 'Cancelled',
-    customer: {
-      initial: 'J',
-      name: 'Jay Hooper',
-      email: 'hooper@email.com',
-    },
+    rut: '78901234-5',
+    name: 'Maria Macdonald',
+    email: 'maria.mc@email.com',
+    role: 'Vendedor',
+    status: 'Active',
   },
 ];
-
-function RowMenu() {
-  return (
-    <Dropdown>
-      <MenuButton
-        slots={{ root: IconButton }}
-        slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
-      >
-        <MoreHorizRoundedIcon />
-      </MenuButton>
-      <Menu size="sm" sx={{ minWidth: 140 }}>
-        <MenuItem>Edit</MenuItem>
-        <MenuItem>Rename</MenuItem>
-        <MenuItem>Move</MenuItem>
-        <Divider />
-        <MenuItem color="danger">Delete</MenuItem>
-      </Menu>
-    </Dropdown>
-  );
-}
 
 export default function OrderList() {
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
       {listItems.map((listItem) => (
-        <List key={listItem.id} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
+        <List key={listItem.rut} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
           <ListItem
             sx={{
               display: 'flex',
@@ -121,14 +59,14 @@ export default function OrderList() {
           >
             <ListItemContent sx={{ display: 'flex', gap: 2, alignItems: 'start' }}>
               <ListItemDecorator>
-                <Avatar size="sm">{listItem.customer.initial}</Avatar>
+                <Avatar size="sm">{listItem.name.charAt(0)}</Avatar>
               </ListItemDecorator>
               <div>
                 <Typography gutterBottom sx={{ fontWeight: 600 }}>
-                  {listItem.customer.name}
+                  {listItem.name}
                 </Typography>
                 <Typography level="body-xs" gutterBottom>
-                  {listItem.customer.email}
+                  {listItem.email}
                 </Typography>
                 <Box
                   sx={{
@@ -139,15 +77,9 @@ export default function OrderList() {
                     mb: 1,
                   }}
                 >
-                  <Typography level="body-xs">{listItem.date}</Typography>
+                  <Typography level="body-xs">{listItem.role}</Typography>
                   <Typography level="body-xs">&bull;</Typography>
-                  <Typography level="body-xs">{listItem.id}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <Link level="body-sm" component="button">
-                    Download
-                  </Link>
-                  <RowMenu />
+                  <Typography level="body-xs">{listItem.rut}</Typography>
                 </Box>
               </div>
             </ListItemContent>
@@ -156,16 +88,16 @@ export default function OrderList() {
               size="sm"
               startDecorator={
                 {
-                  Paid: <CheckRoundedIcon />,
-                  Refunded: <AutorenewRoundedIcon />,
-                  Cancelled: <BlockIcon />,
+                  Active: <CheckRoundedIcon />,
+                  Inactive: <BlockIcon />,
+                  Pending: <AutorenewRoundedIcon />,
                 }[listItem.status]
               }
               color={
                 {
-                  Paid: 'success',
-                  Refunded: 'neutral',
-                  Cancelled: 'danger',
+                  Active: 'success',
+                  Inactive: 'danger',
+                  Pending: 'neutral',
                 }[listItem.status] as ColorPaletteProp
               }
             >
@@ -175,30 +107,6 @@ export default function OrderList() {
           <ListDivider />
         </List>
       ))}
-      <Box
-        className="Pagination-mobile"
-        sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', py: 2 }}
-      >
-        <IconButton
-          aria-label="previous page"
-          variant="outlined"
-          color="neutral"
-          size="sm"
-        >
-          <KeyboardArrowLeftIcon />
-        </IconButton>
-        <Typography level="body-sm" sx={{ mx: 'auto' }}>
-          Page 1 of 10
-        </Typography>
-        <IconButton
-          aria-label="next page"
-          variant="outlined"
-          color="neutral"
-          size="sm"
-        >
-          <KeyboardArrowRightIcon />
-        </IconButton>
-      </Box>
     </Box>
   );
 }

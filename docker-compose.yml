@@ -64,7 +64,6 @@ services:
     restart: always
     volumes:
       - ./frontend:/frontend
-      - /BazarMatias/node_modules
     ports:
       - "${FRONTEND_PORT}:3000"
     environment:

@@ -1,14 +1,29 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
 from pymongo.errors import DuplicateKeyError
 from django.db import IntegrityError
 from bson import ObjectId
 from .models import User, UserActivity
 import re
 
+
+class ObjectIdField(serializers.Field):
+    """Campo personalizado para manejar ObjectId de MongoDB."""
+    def to_representation(self, value):
+        if isinstance(value, ObjectId):
+            return str(value)  # Convierte ObjectId a string
+        return value
+
+    def to_internal_value(self, data):
+        try:
+            return ObjectId(data)  # Convierte string a ObjectId
+        except:
+            raise serializers.ValidationError("Invalid ObjectId")
+
+
 class UserSerializer(serializers.ModelSerializer):
-    profile_picture_url = serializers.SerializerMethodField()
     formatted_national_id = serializers.SerializerMethodField()
-    id = serializers.CharField(read_only=True)
+    id = ObjectIdField()
 
     class Meta:
         model = User
@@ -21,8 +36,6 @@ class UserSerializer(serializers.ModelSerializer):
             'formatted_national_id',
             'email',
             'position',
-            'profile_picture',
-            'profile_picture_url',
             'is_staff',
             'is_active'
         ]
@@ -35,12 +48,6 @@ class UserSerializer(serializers.ModelSerializer):
             data['id'] = str(instance.id)
         return data
 
-    def get_profile_picture_url(self, obj):
-        """Retorna la URL completa de la imagen si existe"""
-        if obj.profile_picture:
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.profile_picture.url)
-        return None
 
     def get_formatted_national_id(self, obj):
         """Formatea el RUT con puntos: 12345678-K → 12.345.678-K"""
@@ -118,6 +125,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'non_field_errors': ['Error al crear el usuario en la base de datos.']
             })
+
 
 class UserActivitySerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')

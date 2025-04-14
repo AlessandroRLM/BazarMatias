@@ -6,7 +6,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = list(UserAdmin.fieldsets) # Convierte a lista para modificarla
     fieldsets.append(
         ("Additional Info", {
-            "fields": ("formatted_rut", "position", "profile_picture")
+            "fields": ("formatted_rut", "position")
         })
     )
 

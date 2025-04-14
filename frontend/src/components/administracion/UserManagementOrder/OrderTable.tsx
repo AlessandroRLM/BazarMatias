@@ -271,13 +271,14 @@ export default function OrderTable() {
                       color="neutral"
                       size="sm"
                       aria-label="View"
-                      onClick={() => console.log('View clicked')}
+                      component={RouterLink}
+                      to="/administracion/usuarios/ver-usuario" // remplazar por => to ={`/administracion/usuarios/ver-usuario/${row.rut}`}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       component={RouterLink}
-                      to={`/administracion/usuarios/editar-usuario/${row.rut}`}
+                      to={`/administracion/usuarios/editar-usuario`} // remplazar por => to ={`/administracion/usuarios/editar-usuario/${row.rut}`}
                       variant="plain"
                       color="neutral"
                       size="sm"

@@ -26,12 +26,12 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import AxiosInstance from '../../../helpers/AxiosInstance';
+import { deleteUser } from '../../../services/userService';
 
 type Order = 'asc' | 'desc';
 
-// Función mock para simular llamada API
 async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  // En una aplicación real, aquí iría la llamada real al backend
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -43,7 +43,32 @@ async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: numb
   });
 }
 
+async function realFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  try {
+    const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
+    return {
+      data: response.data.results,
+      totalItems: response.data.count,
+      totalPages: Math.ceil(response.data.count / pageSize),
+    };
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+}
+
 export default function OrderTable() {
+  const [order, setOrder] = React.useState<Order>('desc');
+  const [orderBy, setOrderBy] = React.useState<string>('rut');
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
+
+  const getFetchFunction = (isDemo: boolean) => {
+    return isDemo ? mockFetchUsers : realFetchUsers;
+  };
+
   const {
     data: users = [],
     currentPage,
@@ -53,15 +78,8 @@ export default function OrderTable() {
     isDemoMode,
     handlePageChange,
     toggleDemoMode,
-    connectionStatus, // <-- asegúrate que usePagination lo exponga
-  } = usePagination(mockFetchUsers, 1, 10, demoUsers, demoTotalUsers);
-
-  const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<string>('rut');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
-  const [open, setOpen] = React.useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
+    connectionStatus,
+  } = usePagination(getFetchFunction, 1, 10, demoUsers, demoTotalUsers);
 
   const handleSort = (property: string) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -75,12 +93,16 @@ export default function OrderTable() {
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (userToDelete) {
-      // Aquí iría la lógica para eliminar el usuario (llamada al backend)
-      console.log('Eliminando usuario:', userToDelete.id);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
+      try {
+        await deleteUser(userToDelete.id);
+        setDeleteDialogOpen(false);
+        setUserToDelete(null);
+        handlePageChange(currentPage);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
     }
   };
 
@@ -114,7 +136,6 @@ export default function OrderTable() {
     </React.Fragment>
   );
 
-  // Efecto para activar el modo demo automáticamente en desarrollo
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       toggleDemoMode(true);

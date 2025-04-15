@@ -22,6 +22,8 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Button from '@mui/joy/Button';
+import AxiosInstance from '../../../helpers/AxiosInstance';
+import { deleteUser } from '../../../services/userService';
 
 async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
   return new Promise((resolve) => {
@@ -35,9 +37,27 @@ async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: numb
   });
 }
 
+async function realFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  try {
+    const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
+    return {
+      data: response.data.results,
+      totalItems: response.data.count,
+      totalPages: Math.ceil(response.data.count / pageSize),
+    };
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+}
+
 export default function OrderList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
+
+  const getFetchFunction = (isDemo: boolean) => {
+    return isDemo ? mockFetchUsers : realFetchUsers;
+  };
 
   const {
     data: users,
@@ -48,8 +68,8 @@ export default function OrderList() {
     isDemoMode,
     handlePageChange,
     toggleDemoMode,
-    connectionStatus, // <-- asegúrate que usePagination lo exponga
-  } = usePagination(mockFetchUsers, 1, 5, demoUsers, demoTotalUsers);
+    connectionStatus,
+  } = usePagination(getFetchFunction, 1, 5, demoUsers, demoTotalUsers);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -62,12 +82,16 @@ export default function OrderList() {
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (userToDelete) {
-      // Aquí iría la lógica para eliminar el usuario (llamada a la API del backend)
-      console.log('Eliminando usuario:', userToDelete.rut);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
+      try {
+        await deleteUser(userToDelete.rut);
+        setDeleteDialogOpen(false);
+        setUserToDelete(null);
+        handlePageChange(currentPage);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
     }
   };
 
@@ -115,7 +139,6 @@ export default function OrderList() {
         userName={userToDelete?.name || ''}
       />
 
-      {/* Banner de modo demo para móvil */}
       {isDemoMode ? (
         <Box
           sx={{
@@ -233,7 +256,7 @@ export default function OrderList() {
         itemsPerPage={5}
         onPageChange={handlePageChange}
         isLoading={isLoading}
-        showDesktop={false} // Solo mostrar en móvil
+        showDesktop={false}
       />
     </Box>
   );

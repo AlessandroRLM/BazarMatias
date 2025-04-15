@@ -1,12 +1,12 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 
 export const getUsers = async () => {
-  const response = await AxiosInstance.get('/users/');
+  const response = await AxiosInstance.get('/api/users/');
   return response.data;
 };
 
 export const deleteUser = async (id: string) => {
-  const response = await AxiosInstance.delete(`/users/${id}/`);
+  const response = await AxiosInstance.delete(`/api/users/${id}/`);
   return response.data;
 };
 
@@ -16,6 +16,6 @@ export const createUser = async (userData: any) => {
 };
 
 export const updateUser = async (id: string, userData: any) => {
-  const response = await AxiosInstance.put(`/users/${id}/`, userData);
+  const response = await AxiosInstance.put(`/api/users/${id}/`, userData);
   return response.data;
 };

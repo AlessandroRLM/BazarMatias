@@ -3,15 +3,43 @@ import HeaderUserCreation from "../../components/administracion/HeaderUserCreati
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
 import { Typography } from "@mui/joy";
+import { createUser } from "../../services/userService";
+import { useNavigate } from "@tanstack/react-router";
 
 const UserCreation = () => {
+  const navigate = useNavigate();
+
   const handleSubmitForm = async (formData: any) => {
     try {
-      console.log("Datos del formulario:", formData);
-      alert("Usuario creado con éxito!");
-    } catch (error) {
+      // Preparar datos para el backend
+      const userData = {
+        national_id: formData.rut,
+        first_name: formData.name,
+        last_name: formData.lastName,
+        email: formData.email,
+        position: formData.role,
+      };
+
+      await createUser(userData);
+      
+      // Redirigir usando @tanstack/react-router
+      navigate({
+        to: "/administracion/usuarios",
+        search: { success: "Usuario creado con éxito" },
+      });
+      
+    } catch (error: any) {
       console.error("Error al crear usuario:", error);
-      throw error;
+      
+      let errorMessage = "Error al crear usuario";
+      if (error.response?.data) {
+        // Manejar errores de validación del backend
+        errorMessage = Object.entries(error.response.data)
+          .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+          .join('\n');
+      }
+      
+      throw new Error(errorMessage);
     }
   };
 
@@ -35,9 +63,9 @@ const UserCreation = () => {
       </Box>
       <FormUserCreation 
         onSubmitForm={handleSubmitForm}
-        mode="create"       // Usamos el nuevo prop 'mode' en lugar de 'isEditMode'
-        disableRole={false} // Habilita selección de rol
-        disableRut={false}  // Habilita edición de RUT
+        mode="create"
+        disableRole={false}
+        disableRut={false}
       />
     </CommonPageLayout>
   );

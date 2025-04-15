@@ -14,10 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AdministracionDashboardImport } from './routes/administracion/dashboard'
 import { Route as AdministracionUsuariosIndexImport } from './routes/administracion/usuarios/index'
 import { Route as AdministracionPerfilIndexImport } from './routes/administracion/perfil/index'
-import { Route as AdministracionUsuariosActividadDeUsuariosImport } from './routes/administracion/usuarios/actividad-de-usuarios'
 import { Route as AdministracionUsuariosVerUsuarioImport } from './routes/administracion/usuarios/ver-usuario'
 import { Route as AdministracionUsuariosEditarUsuarioImport } from './routes/administracion/usuarios/editar-usuario'
 import { Route as AdministracionUsuariosCrearUsuarioImport } from './routes/administracion/usuarios/crear-usuario'
+import { Route as AdministracionUsuariosActividadDeUsuariosImport } from './routes/administracion/usuarios/actividad-de-usuarios'
 
 // Create/Update Routes
 
@@ -59,14 +59,14 @@ const AdministracionUsuariosCrearUsuarioRoute =
     id: '/administracion/usuarios/crear-usuario',
     path: '/administracion/usuarios/crear-usuario',
     getParentRoute: () => rootRoute,
-} as any)
+  } as any)
 
 const AdministracionUsuariosActividadDeUsuariosRoute =
   AdministracionUsuariosActividadDeUsuariosImport.update({
     id: '/administracion/usuarios/actividad-de-usuarios',
     path: '/administracion/usuarios/actividad-de-usuarios',
     getParentRoute: () => rootRoute,
-    } as any)
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -77,6 +77,13 @@ declare module '@tanstack/react-router' {
       path: '/administracion/dashboard'
       fullPath: '/administracion/dashboard'
       preLoaderRoute: typeof AdministracionDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/administracion/usuarios/actividad-de-usuarios': {
+      id: '/administracion/usuarios/actividad-de-usuarios'
+      path: '/administracion/usuarios/actividad-de-usuarios'
+      fullPath: '/administracion/usuarios/actividad-de-usuarios'
+      preLoaderRoute: typeof AdministracionUsuariosActividadDeUsuariosImport
       parentRoute: typeof rootRoute
     }
     '/administracion/usuarios/crear-usuario': {
@@ -100,13 +107,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdministracionUsuariosVerUsuarioImport
       parentRoute: typeof rootRoute
     }
-    '/administracion/usuarios/actividad-de-usuarios': {
-      id: '/administracion/usuarios/actividad-de-usuarios'
-      path: '/administracion/usuarios/actividad-de-usuarios'
-      fullPath: '/administracion/usuarios/actividad-de-usuarios'
-      preLoaderRoute: typeof AdministracionUsuariosActividadDeUsuariosImport
-      parentRoute: typeof rootRoute
-    }
     '/administracion/perfil/': {
       id: '/administracion/perfil/'
       path: '/administracion/perfil'
@@ -128,20 +128,20 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
   '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
   '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/perfil': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
   '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
   '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/perfil': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
 }
@@ -149,10 +149,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
   '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
   '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/perfil/': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios/': typeof AdministracionUsuariosIndexRoute
 }
@@ -161,24 +161,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/administracion/dashboard'
+    | '/administracion/usuarios/actividad-de-usuarios'
+    | '/administracion/usuarios/crear-usuario'
+    | '/administracion/usuarios/editar-usuario'
+    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/administracion/dashboard'
+    | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/usuarios/editar-usuario'
     | '/administracion/usuarios/ver-usuario'
-    | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/perfil'
     | '/administracion/usuarios'
   id:
     | '__root__'
     | '/administracion/dashboard'
+    | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/usuarios/editar-usuario'
     | '/administracion/usuarios/ver-usuario'
-    | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/perfil/'
     | '/administracion/usuarios/'
   fileRoutesById: FileRoutesById
@@ -186,23 +190,23 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AdministracionDashboardRoute: typeof AdministracionDashboardRoute
+  AdministracionUsuariosActividadDeUsuariosRoute: typeof AdministracionUsuariosActividadDeUsuariosRoute
   AdministracionUsuariosCrearUsuarioRoute: typeof AdministracionUsuariosCrearUsuarioRoute
   AdministracionUsuariosEditarUsuarioRoute: typeof AdministracionUsuariosEditarUsuarioRoute
   AdministracionUsuariosVerUsuarioRoute: typeof AdministracionUsuariosVerUsuarioRoute
-  AdministracionUsuariosActividadDeUsuariosRoute: typeof AdministracionUsuariosActividadDeUsuariosRoute
   AdministracionPerfilIndexRoute: typeof AdministracionPerfilIndexRoute
   AdministracionUsuariosIndexRoute: typeof AdministracionUsuariosIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AdministracionDashboardRoute: AdministracionDashboardRoute,
+  AdministracionUsuariosActividadDeUsuariosRoute:
+    AdministracionUsuariosActividadDeUsuariosRoute,
   AdministracionUsuariosCrearUsuarioRoute:
     AdministracionUsuariosCrearUsuarioRoute,
   AdministracionUsuariosEditarUsuarioRoute:
     AdministracionUsuariosEditarUsuarioRoute,
   AdministracionUsuariosVerUsuarioRoute: AdministracionUsuariosVerUsuarioRoute,
-  AdministracionUsuariosActividadDeUsuariosRoute:
-    AdministracionUsuariosActividadDeUsuariosRoute,
   AdministracionPerfilIndexRoute: AdministracionPerfilIndexRoute,
   AdministracionUsuariosIndexRoute: AdministracionUsuariosIndexRoute,
 }
@@ -218,12 +222,28 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/administracion/dashboard",
+        "/administracion/usuarios/actividad-de-usuarios",
+        "/administracion/usuarios/crear-usuario",
+        "/administracion/usuarios/editar-usuario",
+        "/administracion/usuarios/ver-usuario",
         "/administracion/perfil/",
         "/administracion/usuarios/"
       ]
     },
     "/administracion/dashboard": {
       "filePath": "administracion/dashboard.tsx"
+    },
+    "/administracion/usuarios/actividad-de-usuarios": {
+      "filePath": "administracion/usuarios/actividad-de-usuarios.tsx"
+    },
+    "/administracion/usuarios/crear-usuario": {
+      "filePath": "administracion/usuarios/crear-usuario.tsx"
+    },
+    "/administracion/usuarios/editar-usuario": {
+      "filePath": "administracion/usuarios/editar-usuario.tsx"
+    },
+    "/administracion/usuarios/ver-usuario": {
+      "filePath": "administracion/usuarios/ver-usuario.tsx"
     },
     "/administracion/perfil/": {
       "filePath": "administracion/perfil/index.tsx"

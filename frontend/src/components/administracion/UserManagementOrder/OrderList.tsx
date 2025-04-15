@@ -18,6 +18,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { ColorPaletteProp } from '@mui/joy/styles';
+import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Button from '@mui/joy/Button';
 
 async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
   return new Promise((resolve) => {
@@ -44,6 +48,7 @@ export default function OrderList() {
     isDemoMode,
     handlePageChange,
     toggleDemoMode,
+    connectionStatus, // <-- asegúrate que usePagination lo exponga
   } = usePagination(mockFetchUsers, 1, 5, demoUsers, demoTotalUsers);
 
   React.useEffect(() => {
@@ -71,6 +76,36 @@ export default function OrderList() {
     setUserToDelete(null);
   };
 
+  const getButtonConfig = () => {
+    if (connectionStatus === 'connecting') {
+      return {
+        color: 'neutral',
+        icon: <AutorenewRoundedIcon />,
+        loading: true
+      };
+    }
+    if (connectionStatus === 'error') {
+      return {
+        color: 'danger',
+        icon: <ErrorOutlineIcon />,
+        loading: false
+      };
+    }
+    return isDemoMode
+      ? {
+          color: 'warning',
+          icon: <CloudSyncIcon />,
+          loading: false
+        }
+      : {
+          color: 'success',
+          icon: <CloudDoneIcon />,
+          loading: false
+        };
+  };
+
+  const buttonConfig = getButtonConfig();
+
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
       <ConfirmDialog
@@ -81,19 +116,43 @@ export default function OrderList() {
       />
 
       {/* Banner de modo demo para móvil */}
-      {isDemoMode && (
+      {isDemoMode ? (
         <Box
           sx={{
             backgroundColor: 'warning.100',
             p: 1,
             mb: 2,
             borderRadius: 'sm',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
           <Typography level="body-sm" color="warning">
             Modo demo activado
           </Typography>
+          <Button
+            size="sm"
+            variant="outlined"
+            color={buttonConfig.color}
+            onClick={() => toggleDemoMode(!isDemoMode)}
+            loading={buttonConfig.loading}
+            startDecorator={buttonConfig.icon}
+            disabled={connectionStatus === 'connecting'}
+            sx={{ py: 0.5 }}
+          >
+            {connectionStatus === 'error' ? 'Error' : isDemoMode ? 'Conectar' : 'Conectado'}
+          </Button>
         </Box>
+      ) : (
+        <Chip
+          variant="soft"
+          color="success"
+          startDecorator={<CloudDoneIcon />}
+          sx={{ mb: 2 }}
+        >
+          Backend real
+        </Chip>
       )}
 
       {users.map((user) => (

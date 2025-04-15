@@ -22,6 +22,10 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { demoUsers, demoTotalUsers } from '../../../data/demoUsers/demoUsers';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import Pagination from '../../common/Pagination/Pagination';
+import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 type Order = 'asc' | 'desc';
 
@@ -49,6 +53,7 @@ export default function OrderTable() {
     isDemoMode,
     handlePageChange,
     toggleDemoMode,
+    connectionStatus, // <-- asegúrate que usePagination lo exponga
   } = usePagination(mockFetchUsers, 1, 10, demoUsers, demoTotalUsers);
 
   const [order, setOrder] = React.useState<Order>('desc');
@@ -116,34 +121,67 @@ export default function OrderTable() {
     }
   }, [toggleDemoMode]);
 
+  const getButtonConfig = () => {
+    if (connectionStatus === 'connecting') {
+      return {
+        color: 'neutral',
+        icon: <AutorenewRoundedIcon />,
+        text: 'Conectando...',
+        loading: true
+      };
+    }
+    if (connectionStatus === 'error') {
+      return {
+        color: 'danger',
+        icon: <ErrorOutlineIcon />,
+        text: 'Error de conexión',
+        loading: false
+      };
+    }
+    return isDemoMode ? {
+      color: 'warning',
+      icon: <CloudSyncIcon />,
+      text: 'Conectar a backend real',
+      loading: false
+    } : {
+      color: 'success',
+      icon: <CloudDoneIcon />,
+      text: 'Conectado al backend',
+      loading: false
+    };
+  };
+
+  const buttonConfig = getButtonConfig();
+
   return (
     <React.Fragment>
-      {/* Banner de modo demo */}
-      {isDemoMode && (
-        <Box
-          sx={{
-            backgroundColor: 'warning.100',
-            p: 1,
-            mb: 2,
-            borderRadius: 'sm',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
+      {/* Banner de modo demo o chip de conexión */}
+      <Box
+        sx={{
+          backgroundColor: isDemoMode ? 'warning.100' : 'background.level1',
+          p: 1,
+          mb: 2,
+          borderRadius: 'sm',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography level="body-sm" color={isDemoMode ? "warning" : "success"}>
+          {isDemoMode ? "Modo demo: mostrando datos de ejemplo" : "Conectado al backend real"}
+        </Typography>
+        <Button
+          size="sm"
+          variant="outlined"
+          color={buttonConfig.color}
+          onClick={() => toggleDemoMode(!isDemoMode)}
+          loading={buttonConfig.loading}
+          startDecorator={buttonConfig.icon}
+          disabled={connectionStatus === 'connecting'}
         >
-          <Typography level="body-sm" color="warning">
-            Modo demo: mostrando datos de ejemplo
-          </Typography>
-          <Button
-            size="sm"
-            variant="outlined"
-            color="warning"
-            onClick={() => toggleDemoMode(false)}
-          >
-            Conectar a backend real
-          </Button>
-        </Box>
-      )}
+          {buttonConfig.text}
+        </Button>
+      </Box>
 
       <Sheet
         className="SearchAndFilters-mobile"

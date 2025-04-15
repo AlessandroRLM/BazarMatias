@@ -15,8 +15,8 @@ export function usePagination<T>(
   fetchData: (params: PaginationParams) => Promise<PaginationResult<T>>,
   initialPage = 1,
   initialPageSize = 10,
-  demoData?: T[], // Nuevo parámetro para datos de ejemplo
-  demoTotalItems?: number // Total de items para el modo demo
+  demoData?: T[],
+  demoTotalItems?: number
 ) {
   const [data, setData] = React.useState<T[]>([]);
   const [currentPage, setCurrentPage] = React.useState(initialPage);
@@ -25,7 +25,8 @@ export function usePagination<T>(
   const [totalPages, setTotalPages] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
-  const [isDemoMode, setIsDemoMode] = React.useState(!!demoData); // Estado para modo demo
+  const [isDemoMode, setIsDemoMode] = React.useState(!!demoData);
+  const [connectionStatus, setConnectionStatus] = React.useState<'idle' | 'connecting' | 'error'>('idle');
 
   const fetchDataWithPagination = React.useCallback(async () => {
     setIsLoading(true);
@@ -33,7 +34,7 @@ export function usePagination<T>(
     
     try {
       if (isDemoMode && demoData) {
-        // Modo demo: usa los datos de ejemplo
+        // Modo demo
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         const paginatedData = demoData.slice(startIndex, endIndex);
@@ -42,14 +43,16 @@ export function usePagination<T>(
         setTotalItems(demoTotalItems || demoData.length);
         setTotalPages(Math.ceil((demoTotalItems || demoData.length) / pageSize));
       } else {
-        // Modo real: llama al backend
+        // Modo real
         const result = await fetchData({ page: currentPage, pageSize });
         setData(result.data);
         setTotalItems(result.totalItems);
         setTotalPages(result.totalPages);
       }
+      setConnectionStatus('idle');
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Error fetching data'));
+      setConnectionStatus('error');
     } finally {
       setIsLoading(false);
     }
@@ -65,11 +68,25 @@ export function usePagination<T>(
     }
   };
 
-  // Función para cambiar entre modo demo y real
-  const toggleDemoMode = (enable: boolean) => {
-    setIsDemoMode(enable);
-    // Refrescar datos cuando se cambia el modo
-    fetchDataWithPagination();
+  const toggleDemoMode = async (enable: boolean) => {
+    if (!enable) {
+      setConnectionStatus('connecting');
+      try {
+        // Verificar conexión al backend
+        const response = await fetch('/api/healthcheck');
+        if (!response.ok) throw new Error('Backend no disponible');
+        
+        setIsDemoMode(false);
+        setConnectionStatus('idle');
+      } catch (error) {
+        console.error("Error connecting to backend:", error);
+        setConnectionStatus('error');
+        throw error;
+      }
+    } else {
+      setIsDemoMode(true);
+      setConnectionStatus('idle');
+    }
   };
 
   return {
@@ -81,6 +98,7 @@ export function usePagination<T>(
     isLoading,
     error,
     isDemoMode,
+    connectionStatus, // Nuevo estado exportado
     handlePageChange,
     setPageSize,
     toggleDemoMode,

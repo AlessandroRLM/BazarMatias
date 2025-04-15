@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { ColorPaletteProp } from '@mui/joy/styles';
 import Box from '@mui/joy/Box';
-import Avatar from '@mui/joy/Avatar';
-import Chip from '@mui/joy/Chip';
 import Typography from '@mui/joy/Typography';
 import List from '@mui/joy/List';
+import { usePagination } from '../../../hooks/usePagination/usePagination';
+import Pagination from '../../common/Pagination/Pagination';
+import { demoUsers, demoTotalUsers } from '../../../data/demoUsers/demoUsers';
+import Avatar from '@mui/joy/Avatar';
+import Chip from '@mui/joy/Chip';
 import ListItem from '@mui/joy/ListItem';
 import ListItemContent from '@mui/joy/ListItemContent';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
@@ -14,42 +16,41 @@ import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
-import ConfirmDialog from '../ConfirmDialog/ConfirmDialog'; // Asegúrate de que la ruta sea correcta
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
+import { ColorPaletteProp } from '@mui/joy/styles';
 
-const listItems = [
-  {
-    rut: '12345678-9',
-    name: 'Olivia Ryhe',
-    email: 'olivia@email.com',
-    role: 'Admin',
-    status: 'Active',
-  },
-  {
-    rut: '98765432-1',
-    name: 'Steve Hampton',
-    email: 'steve.hamp@email.com',
-    role: 'Bodegero',
-    status: 'Active',
-  },
-  {
-    rut: '45678901-2',
-    name: 'Ciaran Murray',
-    email: 'ciaran.murray@email.com',
-    role: 'Bodegero',
-    status: 'Inactive',
-  },
-  {
-    rut: '78901234-5',
-    name: 'Maria Macdonald',
-    email: 'maria.mc@email.com',
-    role: 'Vendedor',
-    status: 'Active',
-  },
-];
+async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        data: [],
+        totalItems: 0,
+        totalPages: 0,
+      });
+    }, 500);
+  });
+}
 
 export default function OrderList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
+
+  const {
+    data: users,
+    currentPage,
+    totalItems,
+    totalPages,
+    isLoading,
+    isDemoMode,
+    handlePageChange,
+    toggleDemoMode,
+  } = usePagination(mockFetchUsers, 1, 5, demoUsers, demoTotalUsers);
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      toggleDemoMode(true);
+    }
+  }, [toggleDemoMode]);
 
   const handleDeleteClick = (rut: string, name: string) => {
     setUserToDelete({ rut, name });
@@ -72,7 +73,6 @@ export default function OrderList() {
 
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-      {/* Diálogo de confirmación para eliminar usuario */}
       <ConfirmDialog
         open={deleteDialogOpen}
         onClose={handleCancelDelete}
@@ -80,8 +80,24 @@ export default function OrderList() {
         userName={userToDelete?.name || ''}
       />
 
-      {listItems.map((listItem) => (
-        <List key={listItem.rut} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
+      {/* Banner de modo demo para móvil */}
+      {isDemoMode && (
+        <Box
+          sx={{
+            backgroundColor: 'warning.100',
+            p: 1,
+            mb: 2,
+            borderRadius: 'sm',
+          }}
+        >
+          <Typography level="body-sm" color="warning">
+            Modo demo activado
+          </Typography>
+        </Box>
+      )}
+
+      {users.map((user) => (
+        <List key={user.id} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
           <ListItem
             sx={{
               display: 'flex',
@@ -91,14 +107,14 @@ export default function OrderList() {
           >
             <ListItemContent sx={{ display: 'flex', gap: 2, alignItems: 'start' }}>
               <ListItemDecorator>
-                <Avatar size="sm">{listItem.name.charAt(0)}</Avatar>
+                <Avatar size="sm">{user.name.charAt(0)}</Avatar>
               </ListItemDecorator>
               <div>
                 <Typography gutterBottom sx={{ fontWeight: 600 }}>
-                  {listItem.name}
+                  {user.name}
                 </Typography>
                 <Typography level="body-xs" gutterBottom>
-                  {listItem.email}
+                  {user.email}
                 </Typography>
                 <Box
                   sx={{
@@ -109,9 +125,9 @@ export default function OrderList() {
                     mb: 1,
                   }}
                 >
-                  <Typography level="body-xs">{listItem.role}</Typography>
+                  <Typography level="body-xs">{user.role}</Typography>
                   <Typography level="body-xs">&bull;</Typography>
-                  <Typography level="body-xs">{listItem.rut}</Typography>
+                  <Typography level="body-xs">{user.rut}</Typography>
                 </Box>
               </div>
             </ListItemContent>
@@ -124,24 +140,24 @@ export default function OrderList() {
                     Active: <CheckRoundedIcon />,
                     Inactive: <BlockIcon />,
                     Pending: <AutorenewRoundedIcon />,
-                  }[listItem.status]
+                  }[user.status]
                 }
                 color={
                   {
                     Active: 'success',
                     Inactive: 'danger',
                     Pending: 'neutral',
-                  }[listItem.status] as ColorPaletteProp
+                  }[user.status] as ColorPaletteProp
                 }
               >
-                {listItem.status}
+                {user.status}
               </Chip>
               <IconButton
                 variant="plain"
                 color="danger"
                 size="sm"
                 aria-label="Delete"
-                onClick={() => handleDeleteClick(listItem.rut, listItem.name)}
+                onClick={() => handleDeleteClick(user.rut, user.name)}
               >
                 <DeleteIcon />
               </IconButton>
@@ -150,6 +166,16 @@ export default function OrderList() {
           <ListDivider />
         </List>
       ))}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={5}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+        showDesktop={false} // Solo mostrar en móvil
+      />
     </Box>
   );
 }

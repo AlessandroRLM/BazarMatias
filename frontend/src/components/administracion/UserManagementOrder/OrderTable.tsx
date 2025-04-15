@@ -16,60 +16,64 @@ import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import SearchIcon from '@mui/icons-material/Search';
+import Button from '@mui/joy/Button';
 import { Link as RouterLink } from '@tanstack/react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-
-const rows = [
-  { rut: '12345678-9', name: 'Olivia Ryhe', email: 'olivia@email.com', role: 'Admin', status: 'Active' },
-  { rut: '98765432-1', name: 'Steve Hampton', email: 'steve.hamp@email.com', role: 'Bodegero', status: 'Active' },
-  { rut: '45678901-2', name: 'Ciaran Murray', email: 'ciaran.murray@email.com', role: 'Bodegero', status: 'Inactive' },
-  { rut: '78901234-5', name: 'Maria Macdonald', email: 'maria.mc@email.com', role: 'Vendedor', status: 'Active' },
-];
+import { demoUsers, demoTotalUsers } from '../../../data/demoUsers/demoUsers';
+import { usePagination } from '../../../hooks/usePagination/usePagination';
+import Pagination from '../../common/Pagination/Pagination';
 
 type Order = 'asc' | 'desc';
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+// Función mock para simular llamada API
+async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  // En una aplicación real, aquí iría la llamada real al backend
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        data: [],
+        totalItems: 0,
+        totalPages: 0,
+      });
+    }, 500);
+  });
 }
 
 export default function OrderTable() {
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof typeof rows[0]>('rut');
+  const {
+    data: users = [],
+    currentPage,
+    totalItems,
+    totalPages,
+    isLoading,
+    isDemoMode,
+    handlePageChange,
+    toggleDemoMode,
+  } = usePagination(mockFetchUsers, 1, 10, demoUsers, demoTotalUsers);
+
+  const [order, setOrder] = React.useState<Order>('desc');
+  const [orderBy, setOrderBy] = React.useState<string>('rut');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
+  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
 
-  const handleSort = (property: keyof typeof rows[0]) => {
+  const handleSort = (property: string) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+    // Aquí agregar lógica para reordenar los datos segun el backend
   };
 
-  const handleDeleteClick = (rut: string, name: string) => {
-    setUserToDelete({ rut, name });
+  const handleDeleteClick = (id: string, name: string) => {
+    setUserToDelete({ id, name });
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = () => {
     if (userToDelete) {
-      // Aquí iría la lógica para eliminar el usuario (la llamada al Backend)
-      console.log('Eliminando usuario:', userToDelete.rut);
+      // Aquí iría la lógica para eliminar el usuario (llamada al backend)
+      console.log('Eliminando usuario:', userToDelete.id);
       setDeleteDialogOpen(false);
       setUserToDelete(null);
     }
@@ -105,8 +109,42 @@ export default function OrderTable() {
     </React.Fragment>
   );
 
+  // Efecto para activar el modo demo automáticamente en desarrollo
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      toggleDemoMode(true);
+    }
+  }, [toggleDemoMode]);
+
   return (
     <React.Fragment>
+      {/* Banner de modo demo */}
+      {isDemoMode && (
+        <Box
+          sx={{
+            backgroundColor: 'warning.100',
+            p: 1,
+            mb: 2,
+            borderRadius: 'sm',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography level="body-sm" color="warning">
+            Modo demo: mostrando datos de ejemplo
+          </Typography>
+          <Button
+            size="sm"
+            variant="outlined"
+            color="warning"
+            onClick={() => toggleDemoMode(false)}
+          >
+            Conectar a backend real
+          </Button>
+        </Box>
+      )}
+
       <Sheet
         className="SearchAndFilters-mobile"
         sx={{ display: { xs: 'flex', sm: 'none' }, my: 1, gap: 1 }}
@@ -138,7 +176,6 @@ export default function OrderTable() {
         {renderFilters()}
       </Box>
 
-      {/* Diálogo de confirmación para eliminar usuario */}
       <ConfirmDialog
         open={deleteDialogOpen}
         onClose={handleCancelDelete}
@@ -175,12 +212,12 @@ export default function OrderTable() {
               <th style={{ width: 48, textAlign: 'center', padding: '12px 6px' }}>
                 <Checkbox
                   size="sm"
-                  indeterminate={selected.length > 0 && selected.length !== rows.length}
-                  checked={selected.length === rows.length}
+                  indeterminate={selected.length > 0 && selected.length !== users.length}
+                  checked={selected.length === users.length && users.length > 0}
                   onChange={(event) => {
-                    setSelected(event.target.checked ? rows.map((row) => row.rut) : []);
+                    setSelected(event.target.checked ? users.map((row: any) => row.id) : []);
                   }}
-                  color={selected.length > 0 || selected.length === rows.length ? 'primary' : undefined}
+                  color={selected.length > 0 || selected.length === users.length ? 'primary' : undefined}
                   sx={{ verticalAlign: 'text-bottom' }}
                 />
               </th>
@@ -262,32 +299,32 @@ export default function OrderTable() {
             </tr>
           </thead>
           <tbody>
-            {[...rows].sort(getComparator(order, orderBy)).map((row) => (
-              <tr key={row.rut}>
+            {users.map((user: any) => (
+              <tr key={user.id}>
                 <td style={{ textAlign: 'center', width: 120 }}>
                   <Checkbox
                     size="sm"
-                    checked={selected.includes(row.rut)}
-                    color={selected.includes(row.rut) ? 'primary' : undefined}
+                    checked={selected.includes(user.id)}
+                    color={selected.includes(user.id) ? 'primary' : undefined}
                     onChange={(event) => {
                       setSelected((ids) =>
-                        event.target.checked ? ids.concat(row.rut) : ids.filter((id) => id !== row.rut),
+                        event.target.checked ? ids.concat(user.id) : ids.filter((id) => id !== user.id),
                       );
                     }}
                     sx={{ verticalAlign: 'text-bottom' }}
                   />
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.rut}</Typography>
+                  <Typography level="body-xs">{user.rut}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.name}</Typography>
+                  <Typography level="body-xs">{user.name}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.email}</Typography>
+                  <Typography level="body-xs">{user.email}</Typography>
                 </td>
                 <td>
-                  <Typography level="body-xs">{row.role}</Typography>
+                  <Typography level="body-xs">{user.role}</Typography>
                 </td>
                 <td>
                   <Box
@@ -303,13 +340,13 @@ export default function OrderTable() {
                       size="sm"
                       aria-label="View"
                       component={RouterLink}
-                      to="/administracion/usuarios/ver-usuario" // remplazar por => to ={`/administracion/usuarios/ver-usuario/${row.rut}`}
+                      to={`/administracion/usuarios/ver-usuario/${user.rut}`}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       component={RouterLink}
-                      to={`/administracion/usuarios/editar-usuario`} // remplazar por => to ={`/administracion/usuarios/editar-usuario/${row.rut}`}
+                      to={`/administracion/usuarios/editar-usuario/${user.rut}`}
                       variant="plain"
                       color="neutral"
                       size="sm"
@@ -322,7 +359,7 @@ export default function OrderTable() {
                       color="danger"
                       size="sm"
                       aria-label="Delete"
-                      onClick={() => handleDeleteClick(row.rut, row.name)}
+                      onClick={() => handleDeleteClick(user.id, user.name)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -333,6 +370,15 @@ export default function OrderTable() {
           </tbody>
         </Table>
       </Sheet>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={10}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+      />
     </React.Fragment>
   );
 }

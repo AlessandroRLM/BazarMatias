@@ -1,18 +1,35 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button } from "@mui/joy";
+import { Button, CircularProgress } from "@mui/joy";
+import { useState } from "react";
 
 import { userCreationSchema, UserCreationFormValues } from "../../../schemas/administracion/userCreationSchema";
 import FormField from "../../core/FormField/FormField";
 import FormSelect from "../../core/FormSelect/FormSelect";
 
-// Agrega la propiedad isEditMode
+// Definimos los posibles modos del formulario
+type FormMode = 'create' | 'edit' | 'view';
+
 interface FormUserCreationProps {
-  isEditMode?: boolean;
+  mode?: FormMode; // Nuevo prop para controlar el modo
+  disableRole?: boolean;
+  disableRut?: boolean;
+  initialValues?: Partial<UserCreationFormValues>;
+  onSubmitForm: (data: UserCreationFormValues) => Promise<void>;
 }
 
-const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<UserCreationFormValues>({
+const FormUserCreation = ({ 
+  mode = 'create', // Valor por defecto: modo creación
+  disableRole = false,
+  disableRut = false,
+  initialValues, 
+  onSubmitForm 
+}: FormUserCreationProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<UserCreationFormValues>({
     resolver: zodResolver(userCreationSchema),
     mode: "onBlur",
     defaultValues: {
@@ -20,12 +37,40 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
       lastName: "",
       rut: "",
       email: "",
-      role: "", // Valor inicial vacío
+      role: "",
+      ...initialValues,
     },
   });
 
-  const onSubmit: SubmitHandler<UserCreationFormValues> = (data) => {
-    alert(`Usuario ${isEditMode ? "editado" : "creado"}: ${data.name} ${data.lastName}, ${data.email}, ${data.role}`);
+  // Determina si un campo debe estar deshabilitado
+  const isFieldDisabled = (fieldName: keyof UserCreationFormValues) => {
+    if (isSubmitting) return true;
+    if (mode === 'view') return true;
+    
+    switch(fieldName) {
+      case 'rut': return disableRut || mode === 'edit';
+      case 'role': return disableRole;
+      default: return false;
+    }
+  };
+
+  const onSubmit: SubmitHandler<UserCreationFormValues> = async (data) => {
+    try {
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setSubmitSuccess(false);
+      
+      await onSubmitForm(data);
+      
+      setSubmitSuccess(true);
+      if (mode === 'create') {
+        reset(); // Reset solo para creación de usuarios
+      }
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Ocurrió un error inesperado");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -37,6 +82,7 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
         alignItems: "center",
         width: "70%",
         margin: "auto",
+        gap: "1rem",
       }}
     >
       <FormField
@@ -47,6 +93,8 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
         size="lg"
         fullWidht={true}
         error={errors.name}
+        disabled={isFieldDisabled('name')}
+        readonly={mode === 'view'}
       />
       <FormField
         name="lastName"
@@ -56,6 +104,8 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
         size="lg"
         fullWidht={true}
         error={errors.lastName}
+        disabled={isFieldDisabled('lastName')}
+        readonly={mode === 'view'}
       />
       <FormField
         name="rut"
@@ -65,17 +115,20 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
         size="lg"
         fullWidht={true}
         error={errors.rut}
-        disabled={isEditMode} // Deshabilita el campo si está en modo de edición
+        disabled={isFieldDisabled('rut')}
+        readonly={mode === 'view' || mode === 'edit'}
       />
       <FormField
         name="email"
         control={control}
         label="Correo"
-        placeholder="Correo"
+        placeholder="Correo electrónico"
         type="email"
         size="lg"
         fullWidht={true}
         error={errors.email}
+        disabled={isFieldDisabled('email')}
+        readonly={mode === 'view'}
       />
       <FormSelect
         name="role"
@@ -84,15 +137,37 @@ const FormUserCreation = ({ isEditMode = false }: FormUserCreationProps) => {
         size="lg"
         fullWidht={true}
         error={errors.role}
+        disabled={isFieldDisabled('role')}
         options={[
           { value: "Admin", label: "Administrador" },
           { value: "Usuario", label: "Usuario" },
           { value: "Supervisor", label: "Supervisor" },
         ]}
       />
-      <Button type="submit" variant="solid" size="lg">
-        {isEditMode ? "Guardar Cambios" : "Crear Usuario"}
-      </Button>
+
+      {submitError && (
+        <div style={{ color: "red", margin: "0.5rem 0" }}>
+          {submitError}
+        </div>
+      )}
+
+      {submitSuccess && (
+        <div style={{ color: "green", margin: "0.5rem 0" }}>
+          {mode === 'edit' ? "¡Cambios guardados con éxito!" : "¡Usuario creado con éxito!"}
+        </div>
+      )}
+
+      {mode !== 'view' && (
+        <Button 
+          type="submit"
+          variant="solid"
+          size="lg"
+          disabled={isSubmitting}
+          endDecorator={isSubmitting ? <CircularProgress size="sm" /> : null}
+        >
+          {mode === 'edit' ? "Guardar Cambios" : "Crear Usuario"}
+        </Button>
+      )}
     </form>
   );
 };

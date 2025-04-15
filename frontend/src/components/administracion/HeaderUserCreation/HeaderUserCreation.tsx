@@ -1,28 +1,77 @@
-import { Box, IconButton, Typography } from "@mui/joy";
+import { Typography, Box, IconButton, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 interface HeaderUserCreationProps {
-  title?: string; // Propiedad opcional para personalizar el título
+  title?: React.ReactNode; // Ahora acepta texto o JSX
+  subtitle?: string;
+  onBack?: () => void;
+  showMenu?: boolean;
+  menuItems?: { label: string; onClick: () => void }[];
 }
 
-const HeaderUserCreation = ({ title = "Creación de Usuario" }: HeaderUserCreationProps) => {
+const HeaderUserCreation = ({ title, subtitle, onBack, showMenu = false, menuItems = [] }: HeaderUserCreationProps) => {
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
-        padding: "8px",
+        justifyContent: "space-between",
+        padding: "8px 16px",
+        borderBottom: "1px solid var(--joy-palette-divider)",
+        marginBottom: 2,
+        position: "relative",
       }}
     >
-      <IconButton onClick={() => window.history.back()} variant="plain" color="neutral" size="lg">
+      {/* Botón de retroceso */}
+      <IconButton
+        onClick={onBack || (() => window.history.back())}
+        variant="plain"
+        color="neutral"
+        size="lg"
+        sx={{ zIndex: 1 }}
+      >
         <ArrowBackIcon />
       </IconButton>
-      <Typography level="h2">
-        {title} {/* Usa el título personalizado */}
-      </Typography>
-      <Box sx={{ width: "40px" }} /> {/* Espaciador para alinear el título */}
+
+      {/* Título y subtítulo */}
+      <Box
+        sx={{
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+          textAlign: "center",
+        }}
+      >
+        <Typography level="h4" component="h1">
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography level="h2" sx={{ color: "text.secondary" }}>
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+
+      {/* Menú desplegable */}
+      {showMenu && (
+        <Dropdown>
+          <MenuButton
+            slots={{ root: IconButton }}
+            slotProps={{ root: { variant: "plain", color: "neutral", size: "lg", sx: { zIndex: 1 } } }}
+          >
+            <SettingsIcon />
+          </MenuButton>
+          <Menu>
+            {menuItems.map((item, index) => (
+              <MenuItem key={index} onClick={item.onClick}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Dropdown>
+      )}
     </Box>
   );
 };

@@ -16,7 +16,8 @@ import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link as RouterLink } from '@tanstack/react-router'; // Importa el componente Link
+import { Link as RouterLink } from '@tanstack/react-router';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 
 const rows = [
   { rut: '12345678-9', name: 'Olivia Ryhe', email: 'olivia@email.com', role: 'Admin', status: 'Active' },
@@ -51,11 +52,32 @@ export default function OrderTable() {
   const [orderBy, setOrderBy] = React.useState<keyof typeof rows[0]>('rut');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
 
   const handleSort = (property: keyof typeof rows[0]) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+  };
+
+  const handleDeleteClick = (rut: string, name: string) => {
+    setUserToDelete({ rut, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (userToDelete) {
+      // Aquí iría la lógica para eliminar el usuario (la llamada al Backend)
+      console.log('Eliminando usuario:', userToDelete.rut);
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setUserToDelete(null);
   };
 
   const renderFilters = () => (
@@ -115,6 +137,15 @@ export default function OrderTable() {
         </FormControl>
         {renderFilters()}
       </Box>
+
+      {/* Diálogo de confirmación para eliminar usuario */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        userName={userToDelete?.name || ''}
+      />
+
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -291,7 +322,7 @@ export default function OrderTable() {
                       color="danger"
                       size="sm"
                       aria-label="Delete"
-                      onClick={() => console.log('Delete clicked')}
+                      onClick={() => handleDeleteClick(row.rut, row.name)}
                     >
                       <DeleteIcon />
                     </IconButton>

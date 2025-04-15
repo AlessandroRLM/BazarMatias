@@ -9,10 +9,12 @@ import ListItem from '@mui/joy/ListItem';
 import ListItemContent from '@mui/joy/ListItemContent';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import ListDivider from '@mui/joy/ListDivider';
-
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import BlockIcon from '@mui/icons-material/Block';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/joy/IconButton';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog'; // Asegúrate de que la ruta sea correcta
 
 const listItems = [
   {
@@ -46,8 +48,38 @@ const listItems = [
 ];
 
 export default function OrderList() {
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
+
+  const handleDeleteClick = (rut: string, name: string) => {
+    setUserToDelete({ rut, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (userToDelete) {
+      // Aquí iría la lógica para eliminar el usuario (llamada a la API del backend)
+      console.log('Eliminando usuario:', userToDelete.rut);
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setUserToDelete(null);
+  };
+
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+      {/* Diálogo de confirmación para eliminar usuario */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        userName={userToDelete?.name || ''}
+      />
+
       {listItems.map((listItem) => (
         <List key={listItem.rut} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
           <ListItem
@@ -83,26 +115,37 @@ export default function OrderList() {
                 </Box>
               </div>
             </ListItemContent>
-            <Chip
-              variant="soft"
-              size="sm"
-              startDecorator={
-                {
-                  Active: <CheckRoundedIcon />,
-                  Inactive: <BlockIcon />,
-                  Pending: <AutorenewRoundedIcon />,
-                }[listItem.status]
-              }
-              color={
-                {
-                  Active: 'success',
-                  Inactive: 'danger',
-                  Pending: 'neutral',
-                }[listItem.status] as ColorPaletteProp
-              }
-            >
-              {listItem.status}
-            </Chip>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Chip
+                variant="soft"
+                size="sm"
+                startDecorator={
+                  {
+                    Active: <CheckRoundedIcon />,
+                    Inactive: <BlockIcon />,
+                    Pending: <AutorenewRoundedIcon />,
+                  }[listItem.status]
+                }
+                color={
+                  {
+                    Active: 'success',
+                    Inactive: 'danger',
+                    Pending: 'neutral',
+                  }[listItem.status] as ColorPaletteProp
+                }
+              >
+                {listItem.status}
+              </Chip>
+              <IconButton
+                variant="plain"
+                color="danger"
+                size="sm"
+                aria-label="Delete"
+                onClick={() => handleDeleteClick(listItem.rut, listItem.name)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           </ListItem>
           <ListDivider />
         </List>

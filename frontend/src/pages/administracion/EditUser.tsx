@@ -50,7 +50,7 @@ const EditUser = () => {
       <FormUserCreation 
        onSubmitForm={handleSubmitForm}
        mode="edit"       // Usamos el nuevo prop 'mode' en lugar de 'isEditMode'
-       disableRole={false} // Habilita selección de rol
+       disableRole={true} // Habilita selección de rol
        disableRut={false}  // Habilita edición de RUT
       />
     </CommonPageLayout>

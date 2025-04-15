@@ -111,8 +111,8 @@ const SidebarAdminList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
-                            Gestión de Acciones por Usuario
+                        <SidebarLink to="/administracion/usuarios/actividad-de-usuarios">
+                            Gestión de Actividad de los Usuarios
                         </SidebarLink>
                     </ListItem>
                     <ListItem>

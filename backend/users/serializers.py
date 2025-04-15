@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from bson import ObjectId
 from .models import User, UserActivity
 import re
-
+from django.utils.crypto import get_random_string
 
 class ObjectIdField(serializers.Field):
     """Campo personalizado para manejar ObjectId de MongoDB."""
@@ -23,16 +23,15 @@ class ObjectIdField(serializers.Field):
 
 class UserSerializer(serializers.ModelSerializer):
     formatted_national_id = serializers.SerializerMethodField()
-    id = ObjectIdField()
+    id = ObjectIdField(read_only=True)
 
     class Meta:
         model = User
         fields = [
             'id',
-            'username',
             'first_name',
             'last_name',
-            # No se incluye `national_id` para el frontend
+            'national_id',
             'formatted_national_id',
             'email',
             'position',
@@ -115,7 +114,19 @@ class UserSerializer(serializers.ModelSerializer):
                     'national_id': ['Este RUT ya está registrado en el sistema.']
                 })
                 
-            return super().create(validated_data)
+            random_password = get_random_string(length=12)
+            user = User.objects.create_user(
+                username=validated_data['first_name'] + validated_data['last_name'],
+                email=validated_data.get('email', ''),
+                password=random_password,
+                first_name=validated_data.get('first_name', ''),
+                last_name=validated_data.get('last_name', ''),
+                national_id=validated_data.get('national_id', ''),
+                position=validated_data.get('position', ''),
+                #is_staff=validated_data.get('is_staff', False),
+                #is_active=validated_data.get('is_active', True),
+            )
+            return user
             
         except (DuplicateKeyError, IntegrityError) as e:
             if 'national_id' in str(e):

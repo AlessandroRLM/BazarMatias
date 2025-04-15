@@ -1,21 +1,21 @@
-import apiClient from '../utils/apiClient';
+import AxiosInstance from '../helpers/AxiosInstance';
 
 export const getUsers = async () => {
-  const response = await apiClient.get('/users/');
+  const response = await AxiosInstance.get('/users/');
   return response.data;
 };
 
 export const deleteUser = async (id: string) => {
-  const response = await apiClient.delete(`/users/${id}/`);
+  const response = await AxiosInstance.delete(`/users/${id}/`);
   return response.data;
 };
 
 export const createUser = async (userData: any) => {
-  const response = await apiClient.post('/users/', userData);
+  const response = await AxiosInstance.post('/api/users/', userData);
   return response.data;
 };
 
 export const updateUser = async (id: string, userData: any) => {
-  const response = await apiClient.put(`/users/${id}/`, userData);
+  const response = await AxiosInstance.put(`/users/${id}/`, userData);
   return response.data;
 };

@@ -14,6 +14,9 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AdministracionDashboardImport } from './routes/administracion/dashboard'
 import { Route as AdministracionUsuariosIndexImport } from './routes/administracion/usuarios/index'
 import { Route as AdministracionPerfilIndexImport } from './routes/administracion/perfil/index'
+import { Route as AdministracionUsuariosVerUsuarioImport } from './routes/administracion/usuarios/ver-usuario'
+import { Route as AdministracionUsuariosEditarUsuarioImport } from './routes/administracion/usuarios/editar-usuario'
+import { Route as AdministracionUsuariosCrearUsuarioImport } from './routes/administracion/usuarios/crear-usuario'
 
 // Create/Update Routes
 
@@ -36,6 +39,27 @@ const AdministracionPerfilIndexRoute = AdministracionPerfilIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdministracionUsuariosVerUsuarioRoute =
+  AdministracionUsuariosVerUsuarioImport.update({
+    id: '/administracion/usuarios/ver-usuario',
+    path: '/administracion/usuarios/ver-usuario',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const AdministracionUsuariosEditarUsuarioRoute =
+  AdministracionUsuariosEditarUsuarioImport.update({
+    id: '/administracion/usuarios/editar-usuario',
+    path: '/administracion/usuarios/editar-usuario',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const AdministracionUsuariosCrearUsuarioRoute =
+  AdministracionUsuariosCrearUsuarioImport.update({
+    id: '/administracion/usuarios/crear-usuario',
+    path: '/administracion/usuarios/crear-usuario',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -45,6 +69,27 @@ declare module '@tanstack/react-router' {
       path: '/administracion/dashboard'
       fullPath: '/administracion/dashboard'
       preLoaderRoute: typeof AdministracionDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/administracion/usuarios/crear-usuario': {
+      id: '/administracion/usuarios/crear-usuario'
+      path: '/administracion/usuarios/crear-usuario'
+      fullPath: '/administracion/usuarios/crear-usuario'
+      preLoaderRoute: typeof AdministracionUsuariosCrearUsuarioImport
+      parentRoute: typeof rootRoute
+    }
+    '/administracion/usuarios/editar-usuario': {
+      id: '/administracion/usuarios/editar-usuario'
+      path: '/administracion/usuarios/editar-usuario'
+      fullPath: '/administracion/usuarios/editar-usuario'
+      preLoaderRoute: typeof AdministracionUsuariosEditarUsuarioImport
+      parentRoute: typeof rootRoute
+    }
+    '/administracion/usuarios/ver-usuario': {
+      id: '/administracion/usuarios/ver-usuario'
+      path: '/administracion/usuarios/ver-usuario'
+      fullPath: '/administracion/usuarios/ver-usuario'
+      preLoaderRoute: typeof AdministracionUsuariosVerUsuarioImport
       parentRoute: typeof rootRoute
     }
     '/administracion/perfil/': {
@@ -68,12 +113,18 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
+  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
+  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
   '/administracion/perfil': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
+  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
+  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
   '/administracion/perfil': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
 }
@@ -81,6 +132,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/administracion/dashboard': typeof AdministracionDashboardRoute
+  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
+  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
+  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
   '/administracion/perfil/': typeof AdministracionPerfilIndexRoute
   '/administracion/usuarios/': typeof AdministracionUsuariosIndexRoute
 }
@@ -89,16 +143,25 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/administracion/dashboard'
+    | '/administracion/usuarios/crear-usuario'
+    | '/administracion/usuarios/editar-usuario'
+    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/administracion/dashboard'
+    | '/administracion/usuarios/crear-usuario'
+    | '/administracion/usuarios/editar-usuario'
+    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
   id:
     | '__root__'
     | '/administracion/dashboard'
+    | '/administracion/usuarios/crear-usuario'
+    | '/administracion/usuarios/editar-usuario'
+    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil/'
     | '/administracion/usuarios/'
   fileRoutesById: FileRoutesById
@@ -106,12 +169,20 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   AdministracionDashboardRoute: typeof AdministracionDashboardRoute
+  AdministracionUsuariosCrearUsuarioRoute: typeof AdministracionUsuariosCrearUsuarioRoute
+  AdministracionUsuariosEditarUsuarioRoute: typeof AdministracionUsuariosEditarUsuarioRoute
+  AdministracionUsuariosVerUsuarioRoute: typeof AdministracionUsuariosVerUsuarioRoute
   AdministracionPerfilIndexRoute: typeof AdministracionPerfilIndexRoute
   AdministracionUsuariosIndexRoute: typeof AdministracionUsuariosIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AdministracionDashboardRoute: AdministracionDashboardRoute,
+  AdministracionUsuariosCrearUsuarioRoute:
+    AdministracionUsuariosCrearUsuarioRoute,
+  AdministracionUsuariosEditarUsuarioRoute:
+    AdministracionUsuariosEditarUsuarioRoute,
+  AdministracionUsuariosVerUsuarioRoute: AdministracionUsuariosVerUsuarioRoute,
   AdministracionPerfilIndexRoute: AdministracionPerfilIndexRoute,
   AdministracionUsuariosIndexRoute: AdministracionUsuariosIndexRoute,
 }
@@ -127,12 +198,24 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/administracion/dashboard",
+        "/administracion/usuarios/crear-usuario",
+        "/administracion/usuarios/editar-usuario",
+        "/administracion/usuarios/ver-usuario",
         "/administracion/perfil/",
         "/administracion/usuarios/"
       ]
     },
     "/administracion/dashboard": {
       "filePath": "administracion/dashboard.tsx"
+    },
+    "/administracion/usuarios/crear-usuario": {
+      "filePath": "administracion/usuarios/crear-usuario.tsx"
+    },
+    "/administracion/usuarios/editar-usuario": {
+      "filePath": "administracion/usuarios/editar-usuario.tsx"
+    },
+    "/administracion/usuarios/ver-usuario": {
+      "filePath": "administracion/usuarios/ver-usuario.tsx"
     },
     "/administracion/perfil/": {
       "filePath": "administracion/perfil/index.tsx"

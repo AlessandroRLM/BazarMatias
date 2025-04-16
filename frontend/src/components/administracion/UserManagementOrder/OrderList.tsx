@@ -117,13 +117,13 @@ export default function OrderList() {
                 size="sm"
                 aria-label="View"
                 component={RouterLink}
-                to={`/_auth/administracion/usuarios/ver-usuario/${user.rut}`}
+                to={`/administracion/usuarios/ver-usuario/${user.rut}`}
               >
                 <VisibilityIcon />
               </IconButton>
               <IconButton
                 component={RouterLink}
-                to={`/_auth/administracion/usuarios/editar-usuario/${user.rut}`}
+                to={`/administracion/usuarios/editar-usuario/${user.rut}`}
                 variant="plain"
                 color="neutral"
                 size="sm"

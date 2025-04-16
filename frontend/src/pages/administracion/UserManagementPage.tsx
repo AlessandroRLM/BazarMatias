@@ -15,7 +15,7 @@ export default function UserManagementPage() {
           startDecorator={<PersonAddRoundedIcon />}
           size="sm"
           component={Link}
-          to="/_auth/administracion/usuarios/crear-usuario"
+          to="/administracion/usuarios/crear-usuario"
         >
           Añadir Usuario
         </Button>

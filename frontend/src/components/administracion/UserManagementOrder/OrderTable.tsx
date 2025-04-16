@@ -16,70 +16,47 @@ import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import SearchIcon from '@mui/icons-material/Search';
-import Button from '@mui/joy/Button';
 import { Link as RouterLink } from '@tanstack/react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { demoUsers, demoTotalUsers } from '../../../data/demoUsers/demoUsers';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import Pagination from '../../common/Pagination/Pagination';
-import CloudSyncIcon from '@mui/icons-material/CloudSync';
-import CloudDoneIcon from '@mui/icons-material/CloudDone';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 import AxiosInstance from '../../../helpers/AxiosInstance';
-import { deleteUser } from '../../../services/userService';
 
 type Order = 'asc' | 'desc';
 
-async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        data: [],
-        totalItems: 0,
-        totalPages: 0,
-      });
-    }, 500);
-  });
-}
-
-async function realFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  try {
-    const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
-    return {
-      data: response.data.results,
-      totalItems: response.data.count,
-      totalPages: Math.ceil(response.data.count / pageSize),
-    };
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error;
-  }
+// Función para llamada API
+async function fetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
+  return {
+    data: response.data.results.map((u: any) => ({
+      id: u.id,
+      name: u.first_name,
+      rut: u.national_id,
+      email: u.email,
+      role: u.position,
+      status: u.is_active ? 'Activo' : 'Inactivo',
+    })),
+    totalItems: response.data.count,
+    totalPages: Math.ceil(response.data.count / pageSize),
+  };
 }
 
 export default function OrderTable() {
-  const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<string>('rut');
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
-  const [open, setOpen] = React.useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
-
-  const getFetchFunction = (isDemo: boolean) => {
-    return isDemo ? mockFetchUsers : realFetchUsers;
-  };
-
   const {
     data: users = [],
     currentPage,
     totalItems,
     totalPages,
     isLoading,
-    isDemoMode,
     handlePageChange,
-    toggleDemoMode,
-    connectionStatus,
-  } = usePagination(getFetchFunction, 1, 10, demoUsers, demoTotalUsers);
+  } = usePagination(fetchUsers, 1, 10);
+
+  const [order, setOrder] = React.useState<Order>('desc');
+  const [orderBy, setOrderBy] = React.useState<string>('rut');
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [open, setOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
 
   const handleSort = (property: string) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -93,16 +70,12 @@ export default function OrderTable() {
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (userToDelete) {
-      try {
-        await deleteUser(userToDelete.id);
-        setDeleteDialogOpen(false);
-        setUserToDelete(null);
-        handlePageChange(currentPage);
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
+      // Aquí iría la lógica para eliminar el usuario (llamada al backend)
+      console.log('Eliminando usuario:', userToDelete.id);
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -136,74 +109,8 @@ export default function OrderTable() {
     </React.Fragment>
   );
 
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      toggleDemoMode(true);
-    }
-  }, [toggleDemoMode]);
-
-  const getButtonConfig = () => {
-    if (connectionStatus === 'connecting') {
-      return {
-        color: 'neutral',
-        icon: <AutorenewRoundedIcon />,
-        text: 'Conectando...',
-        loading: true
-      };
-    }
-    if (connectionStatus === 'error') {
-      return {
-        color: 'danger',
-        icon: <ErrorOutlineIcon />,
-        text: 'Error de conexión',
-        loading: false
-      };
-    }
-    return isDemoMode ? {
-      color: 'warning',
-      icon: <CloudSyncIcon />,
-      text: 'Conectar a backend real',
-      loading: false
-    } : {
-      color: 'success',
-      icon: <CloudDoneIcon />,
-      text: 'Conectado al backend',
-      loading: false
-    };
-  };
-
-  const buttonConfig = getButtonConfig();
-
   return (
     <React.Fragment>
-      {/* Banner de modo demo o chip de conexión */}
-      <Box
-        sx={{
-          backgroundColor: isDemoMode ? 'warning.100' : 'background.level1',
-          p: 1,
-          mb: 2,
-          borderRadius: 'sm',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Typography level="body-sm" color={isDemoMode ? "warning" : "success"}>
-          {isDemoMode ? "Modo demo: mostrando datos de ejemplo" : "Conectado al backend real"}
-        </Typography>
-        <Button
-          size="sm"
-          variant="outlined"
-          color={buttonConfig.color}
-          onClick={() => toggleDemoMode(!isDemoMode)}
-          loading={buttonConfig.loading}
-          startDecorator={buttonConfig.icon}
-          disabled={connectionStatus === 'connecting'}
-        >
-          {buttonConfig.text}
-        </Button>
-      </Box>
-
       <Sheet
         className="SearchAndFilters-mobile"
         sx={{ display: { xs: 'flex', sm: 'none' }, my: 1, gap: 1 }}

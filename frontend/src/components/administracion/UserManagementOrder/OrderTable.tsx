@@ -16,31 +16,29 @@ import Input from '@mui/joy/Input';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import SearchIcon from '@mui/icons-material/Search';
-import Button from '@mui/joy/Button';
 import { Link as RouterLink } from '@tanstack/react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { demoUsers, demoTotalUsers } from '../../../data/demoUsers/demoUsers';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import Pagination from '../../common/Pagination/Pagination';
-import CloudSyncIcon from '@mui/icons-material/CloudSync';
-import CloudDoneIcon from '@mui/icons-material/CloudDone';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import AxiosInstance from '../../../helpers/AxiosInstance';
 
 type Order = 'asc' | 'desc';
 
-// Función mock para simular llamada API
-async function mockFetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  // En una aplicación real, aquí iría la llamada real al backend
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        data: [],
-        totalItems: 0,
-        totalPages: 0,
-      });
-    }, 500);
-  });
+// Función para llamada API
+async function fetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
+  const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
+  return {
+    data: response.data.results.map((u: any) => ({
+      id: u.id,
+      name: u.first_name,
+      rut: u.national_id,
+      email: u.email,
+      role: u.position,
+      status: u.is_active ? 'Activo' : 'Inactivo',
+    })),
+    totalItems: response.data.count,
+    totalPages: Math.ceil(response.data.count / pageSize),
+  };
 }
 
 export default function OrderTable() {
@@ -50,11 +48,8 @@ export default function OrderTable() {
     totalItems,
     totalPages,
     isLoading,
-    isDemoMode,
     handlePageChange,
-    toggleDemoMode,
-    connectionStatus, // <-- asegúrate que usePagination lo exponga
-  } = usePagination(mockFetchUsers, 1, 10, demoUsers, demoTotalUsers);
+  } = usePagination(fetchUsers, 1, 10);
 
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<string>('rut');
@@ -114,75 +109,8 @@ export default function OrderTable() {
     </React.Fragment>
   );
 
-  // Efecto para activar el modo demo automáticamente en desarrollo
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      toggleDemoMode(true);
-    }
-  }, [toggleDemoMode]);
-
-  const getButtonConfig = () => {
-    if (connectionStatus === 'connecting') {
-      return {
-        color: 'neutral',
-        icon: <AutorenewRoundedIcon />,
-        text: 'Conectando...',
-        loading: true
-      };
-    }
-    if (connectionStatus === 'error') {
-      return {
-        color: 'danger',
-        icon: <ErrorOutlineIcon />,
-        text: 'Error de conexión',
-        loading: false
-      };
-    }
-    return isDemoMode ? {
-      color: 'warning',
-      icon: <CloudSyncIcon />,
-      text: 'Conectar a backend real',
-      loading: false
-    } : {
-      color: 'success',
-      icon: <CloudDoneIcon />,
-      text: 'Conectado al backend',
-      loading: false
-    };
-  };
-
-  const buttonConfig = getButtonConfig();
-
   return (
     <React.Fragment>
-      {/* Banner de modo demo o chip de conexión */}
-      <Box
-        sx={{
-          backgroundColor: isDemoMode ? 'warning.100' : 'background.level1',
-          p: 1,
-          mb: 2,
-          borderRadius: 'sm',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Typography level="body-sm" color={isDemoMode ? "warning" : "success"}>
-          {isDemoMode ? "Modo demo: mostrando datos de ejemplo" : "Conectado al backend real"}
-        </Typography>
-        <Button
-          size="sm"
-          variant="outlined"
-          color={buttonConfig.color}
-          onClick={() => toggleDemoMode(!isDemoMode)}
-          loading={buttonConfig.loading}
-          startDecorator={buttonConfig.icon}
-          disabled={connectionStatus === 'connecting'}
-        >
-          {buttonConfig.text}
-        </Button>
-      </Box>
-
       <Sheet
         className="SearchAndFilters-mobile"
         sx={{ display: { xs: 'flex', sm: 'none' }, my: 1, gap: 1 }}

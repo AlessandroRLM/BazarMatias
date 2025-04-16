@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react';
 import AxiosInstance from '../../helpers/AxiosInstance';
 import UserViewForm from '../../components/administracion/UserViewForm/UserViewForm';
 import CommonPageLayout from '../../components/layout/components/CommonPageLayout';
-import HeaderUserCreation from '../../components/administracion/HeaderUserCreation/HeaderUserCreation';
-import GenericFormContainer from '../../components/administracion/GenericFormContainer/GenericFormContainer';
-import { Typography } from "@mui/joy";
+import HeaderUserCreation from '../../components/layout/components/Header';
+import { Typography, Avatar, Box} from "@mui/joy";
 
 const UserViewPage = () => {
   const { rut } = Route.useParams();
@@ -35,9 +34,20 @@ const UserViewPage = () => {
       <HeaderUserCreation
         title={<Typography level="h2" component="h1">Ver Usuario</Typography>}
       />
-      <GenericFormContainer avatarText="VU">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+          padding: 0,
+        }}
+      >
+        <Avatar variant="soft" color="primary" size="profile"></Avatar>
+      </Box>
         <UserViewForm user={user} />
-      </GenericFormContainer>
+
     </CommonPageLayout>
   );
 };

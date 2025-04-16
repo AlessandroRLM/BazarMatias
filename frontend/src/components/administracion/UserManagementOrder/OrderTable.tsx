@@ -306,13 +306,13 @@ export default function OrderTable() {
                       size="sm"
                       aria-label="View"
                       component={RouterLink}
-                      to={`/administracion/usuarios/ver-usuario/${user.rut}`}
+                      to={`/_auth/administracion/usuarios/ver-usuario/${user.rut}`}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       component={RouterLink}
-                      to={`/administracion/usuarios/editar-usuario/${user.rut}`}
+                      to={`/_auth/administracion/usuarios/editar-usuario/${user.rut}`}
                       variant="plain"
                       color="neutral"
                       size="sm"

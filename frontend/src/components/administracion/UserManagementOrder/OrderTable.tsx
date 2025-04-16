@@ -25,24 +25,35 @@ import { deleteUser } from '../../../services/userService';
 
 type Order = 'asc' | 'desc';
 
-// Función para llamada API
-async function fetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
-  return {
-    data: response.data.results.map((u: any) => ({
-      id: u.id,
-      name: u.first_name,
-      rut: u.national_id,
-      email: u.email,
-      role: u.position,
-      status: u.is_active ? 'Activo' : 'Inactivo',
-    })),
-    totalItems: response.data.count,
-    totalPages: Math.ceil(response.data.count / pageSize),
-  };
-}
-
 export default function OrderTable() {
+  const [search, setSearch] = React.useState('');
+  const [status, setStatus] = React.useState<string>('');
+  const [role, setRole] = React.useState<string>('');
+
+  // Actualiza fetchUsers para usar los estados de búsqueda y filtros
+  const fetchUsers = React.useCallback(
+    async ({ page, pageSize }: { page: number; pageSize: number }) => {
+      let url = `/api/users/?page=${page}&page_size=${pageSize}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (status) url += `&is_active=${status}`;
+      if (role && role !== 'all') url += `&position=${role}`;
+      const response = await AxiosInstance.get(url);
+      return {
+        data: response.data.results.map((u: any) => ({
+          id: u.id,
+          name: u.first_name,
+          rut: u.national_id,
+          email: u.email,
+          role: u.position,
+          status: u.is_active ? 'Activo' : 'Inactivo',
+        })),
+        totalItems: response.data.count,
+        totalPages: Math.ceil(response.data.count / pageSize),
+      };
+    },
+    [search, status, role]
+  );
+
   const {
     data: users = [],
     currentPage,
@@ -93,6 +104,11 @@ export default function OrderTable() {
     setUserToDelete(null);
   };
 
+  // Cuando cambian los filtros o búsqueda, vuelve a la página 1
+  React.useEffect(() => {
+    handlePageChange(1);
+  }, [search, status, role]);
+
   const renderFilters = () => (
     <React.Fragment>
       <FormControl size="sm">
@@ -100,16 +116,24 @@ export default function OrderTable() {
         <Select
           size="sm"
           placeholder="Filtrar por estado"
+          value={status}
+          onChange={(_, value) => setStatus(value ?? '')}
           slotProps={{ button: { sx: { whiteSpace: 'nowrap' } } }}
         >
-          <Option value="active">Activo</Option>
-          <Option value="inactive">Inactivo</Option>
+          <Option value="">Todos</Option>
+          <Option value="true">Activo</Option>
+          <Option value="false">Inactivo</Option>
         </Select>
       </FormControl>
       <FormControl size="sm">
         <FormLabel>Cargo</FormLabel>
-        <Select size="sm" placeholder="Todos">
-          <Option value="all">Todos</Option>
+        <Select
+          size="sm"
+          placeholder="Todos"
+          value={role}
+          onChange={(_, value) => setRole(value ?? '')}
+        >
+          <Option value="">Todos</Option>
           <Option value="admin">Admin</Option>
           <Option value="bodegero">Bodegero</Option>
           <Option value="vendedor">Vendedor</Option>
@@ -127,6 +151,8 @@ export default function OrderTable() {
         <Input
           size="sm"
           placeholder="Buscar Usuario"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
           startDecorator={<SearchIcon />}
           sx={{ flexGrow: 1 }}
         />
@@ -146,7 +172,13 @@ export default function OrderTable() {
       >
         <FormControl sx={{ flex: 1 }} size="sm">
           <FormLabel>Buscar por Nombre de Usuario</FormLabel>
-          <Input size="sm" placeholder="Buscar" startDecorator={<SearchIcon />} />
+          <Input
+            size="sm"
+            placeholder="Buscar"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            startDecorator={<SearchIcon />}
+          />
         </FormControl>
         {renderFilters()}
       </Box>

@@ -17,27 +17,38 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AxiosInstance from '../../../helpers/AxiosInstance';
 import { deleteUser } from '../../../services/userService';
-
-// Función para traer usuarios reales del backend
-async function fetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
-  const response = await AxiosInstance.get(`/api/users/?page=${page}&page_size=${pageSize}`);
-  return {
-    data: response.data.results.map((u: any) => ({
-      id: u.id,
-      name: u.first_name,
-      rut: u.national_id,
-      email: u.email,
-      role: u.position,
-      status: u.is_active ? 'Active' : 'Inactive',
-    })),
-    totalItems: response.data.count,
-    totalPages: Math.ceil(response.data.count / pageSize),
-  };
-}
+import Input from '@mui/joy/Input';
+import Select from '@mui/joy/Select';
+import Option from '@mui/joy/Option';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function OrderList() {
+  const [search, setSearch] = React.useState('');
+  const [status, setStatus] = React.useState<string>('');
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
+
+  const fetchUsers = React.useCallback(
+    async ({ page, pageSize }: { page: number; pageSize: number }) => {
+      let url = `/api/users/?page=${page}&page_size=${pageSize}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (status) url += `&is_active=${status}`;
+      const response = await AxiosInstance.get(url);
+      return {
+        data: response.data.results.map((u: any) => ({
+          id: u.id,
+          name: u.first_name,
+          rut: u.national_id,
+          email: u.email,
+          role: u.position,
+          status: u.is_active ? 'Active' : 'Inactive',
+        })),
+        totalItems: response.data.count,
+        totalPages: Math.ceil(response.data.count / pageSize),
+      };
+    },
+    [search, status]
+  );
 
   const {
     data: users,
@@ -75,6 +86,10 @@ export default function OrderList() {
     setUserToDelete(null);
   };
 
+  React.useEffect(() => {
+    handlePageChange(1);
+  }, [search, status]);
+
   return (
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
       <ConfirmDialog
@@ -83,6 +98,24 @@ export default function OrderList() {
         onConfirm={handleConfirmDelete}
         userName={userToDelete?.name || ''}
       />
+
+      <Input
+        size="sm"
+        placeholder="Buscar usuario"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        startDecorator={<SearchIcon />}
+      />
+      <Select
+        size="sm"
+        placeholder="Filtrar por estado"
+        value={status}
+        onChange={(_, value) => setStatus(value ?? '')} // Nunca undefined
+      >
+        <Option value="">Todos</Option>
+        <Option value="true">Activo</Option>
+        <Option value="false">Inactivo</Option>
+      </Select>
 
       {users.map((user) => (
         <List key={user.id} size="sm" sx={{ '--ListItem-paddingX': 0 }}>

@@ -4,7 +4,10 @@ from django.utils.deprecation import MiddlewareMixin
 class UserActivityMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         # Ignora peticiones de recursos estáticos
-        if '/static/' in request.path or '/media/' in request.path:
+        if '/static/' in request.path or '/media/' or '/favicon.ico' in request.path:
+            return response
+        
+        if '/login/' or '/logout/' or '/logoutall/' in request.path:
             return response
             
         if hasattr(request, 'user') and request.user.is_authenticated:

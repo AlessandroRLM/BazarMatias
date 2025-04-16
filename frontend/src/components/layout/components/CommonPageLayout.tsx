@@ -20,7 +20,7 @@ const CommonPageLayout = ({ children }: CommonPageLayoutProps) => {
         boxShadow: 'var(--joy-shadow-md)',
         width: '100%',
         height: 'auto',
-        maxHeight: '100vh',
+        maxHeight: '100dvh',
         overflow: 'auto',
       }}
     >

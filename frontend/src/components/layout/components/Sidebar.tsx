@@ -8,6 +8,7 @@ import WorkIcon from '@mui/icons-material/Work'
 import LogoutIcon from '@mui/icons-material/Logout';
 import { KeyboardArrowDown } from "@mui/icons-material"
 import SidebarLink from "./SidebarLink"
+import { useAuth } from "../../../hooks/auth/useAuth"
 
 interface TogglerProps {
     defaultExpanded?: boolean
@@ -121,7 +122,7 @@ const SidebarAdminList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to="/administracion/dashboard">
+                        <SidebarLink to=".">
                             Dashboard
                         </SidebarLink>
                     </ListItem>
@@ -311,6 +312,8 @@ const SidebarContent = () => {
 }
 
 const SidebarFooter = () => {
+    const {logout} = useAuth()
+
     return (
         <Box
             sx={{
@@ -344,7 +347,7 @@ const SidebarFooter = () => {
                     <Typography level='body-sm' fontWeight='bold'>Administrador</Typography>
                     <Typography level='body-xs'> Admin </Typography>
                 </Box>
-                <IconButton>
+                <IconButton onClick={() => logout()}>
                     <LogoutIcon/>
                 </IconButton>
             </Box>

@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
-import django_mongodb_backend
-from decouple import config
+import django_mongodb_backend #type: ignore
+from decouple import config #type: ignore
 
 from pathlib import Path
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import UserManagementPage from '../../../pages/administracion/UserManagementPage';
+import UserManagementPage from '../../../../pages/administracion/UserManagementPage';
 
-export const Route = createFileRoute('/administracion/usuarios/')({
+export const Route = createFileRoute('/_auth/administracion/usuarios/')({
   component: UserManagementComponent,
 });
 

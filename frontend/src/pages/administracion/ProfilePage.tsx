@@ -1,7 +1,6 @@
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import useUserProfileFormContext from "../../hooks/administracion/useUserProfileFormContext";
 import ChangePasswordForm from "../../components/administracion/ChangePasswordForm/ChangePasswordForm";
-import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
 import HeaderUserCreation from "../../components/administracion/HeaderUserCreation/HeaderUserCreation";
 import GenericFormContainer from "../../components/administracion/GenericFormContainer/GenericFormContainer";
 import { Typography } from "@mui/joy";
@@ -14,13 +13,13 @@ const ProfilePage = () => {
     try {
       console.log("Datos del perfil:", formData);
       // Lógica para actualizar el perfil
-      setIsEditMode(false);
+      setIsEditMode(false)
       alert("Perfil actualizado con éxito!");
     } catch (error) {
-      console.error("Error al actualizar perfil:", error);
-      throw error;
+      console.error("Error al actualizar perfil:", error)
+      throw error
     }
-  };
+  }
 
   const menuItems = [
     {
@@ -39,10 +38,10 @@ const ProfilePage = () => {
         setIsEditMode(false);
       },
     },
-  ];
+  ]
 
   return (
-    <CommonPageLayout>
+    <>
       <HeaderUserCreation
         title={<Typography level="h2" component="h1">Perfil de Usuario</Typography>}
         showMenu={true}
@@ -59,8 +58,8 @@ const ProfilePage = () => {
       )}
         {isChangePassword && <ChangePasswordForm />}
       </GenericFormContainer>
-    </CommonPageLayout>
-  );
-};
+    </>
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage

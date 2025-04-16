@@ -11,156 +11,198 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AdministracionDashboardImport } from './routes/administracion/dashboard'
-import { Route as AdministracionUsuariosIndexImport } from './routes/administracion/usuarios/index'
-import { Route as AdministracionPerfilIndexImport } from './routes/administracion/perfil/index'
-import { Route as AdministracionUsuariosVerUsuarioImport } from './routes/administracion/usuarios/ver-usuario'
-import { Route as AdministracionUsuariosEditarUsuarioImport } from './routes/administracion/usuarios/editar-usuario'
-import { Route as AdministracionUsuariosCrearUsuarioImport } from './routes/administracion/usuarios/crear-usuario'
-import { Route as AdministracionUsuariosActividadDeUsuariosImport } from './routes/administracion/usuarios/actividad-de-usuarios'
+import { Route as LoginImport } from './routes/login'
+import { Route as AuthImport } from './routes/_auth'
+import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
+import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
+import { Route as AuthAdministracionUsuariosVerUsuarioImport } from './routes/_auth/administracion/usuarios/ver-usuario'
+import { Route as AuthAdministracionUsuariosEditarUsuarioImport } from './routes/_auth/administracion/usuarios/editar-usuario'
+import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
+import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
 
 // Create/Update Routes
 
-const AdministracionDashboardRoute = AdministracionDashboardImport.update({
-  id: '/administracion/dashboard',
-  path: '/administracion/dashboard',
+const LoginRoute = LoginImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AdministracionUsuariosIndexRoute =
-  AdministracionUsuariosIndexImport.update({
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthAdministracionUsuariosIndexRoute =
+  AuthAdministracionUsuariosIndexImport.update({
     id: '/administracion/usuarios/',
     path: '/administracion/usuarios/',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthRoute,
   } as any)
 
-const AdministracionPerfilIndexRoute = AdministracionPerfilIndexImport.update({
-  id: '/administracion/perfil/',
-  path: '/administracion/perfil/',
-  getParentRoute: () => rootRoute,
-} as any)
+const AuthAdministracionPerfilIndexRoute =
+  AuthAdministracionPerfilIndexImport.update({
+    id: '/administracion/perfil/',
+    path: '/administracion/perfil/',
+    getParentRoute: () => AuthRoute,
+  } as any)
 
-const AdministracionUsuariosVerUsuarioRoute =
-  AdministracionUsuariosVerUsuarioImport.update({
+const AuthAdministracionUsuariosVerUsuarioRoute =
+  AuthAdministracionUsuariosVerUsuarioImport.update({
     id: '/administracion/usuarios/ver-usuario',
     path: '/administracion/usuarios/ver-usuario',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthRoute,
   } as any)
 
-const AdministracionUsuariosEditarUsuarioRoute =
-  AdministracionUsuariosEditarUsuarioImport.update({
+const AuthAdministracionUsuariosEditarUsuarioRoute =
+  AuthAdministracionUsuariosEditarUsuarioImport.update({
     id: '/administracion/usuarios/editar-usuario',
     path: '/administracion/usuarios/editar-usuario',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthRoute,
   } as any)
 
-const AdministracionUsuariosCrearUsuarioRoute =
-  AdministracionUsuariosCrearUsuarioImport.update({
+const AuthAdministracionUsuariosCrearUsuarioRoute =
+  AuthAdministracionUsuariosCrearUsuarioImport.update({
     id: '/administracion/usuarios/crear-usuario',
     path: '/administracion/usuarios/crear-usuario',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthRoute,
   } as any)
 
-const AdministracionUsuariosActividadDeUsuariosRoute =
-  AdministracionUsuariosActividadDeUsuariosImport.update({
+const AuthAdministracionUsuariosActividadDeUsuariosRoute =
+  AuthAdministracionUsuariosActividadDeUsuariosImport.update({
     id: '/administracion/usuarios/actividad-de-usuarios',
     path: '/administracion/usuarios/actividad-de-usuarios',
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => AuthRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/administracion/dashboard': {
-      id: '/administracion/dashboard'
-      path: '/administracion/dashboard'
-      fullPath: '/administracion/dashboard'
-      preLoaderRoute: typeof AdministracionDashboardImport
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
-    '/administracion/usuarios/actividad-de-usuarios': {
-      id: '/administracion/usuarios/actividad-de-usuarios'
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth/administracion/usuarios/actividad-de-usuarios': {
+      id: '/_auth/administracion/usuarios/actividad-de-usuarios'
       path: '/administracion/usuarios/actividad-de-usuarios'
       fullPath: '/administracion/usuarios/actividad-de-usuarios'
-      preLoaderRoute: typeof AdministracionUsuariosActividadDeUsuariosImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosImport
+      parentRoute: typeof AuthImport
     }
-    '/administracion/usuarios/crear-usuario': {
-      id: '/administracion/usuarios/crear-usuario'
+    '/_auth/administracion/usuarios/crear-usuario': {
+      id: '/_auth/administracion/usuarios/crear-usuario'
       path: '/administracion/usuarios/crear-usuario'
       fullPath: '/administracion/usuarios/crear-usuario'
-      preLoaderRoute: typeof AdministracionUsuariosCrearUsuarioImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionUsuariosCrearUsuarioImport
+      parentRoute: typeof AuthImport
     }
-    '/administracion/usuarios/editar-usuario': {
-      id: '/administracion/usuarios/editar-usuario'
+    '/_auth/administracion/usuarios/editar-usuario': {
+      id: '/_auth/administracion/usuarios/editar-usuario'
       path: '/administracion/usuarios/editar-usuario'
       fullPath: '/administracion/usuarios/editar-usuario'
-      preLoaderRoute: typeof AdministracionUsuariosEditarUsuarioImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionUsuariosEditarUsuarioImport
+      parentRoute: typeof AuthImport
     }
-    '/administracion/usuarios/ver-usuario': {
-      id: '/administracion/usuarios/ver-usuario'
+    '/_auth/administracion/usuarios/ver-usuario': {
+      id: '/_auth/administracion/usuarios/ver-usuario'
       path: '/administracion/usuarios/ver-usuario'
       fullPath: '/administracion/usuarios/ver-usuario'
-      preLoaderRoute: typeof AdministracionUsuariosVerUsuarioImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionUsuariosVerUsuarioImport
+      parentRoute: typeof AuthImport
     }
-    '/administracion/perfil/': {
-      id: '/administracion/perfil/'
+    '/_auth/administracion/perfil/': {
+      id: '/_auth/administracion/perfil/'
       path: '/administracion/perfil'
       fullPath: '/administracion/perfil'
-      preLoaderRoute: typeof AdministracionPerfilIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionPerfilIndexImport
+      parentRoute: typeof AuthImport
     }
-    '/administracion/usuarios/': {
-      id: '/administracion/usuarios/'
+    '/_auth/administracion/usuarios/': {
+      id: '/_auth/administracion/usuarios/'
       path: '/administracion/usuarios'
       fullPath: '/administracion/usuarios'
-      preLoaderRoute: typeof AdministracionUsuariosIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthAdministracionUsuariosIndexImport
+      parentRoute: typeof AuthImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthRouteChildren {
+  AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
+  AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  AuthAdministracionUsuariosEditarUsuarioRoute: typeof AuthAdministracionUsuariosEditarUsuarioRoute
+  AuthAdministracionUsuariosVerUsuarioRoute: typeof AuthAdministracionUsuariosVerUsuarioRoute
+  AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
+  AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAdministracionUsuariosActividadDeUsuariosRoute:
+    AuthAdministracionUsuariosActividadDeUsuariosRoute,
+  AuthAdministracionUsuariosCrearUsuarioRoute:
+    AuthAdministracionUsuariosCrearUsuarioRoute,
+  AuthAdministracionUsuariosEditarUsuarioRoute:
+    AuthAdministracionUsuariosEditarUsuarioRoute,
+  AuthAdministracionUsuariosVerUsuarioRoute:
+    AuthAdministracionUsuariosVerUsuarioRoute,
+  AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
+  AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/administracion/dashboard': typeof AdministracionDashboardRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
-  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
-  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
-  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/perfil': typeof AdministracionPerfilIndexRoute
-  '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
+  '': typeof AuthRouteWithChildren
+  '/login': typeof LoginRoute
+  '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
+  '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
+  '/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
+  '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
+  '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/administracion/dashboard': typeof AdministracionDashboardRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
-  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
-  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
-  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/perfil': typeof AdministracionPerfilIndexRoute
-  '/administracion/usuarios': typeof AdministracionUsuariosIndexRoute
+  '': typeof AuthRouteWithChildren
+  '/login': typeof LoginRoute
+  '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
+  '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
+  '/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
+  '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
+  '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/administracion/dashboard': typeof AdministracionDashboardRoute
-  '/administracion/usuarios/actividad-de-usuarios': typeof AdministracionUsuariosActividadDeUsuariosRoute
-  '/administracion/usuarios/crear-usuario': typeof AdministracionUsuariosCrearUsuarioRoute
-  '/administracion/usuarios/editar-usuario': typeof AdministracionUsuariosEditarUsuarioRoute
-  '/administracion/usuarios/ver-usuario': typeof AdministracionUsuariosVerUsuarioRoute
-  '/administracion/perfil/': typeof AdministracionPerfilIndexRoute
-  '/administracion/usuarios/': typeof AdministracionUsuariosIndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
+  '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/_auth/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
+  '/_auth/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
+  '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
+  '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/administracion/dashboard'
+    | ''
+    | '/login'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/usuarios/editar-usuario'
@@ -169,7 +211,8 @@ export interface FileRouteTypes {
     | '/administracion/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/administracion/dashboard'
+    | ''
+    | '/login'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/usuarios/editar-usuario'
@@ -178,37 +221,25 @@ export interface FileRouteTypes {
     | '/administracion/usuarios'
   id:
     | '__root__'
-    | '/administracion/dashboard'
-    | '/administracion/usuarios/actividad-de-usuarios'
-    | '/administracion/usuarios/crear-usuario'
-    | '/administracion/usuarios/editar-usuario'
-    | '/administracion/usuarios/ver-usuario'
-    | '/administracion/perfil/'
-    | '/administracion/usuarios/'
+    | '/_auth'
+    | '/login'
+    | '/_auth/administracion/usuarios/actividad-de-usuarios'
+    | '/_auth/administracion/usuarios/crear-usuario'
+    | '/_auth/administracion/usuarios/editar-usuario'
+    | '/_auth/administracion/usuarios/ver-usuario'
+    | '/_auth/administracion/perfil/'
+    | '/_auth/administracion/usuarios/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  AdministracionDashboardRoute: typeof AdministracionDashboardRoute
-  AdministracionUsuariosActividadDeUsuariosRoute: typeof AdministracionUsuariosActividadDeUsuariosRoute
-  AdministracionUsuariosCrearUsuarioRoute: typeof AdministracionUsuariosCrearUsuarioRoute
-  AdministracionUsuariosEditarUsuarioRoute: typeof AdministracionUsuariosEditarUsuarioRoute
-  AdministracionUsuariosVerUsuarioRoute: typeof AdministracionUsuariosVerUsuarioRoute
-  AdministracionPerfilIndexRoute: typeof AdministracionPerfilIndexRoute
-  AdministracionUsuariosIndexRoute: typeof AdministracionUsuariosIndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AdministracionDashboardRoute: AdministracionDashboardRoute,
-  AdministracionUsuariosActividadDeUsuariosRoute:
-    AdministracionUsuariosActividadDeUsuariosRoute,
-  AdministracionUsuariosCrearUsuarioRoute:
-    AdministracionUsuariosCrearUsuarioRoute,
-  AdministracionUsuariosEditarUsuarioRoute:
-    AdministracionUsuariosEditarUsuarioRoute,
-  AdministracionUsuariosVerUsuarioRoute: AdministracionUsuariosVerUsuarioRoute,
-  AdministracionPerfilIndexRoute: AdministracionPerfilIndexRoute,
-  AdministracionUsuariosIndexRoute: AdministracionUsuariosIndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 
 export const routeTree = rootRoute
@@ -221,35 +252,47 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/administracion/dashboard",
-        "/administracion/usuarios/actividad-de-usuarios",
-        "/administracion/usuarios/crear-usuario",
-        "/administracion/usuarios/editar-usuario",
-        "/administracion/usuarios/ver-usuario",
-        "/administracion/perfil/",
-        "/administracion/usuarios/"
+        "/_auth",
+        "/login"
       ]
     },
-    "/administracion/dashboard": {
-      "filePath": "administracion/dashboard.tsx"
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/administracion/usuarios/actividad-de-usuarios",
+        "/_auth/administracion/usuarios/crear-usuario",
+        "/_auth/administracion/usuarios/editar-usuario",
+        "/_auth/administracion/usuarios/ver-usuario",
+        "/_auth/administracion/perfil/",
+        "/_auth/administracion/usuarios/"
+      ]
     },
-    "/administracion/usuarios/actividad-de-usuarios": {
-      "filePath": "administracion/usuarios/actividad-de-usuarios.tsx"
+    "/login": {
+      "filePath": "login.tsx"
     },
-    "/administracion/usuarios/crear-usuario": {
-      "filePath": "administracion/usuarios/crear-usuario.tsx"
+    "/_auth/administracion/usuarios/actividad-de-usuarios": {
+      "filePath": "_auth/administracion/usuarios/actividad-de-usuarios.tsx",
+      "parent": "/_auth"
     },
-    "/administracion/usuarios/editar-usuario": {
-      "filePath": "administracion/usuarios/editar-usuario.tsx"
+    "/_auth/administracion/usuarios/crear-usuario": {
+      "filePath": "_auth/administracion/usuarios/crear-usuario.tsx",
+      "parent": "/_auth"
     },
-    "/administracion/usuarios/ver-usuario": {
-      "filePath": "administracion/usuarios/ver-usuario.tsx"
+    "/_auth/administracion/usuarios/editar-usuario": {
+      "filePath": "_auth/administracion/usuarios/editar-usuario.tsx",
+      "parent": "/_auth"
     },
-    "/administracion/perfil/": {
-      "filePath": "administracion/perfil/index.tsx"
+    "/_auth/administracion/usuarios/ver-usuario": {
+      "filePath": "_auth/administracion/usuarios/ver-usuario.tsx",
+      "parent": "/_auth"
     },
-    "/administracion/usuarios/": {
-      "filePath": "administracion/usuarios/index.tsx"
+    "/_auth/administracion/perfil/": {
+      "filePath": "_auth/administracion/perfil/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/administracion/usuarios/": {
+      "filePath": "_auth/administracion/usuarios/index.tsx",
+      "parent": "/_auth"
     }
   }
 }

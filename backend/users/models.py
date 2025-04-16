@@ -108,8 +108,6 @@ class UserActivity(models.Model):
         ('UPDATE', 'Actualizar'),
         ('DELETE', 'Eliminar'),
         ('VIEW', 'Ver'),
-        ('LOGIN', 'Iniciar sesión'),
-        ('LOGOUT', 'Cerrar sesión'),
         ('OTHER', 'Otro'),
     )
     action_type = models.CharField(max_length=10, choices=ACTION_TYPES)

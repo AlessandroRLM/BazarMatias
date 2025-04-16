@@ -1,4 +1,4 @@
-import { useParams } from '@tanstack/react-router';
+import { Route } from '../../routes/_auth/administracion/usuarios/ver-usuario.$rut';
 import { useEffect, useState } from 'react';
 import AxiosInstance from '../../helpers/AxiosInstance';
 import UserViewForm from '../../components/administracion/UserViewForm/UserViewForm';
@@ -8,14 +8,13 @@ import GenericFormContainer from '../../components/administracion/GenericFormCon
 import { Typography } from "@mui/joy";
 
 const UserViewPage = () => {
-  const { rut } = useParams();
+  const { rut } = Route.useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     AxiosInstance.get(`/api/users/${rut}/`)
       .then(res => {
-        // Mapeo de los datos del backend a los nombres que espera UserViewForm
         const data = res.data;
         setUser({
           name: data.first_name,

@@ -15,10 +15,10 @@ import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
-import { Route as AuthAdministracionUsuariosVerUsuarioImport } from './routes/_auth/administracion/usuarios/ver-usuario'
-import { Route as AuthAdministracionUsuariosEditarUsuarioImport } from './routes/_auth/administracion/usuarios/editar-usuario'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
+import { Route as AuthAdministracionUsuariosVerUsuarioRutImport } from './routes/_auth/administracion/usuarios/ver-usuario.$rut'
+import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './routes/_auth/administracion/usuarios/editar-usuario.$rut'
 
 // Create/Update Routes
 
@@ -47,20 +47,6 @@ const AuthAdministracionPerfilIndexRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthAdministracionUsuariosVerUsuarioRoute =
-  AuthAdministracionUsuariosVerUsuarioImport.update({
-    id: '/administracion/usuarios/ver-usuario',
-    path: '/administracion/usuarios/ver-usuario',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthAdministracionUsuariosEditarUsuarioRoute =
-  AuthAdministracionUsuariosEditarUsuarioImport.update({
-    id: '/administracion/usuarios/editar-usuario',
-    path: '/administracion/usuarios/editar-usuario',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
 const AuthAdministracionUsuariosCrearUsuarioRoute =
   AuthAdministracionUsuariosCrearUsuarioImport.update({
     id: '/administracion/usuarios/crear-usuario',
@@ -72,6 +58,20 @@ const AuthAdministracionUsuariosActividadDeUsuariosRoute =
   AuthAdministracionUsuariosActividadDeUsuariosImport.update({
     id: '/administracion/usuarios/actividad-de-usuarios',
     path: '/administracion/usuarios/actividad-de-usuarios',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthAdministracionUsuariosVerUsuarioRutRoute =
+  AuthAdministracionUsuariosVerUsuarioRutImport.update({
+    id: '/administracion/usuarios/ver-usuario/$rut',
+    path: '/administracion/usuarios/ver-usuario/$rut',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthAdministracionUsuariosEditarUsuarioRutRoute =
+  AuthAdministracionUsuariosEditarUsuarioRutImport.update({
+    id: '/administracion/usuarios/editar-usuario/$rut',
+    path: '/administracion/usuarios/editar-usuario/$rut',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -107,20 +107,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosCrearUsuarioImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/administracion/usuarios/editar-usuario': {
-      id: '/_auth/administracion/usuarios/editar-usuario'
-      path: '/administracion/usuarios/editar-usuario'
-      fullPath: '/administracion/usuarios/editar-usuario'
-      preLoaderRoute: typeof AuthAdministracionUsuariosEditarUsuarioImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/administracion/usuarios/ver-usuario': {
-      id: '/_auth/administracion/usuarios/ver-usuario'
-      path: '/administracion/usuarios/ver-usuario'
-      fullPath: '/administracion/usuarios/ver-usuario'
-      preLoaderRoute: typeof AuthAdministracionUsuariosVerUsuarioImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/administracion/perfil/': {
       id: '/_auth/administracion/perfil/'
       path: '/administracion/perfil'
@@ -135,6 +121,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosIndexImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/administracion/usuarios/editar-usuario/$rut': {
+      id: '/_auth/administracion/usuarios/editar-usuario/$rut'
+      path: '/administracion/usuarios/editar-usuario/$rut'
+      fullPath: '/administracion/usuarios/editar-usuario/$rut'
+      preLoaderRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/administracion/usuarios/ver-usuario/$rut': {
+      id: '/_auth/administracion/usuarios/ver-usuario/$rut'
+      path: '/administracion/usuarios/ver-usuario/$rut'
+      fullPath: '/administracion/usuarios/ver-usuario/$rut'
+      preLoaderRoute: typeof AuthAdministracionUsuariosVerUsuarioRutImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
@@ -143,10 +143,10 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  AuthAdministracionUsuariosEditarUsuarioRoute: typeof AuthAdministracionUsuariosEditarUsuarioRoute
-  AuthAdministracionUsuariosVerUsuarioRoute: typeof AuthAdministracionUsuariosVerUsuarioRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
+  AuthAdministracionUsuariosEditarUsuarioRutRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
+  AuthAdministracionUsuariosVerUsuarioRutRoute: typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
@@ -154,12 +154,12 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthAdministracionUsuariosActividadDeUsuariosRoute,
   AuthAdministracionUsuariosCrearUsuarioRoute:
     AuthAdministracionUsuariosCrearUsuarioRoute,
-  AuthAdministracionUsuariosEditarUsuarioRoute:
-    AuthAdministracionUsuariosEditarUsuarioRoute,
-  AuthAdministracionUsuariosVerUsuarioRoute:
-    AuthAdministracionUsuariosVerUsuarioRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
+  AuthAdministracionUsuariosEditarUsuarioRutRoute:
+    AuthAdministracionUsuariosEditarUsuarioRutRoute,
+  AuthAdministracionUsuariosVerUsuarioRutRoute:
+    AuthAdministracionUsuariosVerUsuarioRutRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -169,10 +169,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
-  '/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
+  '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
 
 export interface FileRoutesByTo {
@@ -180,10 +180,10 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
-  '/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
+  '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
 
 export interface FileRoutesById {
@@ -192,10 +192,10 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/_auth/administracion/usuarios/editar-usuario': typeof AuthAdministracionUsuariosEditarUsuarioRoute
-  '/_auth/administracion/usuarios/ver-usuario': typeof AuthAdministracionUsuariosVerUsuarioRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
+  '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
+  '/_auth/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
 
 export interface FileRouteTypes {
@@ -205,30 +205,30 @@ export interface FileRouteTypes {
     | '/login'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
-    | '/administracion/usuarios/editar-usuario'
-    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/administracion/usuarios/editar-usuario/$rut'
+    | '/administracion/usuarios/ver-usuario/$rut'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
     | '/login'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
-    | '/administracion/usuarios/editar-usuario'
-    | '/administracion/usuarios/ver-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/administracion/usuarios/editar-usuario/$rut'
+    | '/administracion/usuarios/ver-usuario/$rut'
   id:
     | '__root__'
     | '/_auth'
     | '/login'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
-    | '/_auth/administracion/usuarios/editar-usuario'
-    | '/_auth/administracion/usuarios/ver-usuario'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
+    | '/_auth/administracion/usuarios/editar-usuario/$rut'
+    | '/_auth/administracion/usuarios/ver-usuario/$rut'
   fileRoutesById: FileRoutesById
 }
 
@@ -261,10 +261,10 @@ export const routeTree = rootRoute
       "children": [
         "/_auth/administracion/usuarios/actividad-de-usuarios",
         "/_auth/administracion/usuarios/crear-usuario",
-        "/_auth/administracion/usuarios/editar-usuario",
-        "/_auth/administracion/usuarios/ver-usuario",
         "/_auth/administracion/perfil/",
-        "/_auth/administracion/usuarios/"
+        "/_auth/administracion/usuarios/",
+        "/_auth/administracion/usuarios/editar-usuario/$rut",
+        "/_auth/administracion/usuarios/ver-usuario/$rut"
       ]
     },
     "/login": {
@@ -278,20 +278,20 @@ export const routeTree = rootRoute
       "filePath": "_auth/administracion/usuarios/crear-usuario.tsx",
       "parent": "/_auth"
     },
-    "/_auth/administracion/usuarios/editar-usuario": {
-      "filePath": "_auth/administracion/usuarios/editar-usuario.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/administracion/usuarios/ver-usuario": {
-      "filePath": "_auth/administracion/usuarios/ver-usuario.tsx",
-      "parent": "/_auth"
-    },
     "/_auth/administracion/perfil/": {
       "filePath": "_auth/administracion/perfil/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/usuarios/": {
       "filePath": "_auth/administracion/usuarios/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/administracion/usuarios/editar-usuario/$rut": {
+      "filePath": "_auth/administracion/usuarios/editar-usuario.$rut.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/administracion/usuarios/ver-usuario/$rut": {
+      "filePath": "_auth/administracion/usuarios/ver-usuario.$rut.tsx",
       "parent": "/_auth"
     }
   }

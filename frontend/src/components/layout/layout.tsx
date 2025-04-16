@@ -1,14 +1,10 @@
 import { Box } from "@mui/joy"
-import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
 import { Outlet } from "@tanstack/react-router"
-
-
 
 const layout = () => {
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
-            <Header />
             <Sidebar />
             <Box
                 component="main"

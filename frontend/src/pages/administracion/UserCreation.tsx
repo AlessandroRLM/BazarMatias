@@ -1,5 +1,5 @@
 import { Box, Avatar } from "@mui/joy";
-import HeaderUserCreation from "../../components/administracion/HeaderUserCreation/HeaderUserCreation";
+import HeaderUserCreation from "../../components/layout/components/Header";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
 import { Typography } from "@mui/joy";
@@ -24,7 +24,7 @@ const UserCreation = () => {
       
       // Redirigir usando @tanstack/react-router
       navigate({
-        to: "/administracion/usuarios",
+        to: "/administracion/usuarios/",
         search: { success: "Usuario creado con éxito" },
       });
       

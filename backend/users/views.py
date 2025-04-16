@@ -12,6 +12,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAdminUser,)  # Cambiar a IsAdmin cuando se implemente autenticación
+    lookup_field = 'national_id'
 
     # Filtros y búsqueda
     filter_backends = [ filters.SearchFilter, filters.OrderingFilter]

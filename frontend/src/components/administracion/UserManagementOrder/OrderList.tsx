@@ -16,6 +16,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AxiosInstance from '../../../helpers/AxiosInstance';
+import { deleteUser } from '../../../services/userService';
 
 // Función para traer usuarios reales del backend
 async function fetchUsers({ page, pageSize }: { page: number; pageSize: number }) {
@@ -45,6 +46,7 @@ export default function OrderList() {
     totalPages,
     isLoading,
     handlePageChange,
+    refresh,
   } = usePagination(fetchUsers, 1, 5);
 
   const handleDeleteClick = (rut: string, name: string) => {
@@ -52,12 +54,19 @@ export default function OrderList() {
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (userToDelete) {
-      // Aquí iría la lógica para eliminar el usuario (llamada a la API del backend)
-      console.log('Eliminando usuario:', userToDelete.rut);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
+      try {
+        await deleteUser(userToDelete.rut);
+        alert('Usuario eliminado con éxito');
+        await refresh();
+      } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        alert('Error al eliminar usuario');
+      } finally {
+        setDeleteDialogOpen(false);
+        setUserToDelete(null);
+      }
     }
   };
 

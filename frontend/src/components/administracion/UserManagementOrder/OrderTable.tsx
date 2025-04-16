@@ -21,6 +21,7 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { usePagination } from '../../../hooks/usePagination/usePagination';
 import Pagination from '../../common/Pagination/Pagination';
 import AxiosInstance from '../../../helpers/AxiosInstance';
+import { deleteUser } from '../../../services/userService';
 
 type Order = 'asc' | 'desc';
 
@@ -49,6 +50,7 @@ export default function OrderTable() {
     totalPages,
     isLoading,
     handlePageChange,
+    refresh,
   } = usePagination(fetchUsers, 1, 10);
 
   const [order, setOrder] = React.useState<Order>('desc');
@@ -65,17 +67,24 @@ export default function OrderTable() {
     // Aquí agregar lógica para reordenar los datos segun el backend
   };
 
-  const handleDeleteClick = (id: string, name: string) => {
-    setUserToDelete({ id, name });
+  const handleDeleteClick = (rut: string, name: string) => {
+    setUserToDelete({ rut, name });
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (userToDelete) {
-      // Aquí iría la lógica para eliminar el usuario (llamada al backend)
-      console.log('Eliminando usuario:', userToDelete.id);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
+      try {
+        await deleteUser(userToDelete.rut);
+        alert('Usuario eliminado con éxito');
+        await refresh();
+      } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        alert('Error al eliminar usuario');
+      } finally {
+        setDeleteDialogOpen(false);
+        setUserToDelete(null);
+      }
     }
   };
 
@@ -325,7 +334,7 @@ export default function OrderTable() {
                       color="danger"
                       size="sm"
                       aria-label="Delete"
-                      onClick={() => handleDeleteClick(user.id, user.name)}
+                      onClick={() => handleDeleteClick(user.rut, user.name)}
                     >
                       <DeleteIcon />
                     </IconButton>

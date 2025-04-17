@@ -5,7 +5,7 @@ import useUserProfileFormContext from "../../hooks/administracion/useUserProfile
 import ChangePasswordForm from "../../components/administracion/ChangePasswordForm/ChangePasswordForm";
 import HeaderUserCreation from "../../components/layout/components/Header";
 import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
-import { Typography, Avatar, Box} from "@mui/joy";
+import { Typography, Avatar, Box } from "@mui/joy";
 
 const ProfilePage = () => {
   const { isProfile, isChangePassword, setIsProfile, setIsChangePassword, setIsEditMode, isEditMode } =
@@ -26,7 +26,6 @@ const ProfilePage = () => {
         first_name: formData.name,
         last_name: formData.lastName,
         email: formData.email,
-        // Otros campos si es necesario
       });
       setIsEditMode(false);
       alert("Perfil actualizado con éxito!");
@@ -59,7 +58,7 @@ const ProfilePage = () => {
   if (!profileData) return <div>No se pudo cargar el perfil</div>;
 
   return (
-    <CommonPageLayout> {/* ← envuelve el contenido */}
+    <CommonPageLayout>
       <HeaderUserCreation
         title={<Typography level="h2" component="h1">Perfil de Usuario</Typography>}
         showMenu={true}
@@ -77,22 +76,35 @@ const ProfilePage = () => {
       >
         <Avatar variant="soft" color="primary" size="profile"></Avatar>
       </Box>
-        {isProfile && (
-          <FormUserCreation 
-            mode={isEditMode ? "edit" : "view"}
-            disableRole={true}
-            disableRut={true}
-            onSubmitForm={handleProfileSubmit}
-            initialValues={{
-              name: profileData.first_name,
-              lastName: profileData.last_name,
-              rut: profileData.national_id,
-              email: profileData.email,
-              role: profileData.position,
-            }}
-          />
-        )}
-        {isChangePassword && <ChangePasswordForm />}
+      
+      {isProfile && (
+        <FormUserCreation 
+          mode={isEditMode ? "edit" : "view"}
+          disableRole={true}
+          disableRut={true}
+          onSubmitForm={handleProfileSubmit}
+          initialValues={{
+            name: profileData.first_name,
+            lastName: profileData.last_name,
+            rut: profileData.national_id,
+            email: profileData.email,
+            role: profileData.position,
+          }}
+        />
+      )}
+      
+      {isChangePassword && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+            mt: 4
+          }}
+        >
+          <ChangePasswordForm />
+        </Box>
+      )}
     </CommonPageLayout>
   );
 };

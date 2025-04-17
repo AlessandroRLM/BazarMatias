@@ -1,29 +1,38 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, CircularProgress } from "@mui/joy";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { userCreationSchema, UserCreationFormValues } from "../../../schemas/administracion/userCreationSchema";
 import FormField from "../../core/FormField/FormField";
 import FormSelect from "../../core/FormSelect/FormSelect";
 
-// Definimos los posibles modos del formulario
 type FormMode = 'create' | 'edit' | 'view';
 
 interface FormUserCreationProps {
-  mode?: FormMode; // Nuevo prop para controlar el modo
+  mode?: FormMode;
   disableRole?: boolean;
   disableRut?: boolean;
   initialValues?: Partial<UserCreationFormValues>;
   onSubmitForm: (data: UserCreationFormValues) => Promise<void>;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  submitSuccessExternal?: boolean;
+  onSuccessReset?: () => void;
+  successMessage?: string;
 }
 
 const FormUserCreation = ({ 
-  mode = 'create', // Valor por defecto: modo creación
+  mode = 'create',
   disableRole = false,
   disableRut = false,
   initialValues, 
-  onSubmitForm 
+  onSubmitForm,
+  onSuccess,
+  onCancel,
+  submitSuccessExternal = false,
+  onSuccessReset = () => {},
+  successMessage
 }: FormUserCreationProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -42,7 +51,18 @@ const FormUserCreation = ({
     },
   });
 
-  // Determina si un campo debe estar deshabilitado
+  useEffect(() => {
+    if (submitSuccessExternal) {
+      setSubmitSuccess(true);
+      const timer = setTimeout(() => {
+        setSubmitSuccess(false);
+        onSuccessReset();
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [submitSuccessExternal, onSuccessReset]);
+
   const isFieldDisabled = (fieldName: keyof UserCreationFormValues) => {
     if (isSubmitting) return true;
     if (mode === 'view') return true;
@@ -63,8 +83,13 @@ const FormUserCreation = ({
       await onSubmitForm(data);
       
       setSubmitSuccess(true);
+      
+      setTimeout(() => {
+        if (onSuccess) onSuccess();
+      }, 1500);
+      
       if (mode === 'create') {
-        reset(); // Reset solo para creación de usuarios
+        reset();
       }
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Ocurrió un error inesperado");
@@ -153,20 +178,35 @@ const FormUserCreation = ({
 
       {submitSuccess && (
         <div style={{ color: "green", margin: "0.5rem 0" }}>
-          {mode === 'edit' ? "¡Cambios guardados con éxito!" : "¡Usuario creado con éxito!"}
+          {successMessage || (mode === 'edit' ? "¡Cambios guardados con éxito!" : "¡Usuario creado con éxito!")}
         </div>
       )}
 
       {mode !== 'view' && (
-        <Button 
-          type="submit"
-          variant="solid"
-          size="lg"
-          disabled={isSubmitting}
-          endDecorator={isSubmitting ? <CircularProgress size="sm" /> : null}
-        >
-          {mode === 'edit' ? "Guardar Cambios" : "Crear Usuario"}
-        </Button>
+        <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center' }}>
+          <Button 
+            type="submit"
+            variant="solid"
+            size="lg"
+            disabled={isSubmitting}
+            endDecorator={isSubmitting ? <CircularProgress size="sm" /> : null}
+            sx={{ flex: 1 }}
+          >
+            {mode === 'edit' ? "Guardar Cambios" : "Crear Usuario"}
+          </Button>
+          
+          {onCancel && (
+            <Button 
+              variant="outlined"
+              size="lg"
+              onClick={onCancel}
+              disabled={isSubmitting}
+              sx={{ flex: 1 }}
+            >
+              Cancelar
+            </Button>
+          )}
+        </div>
       )}
     </form>
   );

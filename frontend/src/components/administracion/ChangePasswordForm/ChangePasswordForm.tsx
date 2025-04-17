@@ -1,15 +1,20 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormField from '../../core/FormField/FormField';
-import { Button, Box } from '@mui/joy';
+import { Button, Box, Stack } from '@mui/joy';
 import { changePasswordFormSchema, ChangePasswordFormValues, defaultValues } from '../../../schemas/administracion/changePasswordFormSchema'
 import AxiosInstance from "../../../helpers/AxiosInstance";
 
-const ChangePasswordForm = () => {
+interface ChangePasswordFormProps {
+  onSuccess: () => void;
+}
+
+const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) => {
   const { 
     control, 
     handleSubmit, 
-    formState: { errors } 
+    formState: { errors },
+    reset
   } = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordFormSchema),
     mode: 'onBlur',
@@ -23,6 +28,8 @@ const ChangePasswordForm = () => {
         confirmPassword: data.confirmPassword,
       });
       alert("Contraseña cambiada con éxito!");
+      reset();
+      onSuccess();
     } catch (error) {
       alert("Error al cambiar la contraseña");
     }
@@ -36,7 +43,8 @@ const ChangePasswordForm = () => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        p: 2
+        p: 2,
+        margin: '0 auto'
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -58,15 +66,24 @@ const ChangePasswordForm = () => {
           fullWidht={true}
           error={errors.confirmPassword}
         /> 
-        <Button 
-          type='submit'
-          variant='solid' 
-          size='lg'
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          Confirmar
-        </Button>
+        
+        <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
+          <Button 
+            type="button" 
+            variant="outlined" 
+            fullWidth
+            onClick={onSuccess}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit"
+            variant="solid" 
+            fullWidth
+          >
+            Confirmar
+          </Button>
+        </Stack>
       </form>
     </Box>
   );

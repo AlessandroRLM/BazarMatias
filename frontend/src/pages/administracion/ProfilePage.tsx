@@ -13,6 +13,7 @@ const ProfilePage = () => {
 
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     AxiosInstance.get("/api/users/me/")
@@ -27,8 +28,11 @@ const ProfilePage = () => {
         last_name: formData.lastName,
         email: formData.email,
       });
-      setIsEditMode(false);
-      alert("Perfil actualizado con éxito!");
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setIsEditMode(false);
+        setSubmitSuccess(false);
+      }, 1500);
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
       throw error;
@@ -80,7 +84,7 @@ const ProfilePage = () => {
       {isProfile && (
         <FormUserCreation 
           mode={isEditMode ? "edit" : "view"}
-          disableRole={true}
+          disableRole={false}
           disableRut={true}
           onSubmitForm={handleProfileSubmit}
           initialValues={{
@@ -90,20 +94,21 @@ const ProfilePage = () => {
             email: profileData.email,
             role: profileData.position,
           }}
+          successMessage="¡Perfil actualizado con éxito!"
+          submitSuccessExternal={submitSuccess}
+          onSuccessReset={() => setSubmitSuccess(false)}
+          onSuccess={() => setIsEditMode(false)}
+          onCancel={() => setIsEditMode(false)}
         />
       )}
       
       {isChangePassword && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            mt: 4
-          }}
-        >
-          <ChangePasswordForm />
-        </Box>
+        <ChangePasswordForm 
+          onSuccess={() => {
+            setIsChangePassword(false);
+            setIsProfile(true);
+          }} 
+        />
       )}
     </CommonPageLayout>
   );

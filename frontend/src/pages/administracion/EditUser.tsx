@@ -11,7 +11,8 @@ const EditUser = () => {
   const { rut } = Route.useParams();
   const [initialValues, setInitialValues] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // <-- Agrega esto
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     AxiosInstance.get(`/api/users/${rut}/`)
@@ -37,8 +38,15 @@ const EditUser = () => {
         email: formData.email,
         position: formData.role,
       });
-      alert("Usuario actualizado con éxito!");
-      navigate({ to: "/administracion/usuarios/" });
+      
+      // Mostrar éxito en el formulario
+      setSubmitSuccess(true);
+      
+      // Redirigir después de 1.5 segundos
+      setTimeout(() => {
+        navigate({ to: "/administracion/usuarios/" });
+      }, 1500);
+      
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
       throw error;
@@ -71,6 +79,8 @@ const EditUser = () => {
         disableRole={true}
         disableRut={false}
         initialValues={initialValues}
+        submitSuccessExternal={submitSuccess}
+        onSuccessReset={() => setSubmitSuccess(false)}
       />
     </CommonPageLayout>
   );

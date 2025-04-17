@@ -147,3 +147,14 @@ class UserActivitySerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'action_type', 'description', 
                   'content_type_name', 'object_id', 'data', 
                   'ip_address', 'user_agent', 'timestamp']
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True)
+    confirmPassword = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data['password'] != data['confirmPassword']:
+            raise serializers.ValidationError("Las contraseñas no coinciden.")
+        if len(data['password']) < 8:
+            raise serializers.ValidationError("La contraseña debe tener al menos 8 caracteres.")
+        return data

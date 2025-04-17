@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import AxiosInstance from "../../helpers/AxiosInstance";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import useUserProfileFormContext from "../../hooks/administracion/useUserProfileFormContext";
 import ChangePasswordForm from "../../components/administracion/ChangePasswordForm/ChangePasswordForm";
@@ -9,9 +11,23 @@ const ProfilePage = () => {
   const { isProfile, isChangePassword, setIsProfile, setIsChangePassword, setIsEditMode, isEditMode } =
     useUserProfileFormContext();
 
+  const [profileData, setProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    AxiosInstance.get("/api/users/me/")
+      .then(res => setProfileData(res.data))
+      .finally(() => setLoading(false));
+  }, []);
+
   const handleProfileSubmit = async (formData: any) => {
     try {
-      console.log("Datos del perfil:", formData);
+      await AxiosInstance.put(`/api/users/${profileData.national_id}/`, {
+        first_name: formData.name,
+        last_name: formData.lastName,
+        email: formData.email,
+        // Otros campos si es necesario
+      });
       setIsEditMode(false);
       alert("Perfil actualizado con éxito!");
     } catch (error) {
@@ -39,6 +55,9 @@ const ProfilePage = () => {
     },
   ];
 
+  if (loading) return <div>Cargando...</div>;
+  if (!profileData) return <div>No se pudo cargar el perfil</div>;
+
   return (
     <CommonPageLayout> {/* ← envuelve el contenido */}
       <HeaderUserCreation
@@ -64,6 +83,13 @@ const ProfilePage = () => {
             disableRole={true}
             disableRut={true}
             onSubmitForm={handleProfileSubmit}
+            initialValues={{
+              name: profileData.first_name,
+              lastName: profileData.last_name,
+              rut: profileData.national_id,
+              email: profileData.email,
+              role: profileData.position,
+            }}
           />
         )}
         {isChangePassword && <ChangePasswordForm />}

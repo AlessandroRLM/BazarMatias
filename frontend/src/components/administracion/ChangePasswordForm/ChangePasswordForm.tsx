@@ -3,8 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import FormField from '../../core/FormField/FormField'
 import { Button } from '@mui/joy'
 import { changePasswordFormSchema, ChangePasswordFormValues, defaultValues } from '../../../schemas/administracion/changePasswordFormSchema'
-
-
+import AxiosInstance from "../../../helpers/AxiosInstance";
 
 
 const ProfileForm = () => {
@@ -15,8 +14,16 @@ const ProfileForm = () => {
         defaultValues: defaultValues
     })
 
-    const onSubmit: SubmitHandler<ChangePasswordFormValues> = (data) => {
-        console.log(data)
+    const onSubmit: SubmitHandler<ChangePasswordFormValues> = async (data) => {
+        try {
+            await AxiosInstance.post("/api/users/change-password/", {
+                password: data.password,
+                confirmPassword: data.confirmPassword,
+            });
+            alert("Contraseña cambiada con éxito!");
+        } catch (error) {
+            alert("Error al cambiar la contraseña");
+        }
     }
 
     return (

@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth import login
 from .models import User, UserActivity
-from .serializers import UserSerializer, UserActivitySerializer
+from .serializers import UserSerializer, UserActivitySerializer, ChangePasswordSerializer
 from .decorators import log_activity
 from .pagination import CustomPagination
+from rest_framework import status
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -71,6 +72,16 @@ class UserViewSet(viewsets.ModelViewSet):
         """Endpoint adicional para obtener datos del usuario autenticado"""
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
+
+    @log_activity('update', 'actualizar usuario')
+    @action(detail=False, methods=['post'], url_path='change-password', permission_classes=[permissions.IsAuthenticated])
+    def change_password(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        user.set_password(serializer.validated_data['password'])
+        user.save()
+        return Response({"detail": "Contraseña cambiada con éxito."}, status=status.HTTP_200_OK)
 
 
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):

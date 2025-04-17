@@ -26,7 +26,9 @@ const ProfilePage = () => {
       await AxiosInstance.put(`/api/users/${profileData.national_id}/`, {
         first_name: formData.name,
         last_name: formData.lastName,
+        national_id: formData.rut,
         email: formData.email,
+        position: formData.role
       });
       setSubmitSuccess(true);
       setTimeout(() => {
@@ -84,7 +86,7 @@ const ProfilePage = () => {
       {isProfile && (
         <FormUserCreation 
           mode={isEditMode ? "edit" : "view"}
-          disableRole={false}
+          disableRole={true}
           disableRut={true}
           onSubmitForm={handleProfileSubmit}
           initialValues={{

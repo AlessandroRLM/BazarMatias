@@ -7,12 +7,32 @@ import { Link } from '@tanstack/react-router';
 import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
 import OrderTable from '../../components/administracion/UserManagementOrder/OrderTable';
 import OrderList from '../../components/administracion/UserManagementOrder/OrderList';
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from '@mui/joy/IconButton';
+import { toggleSidebar } from '../../utils/sidebar.utils';
 
 export default function UserManagementPage() {
   return (
     <CssVarsProvider disableTransitionOnChange>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+        {/* Botón de menú para móvil */}
+        <IconButton
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            position: 'fixed',
+            top: 16,
+            left: 16,
+            zIndex: 9999,
+            variant: 'outlined',
+            color: 'neutral'
+          }}
+          onClick={() => toggleSidebar()}
+          size="sm"
+        >
+          <MenuIcon />
+        </IconButton>
+
         <Box
           component="main"
           className="MainContent"

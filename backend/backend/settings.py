@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'knox',
     'users',
     'authentication',
+    'inventory',
 ]
 
 MIDDLEWARE = [
@@ -168,3 +169,17 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+
+# Configuración para testing con MongoDB
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+TEST_NON_SERIALIZED_APPS = ['inventory']  # Evita serialización para estas apps
+
+# Desactivar migraciones durante tests
+class DisableMigrations(object):
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+
+MIGRATION_MODULES = DisableMigrations()

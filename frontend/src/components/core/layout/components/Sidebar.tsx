@@ -1,6 +1,6 @@
 import { Avatar, Box, IconButton, List, ListItem, ListItemButton, ListItemContent, Sheet, Typography } from "@mui/joy"
 import { Dispatch, SetStateAction, ReactNode, useState } from "react"
-import { closeSidebar } from "../../../utils/sidebar.utils"
+import { closeSidebar } from "../../../../utils/sidebar.utils"
 import LockIcon from '@mui/icons-material/Lock'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
@@ -8,7 +8,7 @@ import WorkIcon from '@mui/icons-material/Work'
 import LogoutIcon from '@mui/icons-material/Logout';
 import { KeyboardArrowDown } from "@mui/icons-material"
 import SidebarLink from "./SidebarLink"
-import { useAuth } from "../../../hooks/auth/useAuth"
+import { useAuth } from "../../../../hooks/auth/useAuth"
 
 interface TogglerProps {
     defaultExpanded?: boolean
@@ -312,7 +312,7 @@ const SidebarContent = () => {
 }
 
 const SidebarFooter = () => {
-    const {logout} = useAuth()
+    const {logout, user} = useAuth()
 
     return (
         <Box
@@ -335,7 +335,9 @@ const SidebarFooter = () => {
                     flexDirection: 'row'
                 }}
             >
-                <Avatar variant="soft" color="primary" size="md" >AA</Avatar>
+                <Avatar variant="soft" color="primary" size="md" >
+                    {(user?.first_name?.slice(0, 1) ?? 'A') + (user?.last_name?.slice(0, 1) ?? 'A')}
+                </Avatar>
                 <Box
                     sx={{
                         display: 'flex',
@@ -344,8 +346,8 @@ const SidebarFooter = () => {
                         padding: 0,
                     }}
                 >
-                    <Typography level='body-sm' fontWeight='bold'>Administrador</Typography>
-                    <Typography level='body-xs'> Admin </Typography>
+                    <Typography level='body-sm' fontWeight='bold'>{user?.email}</Typography>
+                    <Typography level='body-xs'> {user?.position} </Typography>
                 </Box>
                 <IconButton onClick={() => logout()}>
                     <LogoutIcon/>

@@ -3,12 +3,10 @@ from django.utils.deprecation import MiddlewareMixin
 
 class UserActivityMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
-        # Ignora peticiones de recursos estáticos
-        if '/static/' in request.path or '/media/' or '/favicon.ico' in request.path:
+        # Ignora peticiones de recursos estáticos o autenticacion
+        if any(path in request.path for path in ['/static/', '/media/', '/favicon.ico', '/api/auth/']):
             return response
-        
-        if '/login/' or '/logout/' or '/logoutall/' in request.path:
-            return response
+            
             
         if hasattr(request, 'user') and request.user.is_authenticated:
             # Determina el tipo de acción basado en el método HTTP
@@ -26,8 +24,9 @@ class UserActivityMiddleware(MiddlewareMixin):
             activity_data = {
                 'path': request.path,
                 'status_code': response.status_code,
+                'status_type': 'success' if response.status_code < 400 else 'error',
             }
-            
+                        
             # Intenta capturar datos del cuerpo de la petición para POST, PUT, PATCH
             if request.method in ['POST', 'PUT', 'PATCH'] and hasattr(request, 'data'):
                 # Filtra información sensible

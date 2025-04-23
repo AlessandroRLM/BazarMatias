@@ -10,12 +10,21 @@ import { AuthProvider } from './providers/auth/AuthProvider'
 
 // React Query imports
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Box, CircularProgress } from '@mui/joy'
+
+export const queryClient = new QueryClient()
 
 // Create a new router instance
 const router = createRouter({ 
   routeTree,
+  defaultPendingComponent: () => (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh'}}>
+      <CircularProgress />
+    </Box>
+  ),
   context: {
     auth: undefined!,
+    queryClient,
   },
  })
 
@@ -28,19 +37,18 @@ declare module '@tanstack/react-router' {
 
 function InnerApp() {
   const auth = useAuth()
-  return <RouterProvider router={ router } context={{ auth }} />
+  return <RouterProvider router={ router } context={{ auth, }} />
 }
 
-const queryClient = new QueryClient()
 
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={ queryClient }>
+    <QueryClientProvider client={ queryClient }>
+      <AuthProvider>
         <InnerApp/>
         <TanStackRouterDevtools router={router} />
-      </QueryClientProvider >
-    </AuthProvider>
+      </AuthProvider>
+    </QueryClientProvider >
   )
 }
 

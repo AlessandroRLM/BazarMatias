@@ -108,8 +108,11 @@ class UserActivity(models.Model):
         ('UPDATE', 'Actualizar'),
         ('DELETE', 'Eliminar'),
         ('VIEW', 'Ver'),
+        ('LOGIN', 'Iniciar sesión'),
+        ('LOGOUT', 'Cerrar sesión'),
         ('OTHER', 'Otro'),
     )
+    
     action_type = models.CharField(max_length=10, choices=ACTION_TYPES)
     
     # Descripción de la acción
@@ -123,22 +126,18 @@ class UserActivity(models.Model):
     # Datos adicionales
     data = models.JSONField(null=True, blank=True)
     
-    # IP y User Agent (chrome, edge, ...etc) del usuario
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True)
     
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    
     
     class Meta:
         ordering = ['-timestamp']
         verbose_name = 'Actividad de usuario'
         verbose_name_plural = 'Actividades de usuarios'
-        indexes = [
-            models.Index(fields=['user']),
-            models.Index(fields=['action_type']),
-            models.Index(fields=['timestamp']),
-            models.Index(fields=['content_type', 'object_id']),
-        ]
-    
+
     def __str__(self):
-        return f"{self.user.username} - {self.action_type} - {self.timestamp}"
+        return f"{self.user.username} - {self.action_type} - {self.timestamp} - {self.action_status}"

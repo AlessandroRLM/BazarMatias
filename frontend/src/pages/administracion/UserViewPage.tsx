@@ -2,13 +2,14 @@ import { Route } from '../../routes/_auth/administracion/usuarios/ver-usuario.$r
 import { useEffect, useState } from 'react';
 import AxiosInstance from '../../helpers/AxiosInstance';
 import UserViewForm from '../../components/administracion/UserViewForm/UserViewForm';
-import CommonPageLayout from '../../components/layout/components/CommonPageLayout';
-import HeaderUserCreation from '../../components/layout/components/Header';
+import CommonPageLayout from '../../components/core/layout/components/CommonPageLayout';
+import HeaderUserCreation from '../../components/core/layout/components/Header';
 import { Typography, Avatar, Box} from "@mui/joy";
+import { User } from '../../types/auth.types';
 
 const UserViewPage = () => {
   const { rut } = Route.useParams();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,11 +17,13 @@ const UserViewPage = () => {
       .then(res => {
         const data = res.data;
         setUser({
-          name: data.first_name,
+          firstName: data.first_name,
           lastName: data.last_name,
-          rut: data.national_id,
+          nationalId: data.national_id,
           email: data.email,
-          role: data.position,
+          position: data.position,
+          isStaff: data.is_staff,
+          isSuperuser: data.is_superuser,
         });
       })
       .finally(() => setLoading(false));
@@ -46,7 +49,7 @@ const UserViewPage = () => {
       >
         <Avatar variant="soft" color="primary" size="profile"></Avatar>
       </Box>
-        <UserViewForm user={user} />
+      <UserViewForm user={user} />
 
     </CommonPageLayout>
   );

@@ -54,9 +54,9 @@ paths:
       responses:
         '200':
           description: No response body
-  /api/users/:
+  /api/users/users/:
     get:
-      operationId: users_list
+      operationId: users_users_list
       description: Lista usuarios con paginación, búsqueda y filtros
       parameters:
       - name: ordering
@@ -85,7 +85,7 @@ paths:
                   $ref: '#/components/schemas/User'
           description: ''
     post:
-      operationId: users_create
+      operationId: users_users_create
       description: Crea un nuevo usuario
       tags:
       - users
@@ -110,15 +110,129 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /api/users/{id}/:
+  /api/users/users-activity/:
     get:
-      operationId: users_retrieve
+      operationId: users_users_activity_list
+      parameters:
+      - in: query
+        name: action_type
+        schema:
+          type: string
+          enum:
+          - CREATE
+          - DELETE
+          - LOGIN
+          - LOGOUT
+          - OTHER
+          - UPDATE
+          - VIEW
+        description: |-
+          * `CREATE` - Crear
+          * `UPDATE` - Actualizar
+          * `DELETE` - Eliminar
+          * `VIEW` - Ver
+          * `LOGIN` - Iniciar sesión
+          * `LOGOUT` - Cerrar sesión
+          * `OTHER` - Otro
+      - in: query
+        name: content_type
+        schema:
+          type: integer
+      - in: query
+        name: data__status_type
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: timestamp
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: timestamp__range_after
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: timestamp__range_before
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: timestamp__year__gt
+        schema:
+          type: number
+      - in: query
+        name: timestamp__year__lt
+        schema:
+          type: number
+      - in: query
+        name: user
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserActivityList'
+          description: ''
+  /api/users/users-activity/{id}/:
+    get:
+      operationId: users_users_activity_retrieve
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this user.
+        description: A unique integer value identifying this Actividad de usuario.
+        required: true
+      tags:
+      - users
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActivity'
+          description: ''
+  /api/users/users/{national_id}/:
+    get:
+      operationId: users_users_retrieve
+      parameters:
+      - in: path
+        name: national_id
+        schema:
+          type: string
         required: true
       tags:
       - users
@@ -132,14 +246,13 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     put:
-      operationId: users_update
+      operationId: users_users_update
       description: Actualiza un usuario existente
       parameters:
       - in: path
-        name: id
+        name: national_id
         schema:
-          type: integer
-        description: A unique integer value identifying this user.
+          type: string
         required: true
       tags:
       - users
@@ -165,13 +278,12 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     patch:
-      operationId: users_partial_update
+      operationId: users_users_partial_update
       parameters:
       - in: path
-        name: id
+        name: national_id
         schema:
-          type: integer
-        description: A unique integer value identifying this user.
+          type: string
         required: true
       tags:
       - users
@@ -196,14 +308,13 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     delete:
-      operationId: users_destroy
+      operationId: users_users_destroy
       description: Elimina un usuario
       parameters:
       - in: path
-        name: id
+        name: national_id
         schema:
-          type: integer
-        description: A unique integer value identifying this user.
+          type: string
         required: true
       tags:
       - users
@@ -212,57 +323,23 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/users/activity/:
-    get:
-      operationId: users_activity_list
-      parameters:
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: search
-        required: false
-        in: query
-        description: A search term.
-        schema:
-          type: string
+  /api/users/users/change-password/:
+    post:
+      operationId: users_users_change_password_create
       tags:
       - users
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedUserActivityList'
-          description: ''
-  /api/users/activity/{id}/:
-    get:
-      operationId: users_activity_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this Actividad de usuario.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
-      tags:
-      - users
       security:
       - knoxApiToken: []
       responses:
@@ -270,11 +347,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserActivity'
+                $ref: '#/components/schemas/User'
           description: ''
-  /api/users/me/:
+  /api/users/users/me/:
     get:
-      operationId: users_me_retrieve
+      operationId: users_users_me_retrieve
       description: Endpoint adicional para obtener datos del usuario autenticado
       tags:
       - users
@@ -345,18 +422,18 @@ components:
       properties:
         id:
           type: string
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
+          readOnly: true
         first_name:
           type: string
+          title: Nombre
           maxLength: 150
         last_name:
           type: string
+          title: Apellidos
           maxLength: 150
+        national_id:
+          type: string
+          maxLength: 12
         formatted_national_id:
           type: string
           readOnly: true
@@ -370,31 +447,31 @@ components:
         is_staff:
           type: boolean
           readOnly: true
-          title: Staff status
-          description: Designates whether the user can log into this admin site.
+          title: Es staff
+          description: Indica si el usuario puede entrar en este sitio de administración.
         is_active:
           type: boolean
           readOnly: true
-          title: Active
-          description: Designates whether this user should be treated as active. Unselect
-            this instead of deleting accounts.
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
     User:
       type: object
       properties:
         id:
           type: string
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
+          readOnly: true
         first_name:
           type: string
+          title: Nombre
           maxLength: 150
         last_name:
           type: string
+          title: Apellidos
           maxLength: 150
+        national_id:
+          type: string
+          maxLength: 12
         formatted_national_id:
           type: string
           readOnly: true
@@ -408,44 +485,42 @@ components:
         is_staff:
           type: boolean
           readOnly: true
-          title: Staff status
-          description: Designates whether the user can log into this admin site.
+          title: Es staff
+          description: Indica si el usuario puede entrar en este sitio de administración.
         is_active:
           type: boolean
           readOnly: true
-          title: Active
-          description: Designates whether this user should be treated as active. Unselect
-            this instead of deleting accounts.
+          title: Activo
+          description: Indica si el usuario debe ser tratado como activo. Desmarque
+            esta opción en lugar de borrar la cuenta.
       required:
       - email
       - formatted_national_id
       - id
       - is_active
       - is_staff
+      - national_id
       - position
-      - username
     UserActivity:
       type: object
       properties:
         id:
-          type: integer
-          readOnly: true
-        username:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
           readOnly: true
         action_type:
           $ref: '#/components/schemas/ActionTypeEnum'
         description:
           type: string
-        content_type_name:
-          type: string
-          title: Python model class name
-          readOnly: true
+        content_type:
+          type: integer
+          nullable: true
         object_id:
           type: string
-          nullable: true
+          readOnly: true
         data:
           nullable: true
         ip_address:
@@ -454,17 +529,27 @@ components:
         user_agent:
           type: string
           nullable: true
+        date:
+          type: string
+          format: date
+          readOnly: true
+        time:
+          type: string
+          format: time
+          readOnly: true
         timestamp:
           type: string
           format: date-time
           readOnly: true
       required:
       - action_type
-      - content_type_name
+      - date
       - description
       - id
+      - object_id
+      - time
       - timestamp
-      - username
+      - user
   securitySchemes:
     knoxApiToken:
       type: apiKey

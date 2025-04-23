@@ -1,10 +1,13 @@
 export interface User {
+    id: string
+    first_name: string
+    last_name: string
+    national_id: string
+    formatted_national_id: string
     email: string
-    firstName: string
-    lastName: string
-    isStaff: boolean
-    isSuperuser: boolean
     position: string
+    is_staff: boolean
+    is_active: boolean
 }
 
 export interface AuthProviderProps {
@@ -15,10 +18,9 @@ export interface AuthContextType {
     user: User | null
     token: string | null
     isAuthenticated: boolean
-    login: ({email, password}: LoginProps) => Promise<void>
+    login: ({ email, password }: LoginProps) => Promise<void>
     logout: () => void
     logoutAll: () => void
-
 }
 
 export interface LoginProps {

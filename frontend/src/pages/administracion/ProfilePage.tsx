@@ -3,8 +3,8 @@ import AxiosInstance from "../../helpers/AxiosInstance";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import useUserProfileFormContext from "../../hooks/administracion/useUserProfileFormContext";
 import ChangePasswordForm from "../../components/administracion/ChangePasswordForm/ChangePasswordForm";
-import HeaderUserCreation from "../../components/layout/components/Header";
-import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
+import HeaderUserCreation from "../../components/core/layout/components/Header";
+import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography, Avatar, Box } from "@mui/joy";
 
 const ProfilePage = () => {

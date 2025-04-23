@@ -14,6 +14,12 @@ def log_activity(action_type, description=None):
                 object_id = None
                 content_type = None
                 
+                activity_data = {
+                'path': request.path,
+                'status_code': response.status_code,
+                'status_type': 'success' if response.status_code < 400 else 'error',
+            }
+                
                 # Si es un detalle y tenemos un objeto
                 if hasattr(viewset, 'get_object') and kwargs.get('pk'):
                     try:
@@ -38,7 +44,8 @@ def log_activity(action_type, description=None):
                     content_type=content_type,
                     object_id=object_id,
                     ip_address=request.META.get('REMOTE_ADDR', ''),
-                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    data=activity_data
                 )
                 
             return response

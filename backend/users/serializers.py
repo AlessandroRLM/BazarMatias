@@ -139,14 +139,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserActivitySerializer(serializers.ModelSerializer):
-    username = serializers.ReadOnlyField(source='user.username')
-    content_type_name = serializers.ReadOnlyField(source='content_type.model')
-    
+    user = UserSerializer(read_only=True)
+    id = ObjectIdField(read_only=True)
+    object_id = ObjectIdField(read_only=True)
+
     class Meta:
         model = UserActivity
-        fields = ['id', 'username', 'action_type', 'description', 
-                  'content_type_name', 'object_id', 'data', 
-                  'ip_address', 'user_agent', 'timestamp']
+        fields = ['id', 'user', 'action_type', 'description', 
+                  'content_type', 'object_id', 'data', 
+                  'ip_address', 'user_agent', 'date', 'time','timestamp'] 
 
 class ChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)

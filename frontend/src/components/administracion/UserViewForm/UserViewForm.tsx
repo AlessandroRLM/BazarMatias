@@ -1,11 +1,11 @@
 import { Box, Typography } from "@mui/joy";
 
 interface UserViewData {
-  name: string;
+  firstName: string;
   lastName: string;
-  rut: string;
+  nationalId: string;
   email: string;
-  role: string;
+  position: string;
 }
 
 interface UserViewFormProps {
@@ -31,9 +31,9 @@ const UserViewForm = ({ user }: UserViewFormProps) => {
       <Box sx={{ width: '100%' }}>
         <Typography level="body-sm">Nombre</Typography>
         <Typography level="body-lg" sx={{ p: 1, border: '1px solid', borderColor: 'neutral.300', borderRadius: 'sm' }}>
-          {user.name}
+          {user.firstName}
         </Typography>
-      </Box>
+     Rut </Box>
       
       <Box sx={{ width: '100%' }}>
         <Typography level="body-sm">Apellido</Typography>
@@ -45,7 +45,7 @@ const UserViewForm = ({ user }: UserViewFormProps) => {
       <Box sx={{ width: '100%' }}>
         <Typography level="body-sm">RUT</Typography>
         <Typography level="body-lg" sx={{ p: 1, border: '1px solid', borderColor: 'neutral.300', borderRadius: 'sm' }}>
-          {user.rut}
+          {user.nationalId}
         </Typography>
       </Box>
       
@@ -59,7 +59,7 @@ const UserViewForm = ({ user }: UserViewFormProps) => {
       <Box sx={{ width: '100%' }}>
         <Typography level="body-sm">Cargo</Typography>
         <Typography level="body-lg" sx={{ p: 1, border: '1px solid', borderColor: 'neutral.300', borderRadius: 'sm' }}>
-          {user.role}
+          {user.position}
         </Typography>
       </Box>
     </Box>

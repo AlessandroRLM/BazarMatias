@@ -7,6 +7,7 @@ import FormField from "../../core/FormField/FormField"
 import { useAuth } from "../../../hooks/auth/useAuth"
 
 const LoginForm = () => {
+    const fallback = '/administracion/usuarios/actividad-de-usuarios' as const
     const { login } = useAuth()
     const navigate = useNavigate()
     const search = useSearch({ from: '/login'})
@@ -18,7 +19,7 @@ const LoginForm = () => {
 
     const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
         login(data).then(() => navigate({
-            to: search.redirect || '/',
+            to: search.redirect || fallback,
         }))
     }
 

@@ -2,9 +2,9 @@ import { Route } from '../../routes/_auth/administracion/usuarios/editar-usuario
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import AxiosInstance from "../../helpers/AxiosInstance";
-import HeaderUserCreation from "../../components/layout/components/Header";
+import HeaderUserCreation from "../../components/core/layout/components/Header";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
-import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
+import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography, Box, Avatar } from "@mui/joy";
 
 const EditUser = () => {

@@ -1,7 +1,7 @@
 import { Box, Avatar } from "@mui/joy";
-import HeaderUserCreation from "../../components/layout/components/Header";
+import HeaderUserCreation from "../../components/core/layout/components/Header";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
-import CommonPageLayout from "../../components/layout/components/CommonPageLayout";
+import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography } from "@mui/joy";
 import { createUser } from "../../services/userService";
 import { useNavigate } from "@tanstack/react-router";

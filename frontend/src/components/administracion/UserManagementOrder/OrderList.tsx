@@ -30,7 +30,7 @@ export default function OrderList() {
 
   const fetchUsers = React.useCallback(
     async ({ page, pageSize }: { page: number; pageSize: number }) => {
-      let url = `/api/users/?page=${page}&page_size=${pageSize}`;
+      let url = `/api/users/users/?page=${page}&page_size=${pageSize}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       if (status) url += `&is_active=${status}`;
       const response = await AxiosInstance.get(url);

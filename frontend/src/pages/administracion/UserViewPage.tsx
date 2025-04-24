@@ -13,7 +13,7 @@ const UserViewPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    AxiosInstance.get(`/api/users/${rut}/`)
+    AxiosInstance.get(`/api/users/users/${rut}/`)
       .then(res => {
         const data = res.data;
         setUser({

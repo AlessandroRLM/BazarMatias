@@ -15,7 +15,7 @@ const EditUser = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    AxiosInstance.get(`/api/users/${rut}/`)
+    AxiosInstance.get(`/api/users/users/${rut}/`)
       .then(res => {
         const data = res.data;
         setInitialValues({
@@ -31,7 +31,7 @@ const EditUser = () => {
 
   const handleSubmitForm = async (formData: any) => {
     try {
-      await AxiosInstance.put(`/api/users/${rut}/`, {
+      await AxiosInstance.put(`/api/users/users/${rut}/`, {
         first_name: formData.name,
         last_name: formData.lastName,
         national_id: formData.rut,

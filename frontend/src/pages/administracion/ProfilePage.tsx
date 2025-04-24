@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AxiosInstance from "../../helpers/AxiosInstance";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import useUserProfileFormContext from "../../hooks/administracion/useUserProfileFormContext";
@@ -6,24 +6,18 @@ import ChangePasswordForm from "../../components/administracion/ChangePasswordFo
 import HeaderUserCreation from "../../components/core/layout/components/Header";
 import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography, Avatar, Box } from "@mui/joy";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 const ProfilePage = () => {
   const { isProfile, isChangePassword, setIsProfile, setIsChangePassword, setIsEditMode, isEditMode } =
     useUserProfileFormContext();
 
-  const [profileData, setProfileData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  useEffect(() => {
-    AxiosInstance.get("/api/users/me/")
-      .then(res => setProfileData(res.data))
-      .finally(() => setLoading(false));
-  }, []);
-
+  const {user} = useAuth();
   const handleProfileSubmit = async (formData: any) => {
     try {
-      await AxiosInstance.put(`/api/users/${profileData.national_id}/`, {
+      await AxiosInstance.put(`/api/users/${user?.national_id}/`, {
         first_name: formData.name,
         last_name: formData.lastName,
         national_id: formData.rut,
@@ -60,9 +54,6 @@ const ProfilePage = () => {
     },
   ];
 
-  if (loading) return <div>Cargando...</div>;
-  if (!profileData) return <div>No se pudo cargar el perfil</div>;
-
   return (
     <CommonPageLayout>
       <HeaderUserCreation
@@ -90,11 +81,11 @@ const ProfilePage = () => {
           disableRut={true}
           onSubmitForm={handleProfileSubmit}
           initialValues={{
-            name: profileData.first_name,
-            lastName: profileData.last_name,
-            rut: profileData.national_id,
-            email: profileData.email,
-            role: profileData.position,
+            name: user?.first_name,
+            lastName: user?.last_name,
+            rut: user?.national_id,
+            email: user?.email,
+            role: user?.position,
           }}
           successMessage="¡Perfil actualizado con éxito!"
           submitSuccessExternal={submitSuccess}

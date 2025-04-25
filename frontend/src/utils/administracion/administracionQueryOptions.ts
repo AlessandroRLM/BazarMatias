@@ -6,6 +6,16 @@ import { UserActivity } from "../../types/administracion.types";
 import { AxiosResponse } from "axios";
 import { User } from "../../types/auth.types";
 
+export const userDetailQueryOptions = (rut: string) => {
+    return queryOptions({
+        queryKey: ['user', {rut}],
+        queryFn: async () => {
+            const response: AxiosResponse<User> = await AxiosInstance.get(`/api/users/users/${rut}/`)
+            return response
+        }
+    })
+}
+
 export const usersSelectQueryOptions = () => {
     return queryOptions({
         queryKey: ['usersSelect'],
@@ -25,5 +35,15 @@ export const userActivityQueryOptions = (opts: userActivitySearchType) => {
             })
             return response ?? {}
         } 
+    })
+}
+
+export const userActivityDetailQueryOptions = (userActivityId: string) => {
+    return queryOptions({
+        queryKey: ['userActivityDetail', { userActivityId }],
+        queryFn: async () => {
+            const response: AxiosResponse<UserActivity> = await AxiosInstance.get(`/api/users/users-activity/${userActivityId}/`)
+            return response
+        }
     })
 }

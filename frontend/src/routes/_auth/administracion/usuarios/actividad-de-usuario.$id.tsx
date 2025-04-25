@@ -1,13 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { queryClient } from '../../../../App'
+import { userActivityDetailQueryOptions } from '../../../../utils/administracion/administracionQueryOptions'
+import UserActivityDetailPage from '../../../../pages/administracion/UserActivityDetailPage'
 
 export const Route = createFileRoute(
   '/_auth/administracion/usuarios/actividad-de-usuario/$id',
 )({
-  component: RouteComponent,
+  component: UserActivityDetailPage,
+  loader: ({params: {id}}) => {
+    return queryClient.ensureQueryData(userActivityDetailQueryOptions(id))
+  }
 })
 
-function RouteComponent() {
-  return (
-    <div>Hello "/_auth/administracion/usuarios/actividad-de-usuario/$id"!</div>
-  )
-}
+

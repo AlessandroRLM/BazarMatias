@@ -54,6 +54,230 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/inventory/products/:
+    get:
+      operationId: inventory_products_list
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+          description: ''
+    post:
+      operationId: inventory_products_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/inventory/products/{id}/:
+    get:
+      operationId: inventory_products_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+    put:
+      operationId: inventory_products_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+    delete:
+      operationId: inventory_products_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/inventory/suppliers/:
+    get:
+      operationId: inventory_suppliers_list
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+          description: ''
+    post:
+      operationId: inventory_suppliers_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+  /api/inventory/suppliers/{id}/:
+    get:
+      operationId: inventory_suppliers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    put:
+      operationId: inventory_suppliers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    delete:
+      operationId: inventory_suppliers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/users/users/:
     get:
       operationId: users_users_list
@@ -142,6 +366,29 @@ paths:
         name: data__status_type
         schema:
           type: string
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: date__range_after
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: date__range_before
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: date__year__gt
+        schema:
+          type: number
+      - in: query
+        name: date__year__lt
+        schema:
+          type: number
       - name: ordering
         required: false
         in: query
@@ -167,32 +414,9 @@ paths:
         schema:
           type: string
       - in: query
-        name: timestamp
-        schema:
-          type: string
-          format: date-time
-      - in: query
-        name: timestamp__range_after
-        schema:
-          type: string
-          format: date-time
-      - in: query
-        name: timestamp__range_before
-        schema:
-          type: string
-          format: date-time
-      - in: query
-        name: timestamp__year__gt
-        schema:
-          type: number
-      - in: query
-        name: timestamp__year__lt
-        schema:
-          type: number
-      - in: query
         name: user
         schema:
-          type: string
+          type: integer
       tags:
       - users
       security:
@@ -425,11 +649,9 @@ components:
           readOnly: true
         first_name:
           type: string
-          title: Nombre
           maxLength: 150
         last_name:
           type: string
-          title: Apellidos
           maxLength: 150
         national_id:
           type: string
@@ -447,14 +669,87 @@ components:
         is_staff:
           type: boolean
           readOnly: true
-          title: Es staff
-          description: Indica si el usuario puede entrar en este sitio de administración.
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
         is_active:
           type: boolean
           readOnly: true
-          title: Activo
-          description: Indica si el usuario debe ser tratado como activo. Desmarque
-            esta opción en lugar de borrar la cuenta.
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
+            ]+$
+          maxLength: 255
+        price_clp:
+          type: number
+          format: double
+          minimum: 0.01
+        stock:
+          type: integer
+          minimum: 0
+        category:
+          type: string
+          pattern: ^[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
+            ]+$
+          maxLength: 100
+        supplier_id:
+          type: string
+          description: ID del proveedor asociado a este producto
+      required:
+      - category
+      - id
+      - name
+      - price_clp
+      - stock
+      - supplier_id
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
+            ]+$
+          maxLength: 255
+        address:
+          type: string
+          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
+            ,.#-]+$
+          maxLength: 255
+        phone:
+          type: string
+          pattern: ^\+?[0-9]{9,15}$
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        rut:
+          type: string
+          pattern: ^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]{1}$
+          maxLength: 13
+        category:
+          type: string
+          pattern: ^[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
+            ]+$
+          maxLength: 100
+      required:
+      - address
+      - category
+      - email
+      - id
+      - name
+      - phone
+      - rut
     User:
       type: object
       properties:
@@ -463,11 +758,9 @@ components:
           readOnly: true
         first_name:
           type: string
-          title: Nombre
           maxLength: 150
         last_name:
           type: string
-          title: Apellidos
           maxLength: 150
         national_id:
           type: string
@@ -485,14 +778,14 @@ components:
         is_staff:
           type: boolean
           readOnly: true
-          title: Es staff
-          description: Indica si el usuario puede entrar en este sitio de administración.
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
         is_active:
           type: boolean
           readOnly: true
-          title: Activo
-          description: Indica si el usuario debe ser tratado como activo. Desmarque
-            esta opción en lugar de borrar la cuenta.
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
       required:
       - email
       - formatted_national_id

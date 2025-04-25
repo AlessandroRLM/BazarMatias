@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 import useDebounce from "../../../hooks/core/useDebounce"
 
 // Definimos un tipo para las opciones del select que puede ser flexible
-type SelectOption = {
+export type SelectOption = {
     value: string | number
     label: string
 }
 
 // Definimos el tipo para cada configuración de select
-interface SelectConfig {
+export interface SelectConfig {
     id: string // identificador único para cada select
     placeholder: string
     options: SelectOption[]
@@ -18,7 +18,7 @@ interface SelectConfig {
 
 
 interface Props<T> {
-    filters: Filters<T>
+    filters?: Filters<T>
     onChangeFilters: (dataFilters: Partial<T>) => void
     selects: SelectConfig[]
 }

@@ -1,5 +1,5 @@
 import { Box, Avatar } from "@mui/joy";
-import HeaderUserCreation from "../../components/core/layout/components/Header";
+import HeaderUserCreation from "../../components/administracion/ProfileHeader/ProfileHeader";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography } from "@mui/joy";

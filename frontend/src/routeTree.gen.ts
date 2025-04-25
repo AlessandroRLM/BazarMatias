@@ -13,10 +13,13 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
+import { Route as AuthSuppliersProveedoresImport } from './routes/_auth/Suppliers/proveedores'
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
+import { Route as AuthInventoryProductosIndexImport } from './routes/_auth/Inventory/productos/index'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
+import { Route as AuthInventoryProductosProductCreationImport } from './routes/_auth/Inventory/productos/ProductCreation'
 import { Route as AuthAdministracionUsuariosVerUsuarioRutImport } from './routes/_auth/administracion/usuarios/ver-usuario.$rut'
 import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './routes/_auth/administracion/usuarios/editar-usuario.$rut'
 
@@ -33,6 +36,12 @@ const AuthRoute = AuthImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthSuppliersProveedoresRoute = AuthSuppliersProveedoresImport.update({
+  id: '/Suppliers/proveedores',
+  path: '/Suppliers/proveedores',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 const AuthAdministracionUsuariosIndexRoute =
   AuthAdministracionUsuariosIndexImport.update({
     id: '/administracion/usuarios/',
@@ -47,6 +56,13 @@ const AuthAdministracionPerfilIndexRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthInventoryProductosIndexRoute =
+  AuthInventoryProductosIndexImport.update({
+    id: '/Inventory/productos/',
+    path: '/Inventory/productos/',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthAdministracionUsuariosCrearUsuarioRoute =
   AuthAdministracionUsuariosCrearUsuarioImport.update({
     id: '/administracion/usuarios/crear-usuario',
@@ -58,6 +74,13 @@ const AuthAdministracionUsuariosActividadDeUsuariosRoute =
   AuthAdministracionUsuariosActividadDeUsuariosImport.update({
     id: '/administracion/usuarios/actividad-de-usuarios',
     path: '/administracion/usuarios/actividad-de-usuarios',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventoryProductosProductCreationRoute =
+  AuthInventoryProductosProductCreationImport.update({
+    id: '/Inventory/productos/ProductCreation',
+    path: '/Inventory/productos/ProductCreation',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -93,6 +116,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/_auth/Suppliers/proveedores': {
+      id: '/_auth/Suppliers/proveedores'
+      path: '/Suppliers/proveedores'
+      fullPath: '/Suppliers/proveedores'
+      preLoaderRoute: typeof AuthSuppliersProveedoresImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/Inventory/productos/ProductCreation': {
+      id: '/_auth/Inventory/productos/ProductCreation'
+      path: '/Inventory/productos/ProductCreation'
+      fullPath: '/Inventory/productos/ProductCreation'
+      preLoaderRoute: typeof AuthInventoryProductosProductCreationImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/administracion/usuarios/actividad-de-usuarios': {
       id: '/_auth/administracion/usuarios/actividad-de-usuarios'
       path: '/administracion/usuarios/actividad-de-usuarios'
@@ -105,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/administracion/usuarios/crear-usuario'
       fullPath: '/administracion/usuarios/crear-usuario'
       preLoaderRoute: typeof AuthAdministracionUsuariosCrearUsuarioImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/Inventory/productos/': {
+      id: '/_auth/Inventory/productos/'
+      path: '/Inventory/productos'
+      fullPath: '/Inventory/productos'
+      preLoaderRoute: typeof AuthInventoryProductosIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/administracion/perfil/': {
@@ -141,8 +185,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteChildren {
+  AuthSuppliersProveedoresRoute: typeof AuthSuppliersProveedoresRoute
+  AuthInventoryProductosProductCreationRoute: typeof AuthInventoryProductosProductCreationRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  AuthInventoryProductosIndexRoute: typeof AuthInventoryProductosIndexRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
   AuthAdministracionUsuariosEditarUsuarioRutRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -150,10 +197,14 @@ interface AuthRouteChildren {
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthSuppliersProveedoresRoute: AuthSuppliersProveedoresRoute,
+  AuthInventoryProductosProductCreationRoute:
+    AuthInventoryProductosProductCreationRoute,
   AuthAdministracionUsuariosActividadDeUsuariosRoute:
     AuthAdministracionUsuariosActividadDeUsuariosRoute,
   AuthAdministracionUsuariosCrearUsuarioRoute:
     AuthAdministracionUsuariosCrearUsuarioRoute,
+  AuthInventoryProductosIndexRoute: AuthInventoryProductosIndexRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
   AuthAdministracionUsuariosEditarUsuarioRutRoute:
@@ -167,8 +218,11 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/Suppliers/proveedores': typeof AuthSuppliersProveedoresRoute
+  '/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/Inventory/productos': typeof AuthInventoryProductosIndexRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -178,8 +232,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/Suppliers/proveedores': typeof AuthSuppliersProveedoresRoute
+  '/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/Inventory/productos': typeof AuthInventoryProductosIndexRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -190,8 +247,11 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/_auth/Suppliers/proveedores': typeof AuthSuppliersProveedoresRoute
+  '/_auth/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/_auth/Inventory/productos/': typeof AuthInventoryProductosIndexRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
   '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -203,8 +263,11 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/login'
+    | '/Suppliers/proveedores'
+    | '/Inventory/productos/ProductCreation'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
+    | '/Inventory/productos'
     | '/administracion/perfil'
     | '/administracion/usuarios'
     | '/administracion/usuarios/editar-usuario/$rut'
@@ -213,8 +276,11 @@ export interface FileRouteTypes {
   to:
     | ''
     | '/login'
+    | '/Suppliers/proveedores'
+    | '/Inventory/productos/ProductCreation'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
+    | '/Inventory/productos'
     | '/administracion/perfil'
     | '/administracion/usuarios'
     | '/administracion/usuarios/editar-usuario/$rut'
@@ -223,8 +289,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/login'
+    | '/_auth/Suppliers/proveedores'
+    | '/_auth/Inventory/productos/ProductCreation'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
+    | '/_auth/Inventory/productos/'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
     | '/_auth/administracion/usuarios/editar-usuario/$rut'
@@ -259,8 +328,11 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
+        "/_auth/Suppliers/proveedores",
+        "/_auth/Inventory/productos/ProductCreation",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
         "/_auth/administracion/usuarios/crear-usuario",
+        "/_auth/Inventory/productos/",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
         "/_auth/administracion/usuarios/editar-usuario/$rut",
@@ -270,12 +342,24 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
+    "/_auth/Suppliers/proveedores": {
+      "filePath": "_auth/Suppliers/proveedores.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/Inventory/productos/ProductCreation": {
+      "filePath": "_auth/Inventory/productos/ProductCreation.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/administracion/usuarios/actividad-de-usuarios": {
       "filePath": "_auth/administracion/usuarios/actividad-de-usuarios.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/usuarios/crear-usuario": {
       "filePath": "_auth/administracion/usuarios/crear-usuario.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/Inventory/productos/": {
+      "filePath": "_auth/Inventory/productos/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/perfil/": {

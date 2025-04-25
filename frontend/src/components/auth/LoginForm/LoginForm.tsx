@@ -11,7 +11,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 const LoginForm = () => {
-    const fallback = '/administracion/usuarios/actividad-de-usuarios' as const
+    const fallback = '/home' as const
     const { login } = useAuth()
     const navigate = useNavigate()
     const search = useSearch({ from: '/login'})

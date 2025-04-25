@@ -78,9 +78,11 @@ const SidebarHeader = () => {
                 borderBottom: '1px solid var(--joy-palette-divider)'
             }}
         >
-            <Typography level="h3">
-                Bazar Matias
-            </Typography>
+            <SidebarLink to="/home">
+                <Typography level="h3" sx={{ cursor: 'pointer' }}>
+                    Bazar Matias
+                </Typography>
+            </SidebarLink>
         </Box>
     )
 }

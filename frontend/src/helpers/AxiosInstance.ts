@@ -33,6 +33,7 @@ AxiosInstance.interceptors.response.use(
             localStorage.removeItem('Token')
             window.location.href = '/'
         }
+        throw err
     }
 )
 

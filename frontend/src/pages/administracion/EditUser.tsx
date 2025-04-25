@@ -2,7 +2,7 @@ import { Route } from '../../routes/_auth/administracion/usuarios/editar-usuario
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import AxiosInstance from "../../helpers/AxiosInstance";
-import HeaderUserCreation from "../../components/core/layout/components/Header";
+import HeaderUserCreation from "../../components/administracion/ProfileHeader/ProfileHeader";
 import FormUserCreation from "../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import { Typography, Box, Avatar } from "@mui/joy";
@@ -44,7 +44,7 @@ const EditUser = () => {
       
       // Redirigir después de 1.5 segundos
       setTimeout(() => {
-        navigate({ to: "/administracion/usuarios/" });
+        navigate({ to: "/administracion/perfil" });
       }, 1500);
       
     } catch (error) {

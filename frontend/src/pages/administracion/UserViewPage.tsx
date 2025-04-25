@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import AxiosInstance from '../../helpers/AxiosInstance';
 import UserViewForm from '../../components/administracion/UserViewForm/UserViewForm';
 import CommonPageLayout from '../../components/core/layout/components/CommonPageLayout';
-import HeaderUserCreation from '../../components/core/layout/components/Header';
+import HeaderUserCreation from "../../components/administracion/ProfileHeader/ProfileHeader";
 import { Typography, Avatar, Box} from "@mui/joy";
 import { User } from '../../types/auth.types';
 

@@ -161,7 +161,6 @@ export default function CustomTable<T extends Record<string, any>>({
                   <Select
                     value={table.getState().pagination.pageSize}
                     onChange={(_, newValue) => {
-                      // Usar el segundo parámetro que proporciona MUI Joy Select
                       if (newValue !== null) {
                         table.setPageSize(Number(newValue));
                       }

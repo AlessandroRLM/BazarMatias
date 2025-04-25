@@ -2,7 +2,9 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { UserActivity } from "../../types/administracion.types"
 import { Chip } from "@mui/joy"
 import { ReactNode } from "@tanstack/react-router"
-import { Check, Error } from "@mui/icons-material"
+import { Check, Error, RemoveRedEye } from "@mui/icons-material"
+import IconLink from "../../components/administracion/IconLink/IconLink"
+
 
 function statusTypeMapper(statusType: string): ReactNode {
     switch (statusType) {
@@ -28,7 +30,7 @@ function actionTypeMapper(actionType: string): ReactNode {
         case 'UPDATE':
             return <Chip color="warning">{'Actualización'}</Chip>
         case 'DELETE':
-            return <Chip color="danger">{'Cierre de Sesión'}</Chip>
+            return <Chip color="danger">{'Eliminación'}</Chip>
         default:
             return actionType
     }
@@ -65,4 +67,10 @@ export const USER_ACTIVITY_COLUMNS = [
         header: 'Fecha',
         cell: info => info.getValue(),
     }),
+    columnHelper.accessor('id',{
+        id: 'actions',
+        header: 'Acciones',
+        cell: info => <IconLink color="neutral" to={'/administracion/usuarios/actividad-de-usuario/$id'} params={{id: info.getValue()}}><RemoveRedEye/></IconLink>,
+        enableSorting: false
+    })
 ]

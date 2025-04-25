@@ -12,14 +12,14 @@ class UserActivityFilter(django_filters.FilterSet):
     data__status_type = django_filters.CharFilter(field_name="data__status_type", lookup_expr="exact")
 
     # Filtro por rango de fechas en timestamp
-    timestamp__range = django_filters.DateTimeFromToRangeFilter(field_name="timestamp")
+    date__range = django_filters.DateFromToRangeFilter(field_name="date", lookup_expr="exact")
 
     class Meta:
         model = UserActivity
         fields = {
             'user': ['exact'],
-            'timestamp': ['exact', 'year__gt', 'year__lt'],
-        }
+            'date': ['exact', 'year__gt', 'year__lt'],
+        } 
 
     def filter_by_content_object(self, queryset, name, value):
         """

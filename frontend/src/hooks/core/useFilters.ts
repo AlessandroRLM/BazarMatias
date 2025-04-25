@@ -21,5 +21,4 @@ export default function useFilters<
     const resetFilters = () => navigate({ search: {} as TsearchParams })
 
     return { filters, setFilters, resetFilters }
-
 }

@@ -21,6 +21,7 @@ import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
 import { Route as AuthAdministracionUsuariosVerUsuarioRutImport } from './routes/_auth/administracion/usuarios/ver-usuario.$rut'
 import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './routes/_auth/administracion/usuarios/editar-usuario.$rut'
+import { Route as AuthAdministracionUsuariosActividadDeUsuarioIdImport } from './routes/_auth/administracion/usuarios/actividad-de-usuario.$id'
 
 // Create/Update Routes
 
@@ -89,6 +90,13 @@ const AuthAdministracionUsuariosEditarUsuarioRutRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthAdministracionUsuariosActividadDeUsuarioIdRoute =
+  AuthAdministracionUsuariosActividadDeUsuarioIdImport.update({
+    id: '/administracion/usuarios/actividad-de-usuario/$id',
+    path: '/administracion/usuarios/actividad-de-usuario/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -149,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosIndexImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/administracion/usuarios/actividad-de-usuario/$id': {
+      id: '/_auth/administracion/usuarios/actividad-de-usuario/$id'
+      path: '/administracion/usuarios/actividad-de-usuario/$id'
+      fullPath: '/administracion/usuarios/actividad-de-usuario/$id'
+      preLoaderRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/administracion/usuarios/editar-usuario/$rut': {
       id: '/_auth/administracion/usuarios/editar-usuario/$rut'
       path: '/administracion/usuarios/editar-usuario/$rut'
@@ -174,6 +189,7 @@ interface AuthRouteChildren {
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
+  AuthAdministracionUsuariosActividadDeUsuarioIdRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   AuthAdministracionUsuariosEditarUsuarioRutRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   AuthAdministracionUsuariosVerUsuarioRutRoute: typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
@@ -186,6 +202,8 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthAdministracionUsuariosCrearUsuarioRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
+  AuthAdministracionUsuariosActividadDeUsuarioIdRoute:
+    AuthAdministracionUsuariosActividadDeUsuarioIdRoute,
   AuthAdministracionUsuariosEditarUsuarioRutRoute:
     AuthAdministracionUsuariosEditarUsuarioRutRoute,
   AuthAdministracionUsuariosVerUsuarioRutRoute:
@@ -203,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
@@ -216,6 +235,7 @@ export interface FileRoutesByTo {
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
@@ -230,6 +250,7 @@ export interface FileRoutesById {
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
+  '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/_auth/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
 }
@@ -245,6 +266,7 @@ export interface FileRouteTypes {
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
   fileRoutesByTo: FileRoutesByTo
@@ -257,6 +279,7 @@ export interface FileRouteTypes {
     | '/administracion/usuarios/crear-usuario'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
   id:
@@ -269,6 +292,7 @@ export interface FileRouteTypes {
     | '/_auth/administracion/usuarios/crear-usuario'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
+    | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
     | '/_auth/administracion/usuarios/editar-usuario/$rut'
     | '/_auth/administracion/usuarios/ver-usuario/$rut'
   fileRoutesById: FileRoutesById
@@ -312,6 +336,7 @@ export const routeTree = rootRoute
         "/_auth/administracion/usuarios/crear-usuario",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
+        "/_auth/administracion/usuarios/actividad-de-usuario/$id",
         "/_auth/administracion/usuarios/editar-usuario/$rut",
         "/_auth/administracion/usuarios/ver-usuario/$rut"
       ]
@@ -337,6 +362,10 @@ export const routeTree = rootRoute
     },
     "/_auth/administracion/usuarios/": {
       "filePath": "_auth/administracion/usuarios/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/administracion/usuarios/actividad-de-usuario/$id": {
+      "filePath": "_auth/administracion/usuarios/actividad-de-usuario.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/usuarios/editar-usuario/$rut": {

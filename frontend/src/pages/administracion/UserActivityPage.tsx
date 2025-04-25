@@ -2,7 +2,6 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { userActivityQueryOptions, usersSelectQueryOptions } from "../../utils/administracion/administracionQueryOptions"
 import { useLoaderDeps } from "@tanstack/react-router"
 import PageHeader from "../../components/core/PageHeader/PageHeader"
-import { Button } from "@mui/joy"
 import CustomTable from "../../components/core/CustomTable/CustomTable"
 import { sortByToState, stateToSortBy } from "../../utils/core/tableSortMapper"
 import useFilters from "../../hooks/core/useFilters"
@@ -33,22 +32,16 @@ const UserActivityPage = () => {
         <>
             <PageHeader
                 title="Actividad de Usuarios"
-                buttons={[
-                    <Button variant="solid" color="primary" size="lg" sx={{ borderRadius: 'var(--joy-radius-md)' }}>
-                        Exportar
-                    </Button>,
-                    <Button variant="solid" color="primary" size="lg" sx={{ borderRadius: 'var(--joy-radius-md)' }}>
-                        Importar
-                    </Button>
-                ]}
             />
             <FilterOptions
-                filters={filters}
                 onChangeFilters={(filters) => setFilters(filters)}
                 selects={[
                     {id: 'user', placeholder: 'Usuario', options: usersSelectsResponse?.data.results.map((user) => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) ?? []},
-                    {id: 'data__status_type', placeholder: 'Tipo de Estado', options: [{value: 'success', label: 'Exito'}, {value: 'error', label: 'Error'}]}
+                    {id: 'data__status_type', placeholder: 'Tipo de Estado', options: [{value: 'success', label: 'Exito'}, {value: 'error', label: 'Error'}]},
+                    {id: 'action_type', placeholder: 'Tipo de Acción', options: [{value: 'LOGIN', label: 'Inicio de Sesión'}, {value: 'LOGOUT', label: 'Cierre de Sesión'}, {value: 'VIEW', label: 'Visualización'}, {value: 'CREATE', label: 'Creación'}, {value: 'UPDATE', label: 'Actualización'}, {value: 'DELETE', label: 'Eliminación'}, {value: 'OTHER', label: 'Otro'}]},
                 ]}
+                dateRangePicker={true}
+                dateRangePickerValue={{ start: new Date(), end: new Date() }}
             />
             <CustomTable
                 data={usersActivityResponse?.data?.results ?? []}
@@ -77,7 +70,6 @@ const UserActivityPage = () => {
                     }
                 }
             />
-            <pre>{JSON.stringify(filters)}</pre>
         </>
     )
 

@@ -13,7 +13,7 @@ import {
   export default function EditarProvedor() {
     return (
       <Information
-        title="Añadir Proveedor"
+        title="Editar Proveedor"
         sectionTitle="Informacion del Proveedor"
         footerContent={
           <>

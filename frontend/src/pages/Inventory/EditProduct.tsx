@@ -13,7 +13,7 @@ import {
   export default function EditarProducto() {
     return (
       <Information
-        title="Añadir Producto"
+        title="Editar Producto"
         sectionTitle="Informacion del Producto"
         footerContent={
           <>

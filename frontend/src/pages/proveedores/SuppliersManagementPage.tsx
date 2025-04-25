@@ -10,103 +10,68 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link as RouterLink } from '@tanstack/react-router';
+import { fetchSuppliers, deleteSupplier } from "../../services/inventoryService";
 
 interface Supplier {
-  id?: string;
-  name?: string;
-  direction?: string;
-  contact?: string;
-  email?: string;
-  phone?: string;
-  products?: string[];
-  category?: string; 
-
+  id: string;
+  nombre: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  rut: string;
+  categoria: string;
 }
 
 interface Filters<T> {
   search?: string;
-  productType?: string;
   category?: string;
 }
 
-const sampleData: Supplier[] = [
-  {
-    id: "1",
-    name: "Distribuidora Electrónica SA",
-    direction: "Sazie 1455, Estacion Central",
-    phone: "+56912345678",
-    products: ["Componentes electrónicos", "Cables"],
-    category: "Electronica"
-  },
-  {
-    id: "2",
-    name: "Mayorista de Oficina",
-    direction: "Calle Ecuador 1234, Santiago",
-    contact: "María González",
-    phone: "+56987654321",
-    products: ["Papelería", "Utiles de oficina"],
-    category: "Papeleria"
-  },
-  {
-    id: "3",
-    name: "Importadora de Tecnología",
-    direction: "Av. Vicuña Mackenna 4600",
-    contact: "Carlos Rojas",
-    phone: "+56945678912",
-    products: ["Computadores", "Tablets", "Accesorios"],
-    category: "Electronica"
-  },
-  {
-    id: "4",
-    name: "Suministros Industriales LTDA",
-    direction: "Av. Vicuña Mackenna 7500",
-    contact: "Ana Silva",
-    phone: "+56932165498",
-    products: ["Herramientas", "Insumos industriales"],
-    category: "Cotillon"
-  },
-];
-
 const columns: ColumnDef<Supplier>[] = [
-  { accessorKey: "name", header: "Nombre", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
-  { accessorKey: "direction", header: "Dirección"},
-  { accessorKey: "phone", header: "Teléfono" },
-  { accessorKey: "category", header: "Categoria"},
+  { accessorKey: "nombre", header: "Nombre", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
+  { accessorKey: "direccion", header: "Dirección"},
+  { accessorKey: "telefono", header: "Teléfono" },
+  { accessorKey: "categoria", header: "Categoría"},
   {
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => (
-    <Stack direction="row" spacing={1}>
-    <IconButton
-        variant="plain"
-        color="neutral"
-        size="sm"
-        aria-label="View"
-        component={RouterLink}
-        to={`/Suppliers/ver-proveedor`}
-    >
-        <VisibilityIcon />
-    </IconButton>
-    <IconButton
-        component={RouterLink}
-        to={`/Suppliers/editar-proveedor`}
-        variant="plain"
-        color="neutral"
-        size="sm"
-        aria-label="Edit"
-    >
-        <EditIcon />
-    </IconButton>
-    <IconButton
-        variant="plain"
-        color="danger"
-        size="sm"
-        aria-label="Delete"
-        //onClick={() => handleDeleteClick(user.rut, user.name)}
-    >
-        <DeleteIcon />
-    </IconButton>
-</Stack>
+      <Stack direction="row" spacing={1}>
+        <IconButton
+          variant="plain"
+          color="neutral"
+          size="sm"
+          aria-label="View"
+          component={RouterLink}
+          to={`/Suppliers/ver-proveedor/${row.original.id}`}
+        >
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton
+          component={RouterLink}
+          to={`/Suppliers/editar-proveedor/${row.original.id}`}
+          variant="plain"
+          color="neutral"
+          size="sm"
+          aria-label="Edit"
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          variant="plain"
+          color="danger"
+          size="sm"
+          aria-label="Delete"
+          onClick={async () => {
+            if (window.confirm(`¿Seguro que deseas eliminar a ${row.original.nombre}?`)) {
+              await deleteSupplier(row.original.id);
+              setRefreshFlag(f => !f);
+            }
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Stack>
     ),
   },
 ];
@@ -115,7 +80,9 @@ export default function SuppliersManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters<Supplier>>({});
-  const [filteredData, setFilteredData] = useState<Supplier[]>(sampleData);
+  const [data, setData] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -124,37 +91,48 @@ export default function SuppliersManagementPage() {
       placeholder: "Categoría",
       options: [
         { value: "", label: "Todas" },
-        { value: "Electronica", label: "Electrónica" },
-        { value: "Papeleria", label: "Papelería" },
-        { value: "Cotillon", label: "Cotillón" },
+        { value: "Electrónicos", label: "Electrónica" },
+        { value: "Papelería", label: "Papelería" },
+        { value: "Cotillón", label: "Cotillón" },
       ],
     },
   ];
 
-  // Efecto para aplicar los filtros
   useEffect(() => {
-    let result = [...sampleData];
-    
-    // Filtro de búsqueda (ahora seguro contra valores undefined)
+    setLoading(true);
+    fetchSuppliers()
+      .then(apiData => setData(
+        apiData.map(item => ({
+          id: item.id,
+          nombre: item.name,
+          direccion: item.address,
+          telefono: item.phone,
+          correo: item.email,
+          rut: item.rut,
+          categoria: item.category,
+        }))
+      ))
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
+
+  // Filtros locales
+  const filteredData = data.filter(supplier => {
+    let match = true;
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      result = result.filter(supplier => {
-        const nameMatch = supplier.name?.toLowerCase().includes(searchTerm) ?? false;
-        const contactMatch = supplier.contact?.toLowerCase().includes(searchTerm) ?? false;
-        const emailMatch = supplier.email?.toLowerCase().includes(searchTerm) ?? false;
-        const phoneMatch = supplier.phone?.toLowerCase().includes(searchTerm) ?? false;
-        
-        return nameMatch || contactMatch || emailMatch || phoneMatch;
-      });
+      match = match && (
+        supplier.nombre.toLowerCase().includes(searchTerm) ||
+        supplier.direccion.toLowerCase().includes(searchTerm) ||
+        supplier.telefono.toLowerCase().includes(searchTerm) ||
+        supplier.correo.toLowerCase().includes(searchTerm) ||
+        supplier.rut.toLowerCase().includes(searchTerm)
+      );
     }
-    
-    // Filtro por tipo de producto
     if (filters.category) {
-        result = result.filter(supplier => supplier.category === filters.category);
-      }
-      
-      setFilteredData(result);
-    }, [filters]);
+      match = match && supplier.categoria === filters.category;
+    }
+    return match;
+  });
 
   const handleFilterChange = (newFilters: Partial<Filters<Supplier>>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -168,21 +146,18 @@ export default function SuppliersManagementPage() {
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h2">Gestión de Proveedores</Typography>
             <Button 
-            component={Link}
-            to="/Suppliers/crear-proveedor"
-            variant="solid" 
-            color="primary"
+              component={Link}
+              to="/Suppliers/crear-proveedor"
+              variant="solid" 
+              color="primary"
             >
-            Añadir Proveedor
+              Añadir Proveedor
             </Button>
           </Stack>
-          
-          {/* Componente de filtros importado */}
           <FilterOptions<Supplier>
             onChangeFilters={handleFilterChange}
             selects={selectConfigs}
           />
-          
           <CustomTable<Supplier>
             data={filteredData}
             columns={columns}
@@ -190,6 +165,7 @@ export default function SuppliersManagementPage() {
             paginationOptions={{ onPaginationChange: setPagination, rowCount: filteredData.length }}
             sorting={sorting}
             onSortingChange={setSorting}
+            isLoading={loading}
           />
         </Stack>
       </Box>

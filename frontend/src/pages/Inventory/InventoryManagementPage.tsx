@@ -10,14 +10,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
+import { fetchProducts, deleteProduct } from "../../services/inventoryService";
 
 interface InventoryItem {
   id: string;
-  name: string;
-  category: string;
+  nombre: string;
+  categoria: string;
   stock: number;
-  price: number;
-  lastUpdated: string;
+  precio: number;
+  lastUpdated?: string;
 }
 
 interface Filters {
@@ -26,61 +27,18 @@ interface Filters {
   stockStatus?: string;
 }
 
-const sampleData: InventoryItem[] = [
-  {
-    id: "1",
-    name: "Laptop HP EliteBook",
-    category: "Electrónicos",
-    stock: 15,
-    price: 1200,
-    lastUpdated: "2023-05-15",
-  },
-  {
-    id: "2",
-    name: "Mouse inalámbrico",
-    category: "Accesorios",
-    stock: 42,
-    price: 25,
-    lastUpdated: "2023-06-02",
-  },
-  {
-    id: "3",
-    name: "Teclado mecánico",
-    category: "Accesorios",
-    stock: 18,
-    price: 75,
-    lastUpdated: "2023-05-28",
-  },
-  {
-    id: "4",
-    name: "Monitor 24\"",
-    category: "Electrónicos",
-    stock: 8,
-    price: 200,
-    lastUpdated: "2023-06-10",
-  },
-  {
-    id: "5",
-    name: "Impresora Laser",
-    category: "Electrónicos",
-    stock: 5,
-    price: 350,
-    lastUpdated: "2023-06-05",
-  },
-];
-
 const columns: ColumnDef<InventoryItem>[] = [
   { 
-    accessorKey: "name", 
+    accessorKey: "nombre", 
     header: "Producto", 
     cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
   },
   { 
-    accessorKey: "category", 
+    accessorKey: "categoria", 
     header: "Categoría" 
   },
   { 
-    accessorKey: "price", 
+    accessorKey: "precio", 
     header: "Precio", 
     cell: info => `$${info.getValue<number>()}` 
   },
@@ -96,42 +54,46 @@ const columns: ColumnDef<InventoryItem>[] = [
       );
     } 
   },
-
   {
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => (
-    <Stack direction="row" spacing={1}>
-    <IconButton
-        variant="plain"
-        color="neutral"
-        size="sm"
-        aria-label="View"
-        component={RouterLink}
-        to={`/Inventory/productos/ver-producto`}
-    >
-        <VisibilityIcon />
-    </IconButton>
-    <IconButton
-        component={RouterLink}
-        to={`/Inventory/productos/editar-producto`}
-        variant="plain"
-        color="neutral"
-        size="sm"
-        aria-label="Edit"
-    >
-        <EditIcon />
-    </IconButton>
-    <IconButton
-        variant="plain"
-        color="danger"
-        size="sm"
-        aria-label="Delete"
-        //onClick={() => handleDeleteClick(user.rut, user.name)}
-    >
-        <DeleteIcon />
-    </IconButton>
-</Stack>
+      <Stack direction="row" spacing={1}>
+        <IconButton
+          variant="plain"
+          color="neutral"
+          size="sm"
+          aria-label="View"
+          component={RouterLink}
+          to={`/Inventory/productos/ver-producto/${row.original.id}`}
+        >
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton
+          component={RouterLink}
+          to={`/Inventory/productos/editar-producto/${row.original.id}`}
+          variant="plain"
+          color="neutral"
+          size="sm"
+          aria-label="Edit"
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          variant="plain"
+          color="danger"
+          size="sm"
+          aria-label="Delete"
+          onClick={async () => {
+            if (window.confirm("¿Seguro que deseas eliminar este producto?")) {
+              await deleteProduct(row.original.id);
+              setRefreshFlag(f => !f);
+            }
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Stack>
     ),
   },
 ];
@@ -140,7 +102,9 @@ export default function InventoryManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
-  const [filteredData, setFilteredData] = useState<InventoryItem[]>(sampleData);
+  const [data, setData] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -165,41 +129,50 @@ export default function InventoryManagementPage() {
     },
   ];
 
-  // Efecto para aplicar los filtros
   useEffect(() => {
-    let result = [...sampleData];
-    
-    // Filtro de búsqueda
+    setLoading(true);
+    fetchProducts()
+      .then(apiData => setData(
+        apiData.map(item => ({
+          id: item.id,
+          nombre: item.name,
+          categoria: item.category,
+          stock: item.stock,
+          precio: item.price,
+          lastUpdated: item.lastUpdated,
+        }))
+      ))
+      .finally(() => setLoading(false));
+  }, [refreshFlag]);
+
+  // Filtros locales (puedes mejorarlo para que sean por backend)
+  const filteredData = data.filter(item => {
+    let match = true;
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(searchTerm) || 
-        item.category.toLowerCase().includes(searchTerm)
+      match = match && (
+        item.nombre.toLowerCase().includes(searchTerm) ||
+        item.categoria.toLowerCase().includes(searchTerm)
       );
     }
-    
-    // Filtro por categoría
     if (filters.category) {
-      result = result.filter(item => item.category === filters.category);
+      match = match && item.categoria === filters.category;
     }
-    
-    // Filtro por estado de stock
     if (filters.stockStatus) {
       switch (filters.stockStatus) {
         case "high":
-          result = result.filter(item => item.stock > 20);
+          match = match && item.stock > 20;
           break;
         case "medium":
-          result = result.filter(item => item.stock > 0 && item.stock <= 20);
+          match = match && item.stock > 0 && item.stock <= 20;
           break;
         case "low":
-          result = result.filter(item => item.stock === 0);
+          match = match && item.stock === 0;
           break;
       }
     }
-    
-    setFilteredData(result);
-  }, [filters]);
+    return match;
+  });
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -220,21 +193,18 @@ export default function InventoryManagementPage() {
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h2">Gestión de Productos</Typography>
             <Button 
-            component={Link}
-            to="/Inventory/productos/ProductCreation"
-            variant="solid" 
-            color="primary"
+              component={Link}
+              to="/Inventory/productos/ProductCreation"
+              variant="solid" 
+              color="primary"
             >
-            Añadir Producto
+              Añadir Producto
             </Button>
           </Stack>
-          
-          {/* Componente de filtros */}
           <FilterOptions<Filters>
             onChangeFilters={handleFilterChange}
             selects={selectConfigs}
           />
-          
           <CustomTable<InventoryItem>
             data={filteredData}
             columns={columns}
@@ -245,6 +215,7 @@ export default function InventoryManagementPage() {
             }}
             sorting={sorting}
             onSortingChange={setSorting}
+            isLoading={loading}
           />
         </Stack>
       </Box>

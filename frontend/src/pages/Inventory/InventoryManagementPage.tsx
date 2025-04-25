@@ -112,13 +112,13 @@ const columns: ColumnDef<InventoryItem>[] = [
         size="sm"
         aria-label="View"
         component={RouterLink}
-        to={`/administracion/usuarios/ver-usuario/`}
+        to={``}
     >
         <VisibilityIcon />
     </IconButton>
     <IconButton
         component={RouterLink}
-        to={`/administracion/usuarios/editar-usuario/`}
+        to={``}
         variant="plain"
         color="neutral"
         size="sm"

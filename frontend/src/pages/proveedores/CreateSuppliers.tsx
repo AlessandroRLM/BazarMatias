@@ -10,11 +10,11 @@ import {
   } from "@mui/joy";
   import Information from "../../components/core/Information/Information";
 
-  export default function AñadirProducto() {
+  export default function AñadirProvedor() {
     return (
       <Information
-        title="Añadir Producto"
-        sectionTitle="Informacion del Producto"
+        title="Añadir Proveedor"
+        sectionTitle="Informacion del Proveedor"
         footerContent={
           <>
             <Button 
@@ -30,24 +30,36 @@ import {
           </>
         }
       >
-        {/* Nombre del producto */}
+        {/* Nombre del proveedor */}
         <FormControl>
-          <FormLabel>Nombre del Producto</FormLabel>
-          <Input placeholder="Añadir Nombre del producto" />
+          <FormLabel>Nombre del Proveedor</FormLabel>
+          <Input placeholder="Añadir Nombre del proveedor" />
         </FormControl>
   
         {/* Precio y stock */}
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <FormControl sx={{ flex: 1 }}>
-            <FormLabel>Precio (CLP$)</FormLabel>
-            <Input placeholder="Añadir Precio" />
+            <FormLabel>Dirección</FormLabel>
+            <Input placeholder="Añadir Dirección" />
           </FormControl>
           <FormControl sx={{ flex: 1 }}>
-            <FormLabel>Stock</FormLabel>
-            <Input placeholder="Añadir Cantidad" />
+            <FormLabel>Teléfono</FormLabel>
+            <Input placeholder="Añadir Teléfono" />
           </FormControl>
         </Stack>
-  
+
+        {/* Precio y stock */}
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <FormControl sx={{ flex: 1 }}>
+            <FormLabel>Correo</FormLabel>
+            <Input placeholder="Añadir Correo" />
+          </FormControl>
+          <FormControl sx={{ flex: 1 }}>
+            <FormLabel>Rut</FormLabel>
+            <Input placeholder="Añadir Rut" />
+          </FormControl>
+        </Stack>
+
         {/* Categoría */}
         <FormControl>
           <FormLabel>Categoría</FormLabel>

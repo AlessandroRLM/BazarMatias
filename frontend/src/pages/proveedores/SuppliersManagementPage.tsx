@@ -4,6 +4,12 @@ import { Button, Stack, Typography, Box } from "@mui/joy";
 import CustomTable from "../../components/core/CustomTable/CustomTable";
 import Header from "../../components/core/layout/components/Header";
 import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions/FilterOptions";
+import { Link } from "@tanstack/react-router";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/joy/IconButton';
+import { Link as RouterLink } from '@tanstack/react-router';
 
 interface Supplier {
   id: string;
@@ -71,10 +77,37 @@ const columns: ColumnDef<Supplier>[] = [
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => (
-      <Stack direction="row" spacing={1}>
-        <Button size="sm" variant="soft" color="primary">Editar</Button>
-        <Button size="sm" variant="outlined" color="danger">Eliminar</Button>
-      </Stack>
+    <Stack direction="row" spacing={1}>
+    <IconButton
+        variant="plain"
+        color="neutral"
+        size="sm"
+        aria-label="View"
+        component={RouterLink}
+        to={``}
+    >
+        <VisibilityIcon />
+    </IconButton>
+    <IconButton
+        component={RouterLink}
+        to={``}
+        variant="plain"
+        color="neutral"
+        size="sm"
+        aria-label="Edit"
+    >
+        <EditIcon />
+    </IconButton>
+    <IconButton
+        variant="plain"
+        color="danger"
+        size="sm"
+        aria-label="Delete"
+        //onClick={() => handleDeleteClick(user.rut, user.name)}
+    >
+        <DeleteIcon />
+    </IconButton>
+</Stack>
     ),
   },
 ];
@@ -177,7 +210,14 @@ export default function SuppliersManagementPage() {
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h2">Gestión de Proveedores</Typography>
-            <Button variant="solid" color="primary">Añadir Proveedor</Button>
+            <Button 
+            component={Link}
+            to="/Suppliers/crear-proveedor"
+            variant="solid" 
+            color="primary"
+            >
+            Añadir Proveedor
+            </Button>
           </Stack>
           
           {/* Componente de filtros importado */}

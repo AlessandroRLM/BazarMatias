@@ -258,7 +258,7 @@ const SidebarSuppliersList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to="/Suppliers/proveedores">
+                        <SidebarLink to="/Suppliers">
                             Gestión de Proveedores
                         </SidebarLink>
                     </ListItem>

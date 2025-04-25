@@ -1,62 +1,175 @@
-import unittest
-from inventory.models import Product
-from django.test import TestCase
+from rest_framework.test import APITestCase
+from inventory.db import products_collection, suppliers_collection
 
-class TestProductModel(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        print("✅ Configuración inicial de pruebas Django ORM")
+"""
+============================
+🧪 TEST DE API CON PYMONGO
+============================
 
+Estos tests verifican el comportamiento CRUD de los endpoints /api/products/ y /api/suppliers/
+utilizando la base de datos MongoDB (sin Django ORM).
+
+🚀 Para ejecutar:
+python manage.py test inventory
+"""
+
+class ProductAPITestCase(APITestCase):
     def setUp(self):
-        self.test_product = {
-            "name": "Producto prueba",
+        self.product_data = {
+            "name": "Producto prueba API",
             "price_clp": 19990.0,
             "stock": 15,
             "category": "Tecnología"
         }
-        Product.objects.all().delete()
-        print("🧹 Tabla 'Product' limpiada")
+        self.product_id = products_collection.insert_one(self.product_data).inserted_id
+        self.url_list = '/api/inventory/products/'
+        self.url_detail = f'/api/inventory/products/{str(self.product_id)}/'
 
-    def test_django_crud_operations(self):
-        print("\n=== 🔄 Iniciando pruebas CRUD ===")
+    def tearDown(self):
+        products_collection.delete_many({})
 
-        # 1. Crear producto
-        print("\n🟢 1. Probando creación...")
-        product = Product.objects.create(**self.test_product)
-        self.assertIsNotNone(product.id)
-        print(f"📝 Producto creado con ID: {product.id}")
+    def test_product_list(self):
+        print("\n🔄 Probando GET /api/inventory/products/")
+        response = self.client.get(self.url_list, format='json')
+        print("👀 Productos obtenidos:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        print("✅ Listado de productos exitoso")
 
-        # 2. Leer producto
-        print("\n🔵 2. Probando lectura...")
-        found = Product.objects.get(id=product.id)
-        self.assertEqual(found.name, "Producto prueba")
-        print(f"🔍 Producto encontrado: {found.__dict__}")
+    def test_product_create(self):
+        print("\n🟢 Probando POST /api/inventory/products/")
+        new_product = {
+            "name": "Nuevo producto API",
+            "price_clp": 29990.0,
+            "stock": 10,
+            "category": "Hogar"
+        }
+        response = self.client.post(self.url_list, new_product, format='json')
+        print("➕ Producto agregado:", response.data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(products_collection.count_documents({}), 2)
+        print("✅ Producto creado exitosamente")
 
-        # 3. Actualizar producto
-        print("\n🟡 3. Probando actualización...")
-        found.name = "Producto actualizado"
-        found.save()
-        updated = Product.objects.get(id=product.id)
-        self.assertEqual(updated.name, "Producto actualizado")
-        print(f"🔄 Producto actualizado: {updated.__dict__}")
+    def test_product_retrieve(self):
+        print("\n🔵 Probando GET /api/inventory/products/<id>/")
+        response = self.client.get(self.url_detail)
+        print("👀 Producto mostrado:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], self.product_data['name'])
+        print("✅ Producto recuperado correctamente")
 
-        # 4. Eliminar producto
-        print("\n🔴 4. Probando eliminación...")
-        updated.delete()
-        self.assertFalse(Product.objects.filter(id=product.id).exists())
-        print("🗑️ Producto eliminado correctamente")
+    def test_product_update(self):
+        print("\n🟡 Probando PUT /api/inventory/products/<id>/")
+        updated_data = {
+            "name": "Producto actualizado API",
+            "price_clp": 25990.0,
+            "stock": 20,
+            "category": "Electrónica"
+        }
+        response = self.client.put(self.url_detail, updated_data, format='json')
+        print("✏️ Producto editado:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], updated_data["name"])
+        print("✅ Producto actualizado exitosamente")
 
-        # 5. Verificar eliminación
-        print("\n⚫ 5. Verificando eliminación...")
-        should_be_none = Product.objects.filter(id=product.id).first()
-        self.assertIsNone(should_be_none)
-        print("✅ Eliminación verificada con éxito")
+    def test_product_delete(self):
+        print("\n🔴 Probando DELETE /api/inventory/products/<id>/")
+        response = self.client.delete(self.url_detail)
+        print("🗑️ Producto borrado, status:", response.status_code)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(products_collection.count_documents({}), 0)
+        print("✅ Producto eliminado correctamente")
 
-    @classmethod
-    def tearDownClass(cls):
-        print("🔌 Fin de pruebas Django ORM")
-        super().tearDownClass()
 
-if __name__ == '__main__':
-    unittest.main()
+class SupplierAPITestCase(APITestCase):
+    def setUp(self):
+        self.supplier_data = {
+            "name": "Proveedor prueba API",
+            "address": "Calle API 123",
+            "phone": "+56987654321",
+            "email": "proveedor@api.com",
+            "rut": "60.810.000-7",  # RUT válido conocido
+            "category": "Tecnología"
+        }
+        self.supplier_id = suppliers_collection.insert_one({
+            **self.supplier_data,
+            "rut": "60.810.000-7"
+        }).inserted_id
+        self.url_list = '/api/inventory/suppliers/'
+        self.url_detail = f'/api/inventory/suppliers/{str(self.supplier_id)}/'
+
+    def tearDown(self):
+        suppliers_collection.delete_many({})
+
+    def test_supplier_list(self):
+        print("\n🔄 Probando GET /api/inventory/suppliers/")
+        response = self.client.get(self.url_list)
+        print("👀 Proveedores obtenidos:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        print("✅ Listado de proveedores exitoso")
+
+    def test_supplier_create(self):
+        print("\n🟢 Probando POST /api/inventory/suppliers/")
+        new_supplier = {
+            "name": "Nuevo proveedor API",
+            "address": "Nueva Dirección 456",
+            "phone": "+56911223344",
+            "email": "nuevo@proveedor.com",
+            "rut": "11.111.111-1",  # RUT válido conocido (11111111-1)
+            "category": "Hogar"
+        }
+        response = self.client.post(self.url_list, new_supplier, format='json')
+        print("➕ Proveedor agregado:", response.data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(suppliers_collection.count_documents({}), 2)
+        print("✅ Proveedor creado exitosamente")
+
+    def test_rut_format_conversion(self):
+        """Verifica que el serializer acepte RUTs con puntos pero los convierta"""
+        print("\n🔤 Probando conversión de formato de RUT en POST /api/inventory/suppliers/")
+        supplier_data = {
+            "name": "Proveedor formato mixto",
+            "address": "Calle Test 123",
+            "phone": "+56987654321",
+            "email": "formato@test.com",
+            "rut": "12.345.678-5",  # RUT válido conocido (12345678-5)
+            "category": "Test"
+        }
+        response = self.client.post(self.url_list, supplier_data, format='json')
+        print("📝 Respuesta del servidor:", response.data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['rut'], "12345678-5")  # Verifica la conversión
+        print("✅ Conversión de RUT exitosa")
+
+    def test_supplier_retrieve(self):
+        print("\n🔵 Probando GET /api/inventory/suppliers/<id>/")
+        response = self.client.get(self.url_detail)
+        print("👀 Proveedor mostrado:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], self.supplier_data['name'])
+        print("✅ Proveedor recuperado correctamente")
+
+    def test_supplier_update(self):
+        print("\n🟡 Probando PUT /api/inventory/suppliers/<id>/")
+        updated_data = {
+            "name": "Proveedor actualizado API",
+            "address": "Dirección Actualizada 789",
+            "phone": "+56955667788",
+            "email": "actualizado@proveedor.com",
+            "rut": "12.345.678-5",  # Válido (ejemplo real: 12345678-5)
+            "category": "Electrónica"
+        }
+        response = self.client.put(self.url_detail, updated_data, format='json')
+        print("✏️ Proveedor editado:", response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['name'], updated_data["name"])
+        print("✅ Proveedor actualizado exitosamente")
+
+    def test_supplier_delete(self):
+        print("\n🔴 Probando DELETE /api/inventory/suppliers/<id>/")
+        response = self.client.delete(self.url_detail)
+        print("🗑️ Proveedor borrado, status:", response.status_code)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(suppliers_collection.count_documents({}), 0)
+        print("✅ Proveedor eliminado correctamente")

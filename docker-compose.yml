@@ -50,6 +50,7 @@ services:
     environment:
       - DEBUG=${DEBUG}
       - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DB}?authSource=admin
+      - MONGO_DB=${MONGO_DB}
     depends_on:
       - mongodb
     networks:

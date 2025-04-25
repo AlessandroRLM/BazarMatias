@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 import django_mongodb_backend #type: ignore
 from decouple import config #type: ignore
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

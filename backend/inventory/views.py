@@ -19,6 +19,11 @@ class MongoDBBaseViewSet(viewsets.ViewSet):
         # Convertir ObjectId a string y eliminar el campo _id
         item['id'] = str(item['_id'])
         del item['_id']
+        # Si es producto, agregar nombre del proveedor y dejar supplier_id como string
+        if 'supplier_id' in item:
+            supplier = suppliers_collection.find_one({'_id': item['supplier_id']})
+            item['supplier_name'] = supplier['name'] if supplier else None
+            item['supplier_id'] = str(item['supplier_id'])  # Dejar el id como string
         return item
 
     def list(self, request):
@@ -42,33 +47,36 @@ class MongoDBBaseViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        # Convertir los datos validados a dict e insertar
         data = dict(serializer.validated_data)
+        # Convertir supplier_id a ObjectId si corresponde
+        if self.serializer_class is ProductSerializer and 'supplier_id' in data:
+            data['supplier_id'] = ObjectId(data['supplier_id'])
         result = self.collection.insert_one(data)
         
-        # Obtener el elemento creado y serializarlo
         created_item = self.collection.find_one({'_id': result.inserted_id})
         serialized_item = self._serialize_item(created_item)
-        
-        return Response(serialized_item, status=status.HTTP_201_CREATED)
+        # Usar el serializer para la respuesta
+        response_serializer = self.serializer_class(serialized_item)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, pk=None):
         try:
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
             
-            # Convertir los datos validados a dict y actualizar
             data = dict(serializer.validated_data)
+            # Convertir supplier_id a ObjectId si corresponde
+            if self.serializer_class is ProductSerializer and 'supplier_id' in data:
+                data['supplier_id'] = ObjectId(data['supplier_id'])
             self.collection.update_one(
                 {'_id': ObjectId(pk)},
                 {'$set': data}
             )
             
-            # Obtener el elemento actualizado y serializarlo
             updated_item = self.collection.find_one({'_id': ObjectId(pk)})
             serialized_item = self._serialize_item(updated_item)
-            
-            return Response(serialized_item)
+            response_serializer = self.serializer_class(serialized_item)
+            return Response(response_serializer.data)
         except (TypeError, ValueError):
             raise Http404
 
@@ -90,3 +98,13 @@ class ProductViewSet(MongoDBBaseViewSet):
 class SupplierViewSet(MongoDBBaseViewSet):
     serializer_class = SupplierSerializer
     collection = suppliers_collection
+
+    def list(self, request):
+        name = request.query_params.get('name')
+        query = {}
+        if name:
+            query['name'] = {'$regex': name, '$options': 'i'}
+        items = list(self.collection.find(query))
+        serialized_items = [self._serialize_item(item) for item in items]
+        serializer = self.serializer_class(serialized_items, many=True)
+        return Response(serializer.data)

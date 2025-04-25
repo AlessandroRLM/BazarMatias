@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from inventory.db import products_collection, suppliers_collection
+from bson import ObjectId
 
 """
 ============================
@@ -15,11 +16,24 @@ python manage.py test inventory
 
 class ProductAPITestCase(APITestCase):
     def setUp(self):
+        # Crear un proveedor de prueba
+        self.supplier_data = {
+            "name": "Proveedor test",
+            "address": "Calle Falsa 123",
+            "phone": "+56912345678",
+            "email": "proveedor@test.com",
+            "rut": "12345678-5",
+            "category": "Tecnología"
+        }
+        self.supplier_id = suppliers_collection.insert_one(self.supplier_data).inserted_id
+
+        # Crear un producto de prueba
         self.product_data = {
             "name": "Producto prueba API",
             "price_clp": 19990.0,
             "stock": 15,
-            "category": "Tecnología"
+            "category": "Tecnología",
+            "supplier_id": str(self.supplier_id)
         }
         self.product_id = products_collection.insert_one(self.product_data).inserted_id
         self.url_list = '/api/inventory/products/'
@@ -27,6 +41,7 @@ class ProductAPITestCase(APITestCase):
 
     def tearDown(self):
         products_collection.delete_many({})
+        suppliers_collection.delete_many({})
 
     def test_product_list(self):
         print("\n🔄 Probando GET /api/inventory/products/")
@@ -42,7 +57,8 @@ class ProductAPITestCase(APITestCase):
             "name": "Nuevo producto API",
             "price_clp": 29990.0,
             "stock": 10,
-            "category": "Hogar"
+            "category": "Hogar",
+            "supplier_id": str(self.supplier_id)
         }
         response = self.client.post(self.url_list, new_product, format='json')
         print("➕ Producto agregado:", response.data)
@@ -64,7 +80,8 @@ class ProductAPITestCase(APITestCase):
             "name": "Producto actualizado API",
             "price_clp": 25990.0,
             "stock": 20,
-            "category": "Electrónica"
+            "category": "Electrónica",
+            "supplier_id": str(self.supplier_id)
         }
         response = self.client.put(self.url_detail, updated_data, format='json')
         print("✏️ Producto editado:", response.data)

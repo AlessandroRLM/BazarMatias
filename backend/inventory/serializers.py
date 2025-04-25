@@ -1,3 +1,4 @@
+from bson import ObjectId
 from rest_framework import serializers
 from django.core.validators import MinValueValidator, RegexValidator
 import re
@@ -35,6 +36,10 @@ class ProductSerializer(serializers.Serializer):
             regex='^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$',
             message='Solo se permiten letras y espacios'
         )]
+    )
+    supplier_id = ObjectIdField(
+        required=True,
+        help_text="ID del proveedor asociado a este producto"
     )
 
     def validate_name(self, value):

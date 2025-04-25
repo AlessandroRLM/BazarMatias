@@ -1,37 +1,48 @@
-import { Input, Select, Stack, Option } from "@mui/joy"
-import { Filters } from "../../../types/core.types"
 import { useEffect, useState } from "react"
+import { Input, Select, Stack, Option } from "@mui/joy"
 import useDebounce from "../../../hooks/core/useDebounce"
+import { DateRangePicker } from "../DateRangeInput/DateRangeInput"
+import { DatePicker } from "../DatePicker/DatePicker"
+import dayjs from "dayjs"
 
-// Definimos un tipo para las opciones del select que puede ser flexible
+
 type SelectOption = {
     value: string | number
     label: string
 }
 
-// Definimos el tipo para cada configuración de select
 interface SelectConfig {
-    id: string // identificador único para cada select
+    id: string
     placeholder: string
     options: SelectOption[]
 }
 
-
 interface Props<T> {
-    filters: Filters<T>
     onChangeFilters: (dataFilters: Partial<T>) => void
     selects: SelectConfig[]
+    dateRangePicker?: boolean
+    dateRangePickerValue?: { start: Date | null; end: Date | null }
+    datePicker?: boolean
+    datePickerValue?: Date | null
 }
 
 const FilterOptions = <T,>(props: Props<T>) => {
-    const { onChangeFilters, selects = [] } = props
+    const {
+        onChangeFilters,
+        selects = [],
+        dateRangePicker = false,
+        dateRangePickerValue,
+        datePicker = false,
+        datePickerValue
+    } = props
+
     const [inputValue, setInputValue] = useState<string>('')
-    const debouncedValue = useDebounce<string>(inputValue, 500)
+    const debouncedInputValue = useDebounce<string>(inputValue, 500)
 
     useEffect(() => {
-        setInputValue(debouncedValue)
+        setInputValue(debouncedInputValue)
         onChangeFilters({ search: inputValue } as Partial<T & { search: string }>)
-    }, [debouncedValue])
+    }, [debouncedInputValue])
 
     const handleSelectChange = (selectedId: string, selectedValue: {} | null) => {
         if (selectedValue !== null) {
@@ -41,11 +52,29 @@ const FilterOptions = <T,>(props: Props<T>) => {
         }
     }
 
+    const handleDateChange = (date: Date | null) => {
+        onChangeFilters({ date: dayjs(date).format('YYYY-MM-DD') } as Partial<T> & { date: string })
+    }
+
+    const handleDateRangeChange = (dates: { start: Date | null; end: Date | null }) => {
+        if (dates.start && dates.end){
+            onChangeFilters({
+                date__range_after: dayjs(dates.start).format('YYYY-MM-DD'),
+                date__range_before: dayjs(dates.end).format('YYYY-MM-DD'),
+            } as Partial<T> & { date__range_after: string, date__range_before: string })
+        } else {
+            onChangeFilters({
+                date__range_after: undefined,
+                date__range_before: undefined,
+            } as unknown as Partial<T>)
+        }
+    }
+
     return (
         <Stack
             direction={'row'}
             alignItems={'center'}
-            spacing={0.5}
+            spacing={1}
             sx={{
                 width: '100%',
             }}
@@ -71,7 +100,7 @@ const FilterOptions = <T,>(props: Props<T>) => {
                         handleSelectChange(select.id, newValue)
                     }}
                     sx={{
-                        width: '20%',
+                        width: '30%',
                     }}
                 >
                     {select.options.map((option) => (
@@ -81,6 +110,21 @@ const FilterOptions = <T,>(props: Props<T>) => {
                     ))}
                 </Select>
             ))}
+            {datePicker && (
+                <DatePicker
+                    value={datePickerValue || undefined}
+                    onChange={handleDateChange}
+                    placeholder="Selecciona una fecha"
+                />
+            )}
+            {dateRangePicker && (
+                <DateRangePicker
+                    startDate={dateRangePickerValue?.start || undefined}
+                    endDate={dateRangePickerValue?.end || undefined}
+                    onChange={handleDateRangeChange}
+                    placeholder="Selecciona un rango de fechas"
+                />
+            )}
         </Stack>
     )
 }

@@ -80,6 +80,11 @@ const columns: ColumnDef<InventoryItem>[] = [
     header: "Categoría" 
   },
   { 
+    accessorKey: "price", 
+    header: "Precio", 
+    cell: info => `$${info.getValue<number>()}` 
+  },
+  { 
     accessorKey: "stock", 
     header: "Stock", 
     cell: info => {
@@ -91,16 +96,7 @@ const columns: ColumnDef<InventoryItem>[] = [
       );
     } 
   },
-  { 
-    accessorKey: "price", 
-    header: "Precio", 
-    cell: info => `$${info.getValue<number>()}` 
-  },
-  { 
-    accessorKey: "lastUpdated", 
-    header: "Actualizado", 
-    cell: info => new Date(info.getValue<string>()).toLocaleDateString() 
-  },
+
   {
     id: "actions",
     header: "Acciones",
@@ -112,13 +108,13 @@ const columns: ColumnDef<InventoryItem>[] = [
         size="sm"
         aria-label="View"
         component={RouterLink}
-        to={``}
+        to={`/Inventory/productos/ver-producto`}
     >
         <VisibilityIcon />
     </IconButton>
     <IconButton
         component={RouterLink}
-        to={``}
+        to={`/Inventory/productos/editar-producto`}
         variant="plain"
         color="neutral"
         size="sm"

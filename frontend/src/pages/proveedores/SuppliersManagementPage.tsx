@@ -12,67 +12,66 @@ import IconButton from '@mui/joy/IconButton';
 import { Link as RouterLink } from '@tanstack/react-router';
 
 interface Supplier {
-  id: string;
-  name: string;
-  contact: string;
-  email: string;
-  phone: string;
-  products: string[];
-  lastOrder: string;
+  id?: string;
+  name?: string;
+  direction?: string;
+  contact?: string;
+  email?: string;
+  phone?: string;
+  products?: string[];
+  category?: string; 
+
 }
 
 interface Filters<T> {
   search?: string;
   productType?: string;
-  lastOrder?: string;
+  category?: string;
 }
 
 const sampleData: Supplier[] = [
   {
     id: "1",
     name: "Distribuidora Electrónica SA",
-    contact: "Juan Pérez",
-    email: "juan@electronica.com",
+    direction: "Sazie 1455, Estacion Central",
     phone: "+56912345678",
     products: ["Componentes electrónicos", "Cables"],
-    lastOrder: "2023-06-15",
+    category: "Electronica"
   },
   {
     id: "2",
     name: "Mayorista de Oficina",
+    direction: "Calle Ecuador 1234, Santiago",
     contact: "María González",
-    email: "ventas@oficina.cl",
     phone: "+56987654321",
     products: ["Papelería", "Utiles de oficina"],
-    lastOrder: "2023-05-28",
+    category: "Papeleria"
   },
   {
     id: "3",
     name: "Importadora de Tecnología",
+    direction: "Av. Vicuña Mackenna 4600",
     contact: "Carlos Rojas",
-    email: "carlos@tecnologia.cl",
     phone: "+56945678912",
     products: ["Computadores", "Tablets", "Accesorios"],
-    lastOrder: "2023-06-20",
+    category: "Electronica"
   },
   {
     id: "4",
     name: "Suministros Industriales LTDA",
+    direction: "Av. Vicuña Mackenna 7500",
     contact: "Ana Silva",
-    email: "ana@suministros.com",
     phone: "+56932165498",
     products: ["Herramientas", "Insumos industriales"],
-    lastOrder: "2023-04-10",
+    category: "Cotillon"
   },
 ];
 
 const columns: ColumnDef<Supplier>[] = [
-  { accessorKey: "name", header: "Proveedor", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
-  { accessorKey: "contact", header: "Contacto" },
-  { accessorKey: "email", header: "Email" },
+  { accessorKey: "name", header: "Nombre", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
+  { accessorKey: "direction", header: "Dirección"},
   { accessorKey: "phone", header: "Teléfono" },
-  { accessorKey: "products", header: "Productos", cell: info => (info.getValue<string[]>().join(', ')) },
-  { accessorKey: "lastOrder", header: "Último Pedido", cell: info => new Date(info.getValue<string>()).toLocaleDateString() },
+  { accessorKey: "category", header: "Categoria"},
   {
     id: "actions",
     header: "Acciones",
@@ -84,13 +83,13 @@ const columns: ColumnDef<Supplier>[] = [
         size="sm"
         aria-label="View"
         component={RouterLink}
-        to={``}
+        to={`/Suppliers/ver-proveedor`}
     >
         <VisibilityIcon />
     </IconButton>
     <IconButton
         component={RouterLink}
-        to={``}
+        to={`/Suppliers/editar-proveedor`}
         variant="plain"
         color="neutral"
         size="sm"
@@ -121,23 +120,13 @@ export default function SuppliersManagementPage() {
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
     {
-      id: "productType",
-      placeholder: "Tipo de producto",
+      id: "category",
+      placeholder: "Categoría",
       options: [
-        { value: "", label: "Todos" },
-        { value: "Electrónicos", label: "Electrónicos" },
-        { value: "Oficina", label: "Oficina" },
-        { value: "Industriales", label: "Industriales" },
-      ],
-    },
-    {
-      id: "lastOrder",
-      placeholder: "Último pedido",
-      options: [
-        { value: "", label: "Todos" },
-        { value: "lastMonth", label: "Último mes" },
-        { value: "last3Months", label: "Últimos 3 meses" },
-        { value: "older", label: "Más de 3 meses" },
+        { value: "", label: "Todas" },
+        { value: "Electronica", label: "Electrónica" },
+        { value: "Papeleria", label: "Papelería" },
+        { value: "Cotillon", label: "Cotillón" },
       ],
     },
   ];
@@ -146,58 +135,26 @@ export default function SuppliersManagementPage() {
   useEffect(() => {
     let result = [...sampleData];
     
-    // Filtro de búsqueda
+    // Filtro de búsqueda (ahora seguro contra valores undefined)
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      result = result.filter(supplier => 
-        supplier.name.toLowerCase().includes(searchTerm) || 
-        supplier.contact.toLowerCase().includes(searchTerm) ||
-        supplier.email.toLowerCase().includes(searchTerm) ||
-        supplier.products.some(product => product.toLowerCase().includes(searchTerm))
-      );
-    }
-    
-    // Filtro por tipo de producto
-    if (filters.productType) {
-      result = result.filter(supplier => 
-        supplier.products.some(product => {
-          switch (filters.productType) {
-            case "Electrónicos":
-              return product.includes("electrónico") || product.includes("Tecnología");
-            case "Oficina":
-              return product.includes("Papelería") || product.includes("oficina");
-            case "Industriales":
-              return product.includes("Industrial") || product.includes("Herramienta");
-            default:
-              return true;
-          }
-        })
-      );
-    }
-    
-    // Filtro por último pedido
-    if (filters.lastOrder) {
-      const today = new Date();
       result = result.filter(supplier => {
-        const lastOrderDate = new Date(supplier.lastOrder);
-        const diffTime = today.getTime() - lastOrderDate.getTime();
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        const nameMatch = supplier.name?.toLowerCase().includes(searchTerm) ?? false;
+        const contactMatch = supplier.contact?.toLowerCase().includes(searchTerm) ?? false;
+        const emailMatch = supplier.email?.toLowerCase().includes(searchTerm) ?? false;
+        const phoneMatch = supplier.phone?.toLowerCase().includes(searchTerm) ?? false;
         
-        switch (filters.lastOrder) {
-          case "lastMonth":
-            return diffDays <= 30;
-          case "last3Months":
-            return diffDays <= 90;
-          case "older":
-            return diffDays > 90;
-          default:
-            return true;
-        }
+        return nameMatch || contactMatch || emailMatch || phoneMatch;
       });
     }
     
-    setFilteredData(result);
-  }, [filters]);
+    // Filtro por tipo de producto
+    if (filters.category) {
+        result = result.filter(supplier => supplier.category === filters.category);
+      }
+      
+      setFilteredData(result);
+    }, [filters]);
 
   const handleFilterChange = (newFilters: Partial<Filters<Supplier>>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));

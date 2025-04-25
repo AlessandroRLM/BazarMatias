@@ -6,18 +6,19 @@ import { DatePicker } from "../DatePicker/DatePicker"
 import dayjs from "dayjs"
 
 
-type SelectOption = {
+export type SelectOption = {
     value: string | number
     label: string
 }
 
-interface SelectConfig {
+export interface SelectConfig {
     id: string
     placeholder: string
     options: SelectOption[]
 }
 
 interface Props<T> {
+    filters?: Filters<T>
     onChangeFilters: (dataFilters: Partial<T>) => void
     selects: SelectConfig[]
     dateRangePicker?: boolean

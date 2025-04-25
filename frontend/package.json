@@ -16,7 +16,7 @@
     "@hookform/resolvers": "^5.0.1",
     "@mui/icons-material": "^7.0.1",
     "@mui/joy": "^5.0.0-beta.52",
-    "@mui/x-date-pickers": "^8.0.0-beta.3",
+    "@mui/x-date-pickers": "^8.1.0",
     "@tanstack/react-query": "^5.74.3",
     "@tanstack/react-router": "^1.114.32",
     "@tanstack/react-table": "^8.21.3",

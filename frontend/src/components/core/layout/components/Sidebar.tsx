@@ -156,7 +156,7 @@ const SidebarInventorykList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/Inventory/productos">
                             Gestión de Productos
                         </SidebarLink>
                     </ListItem>
@@ -260,7 +260,7 @@ const SidebarSuppliersList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/Suppliers">
                             Gestión de Proveedores
                         </SidebarLink>
                     </ListItem>

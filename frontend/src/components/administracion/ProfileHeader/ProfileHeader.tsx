@@ -1,8 +1,7 @@
-import { Typography, Box, IconButton, Dropdown, Menu, MenuButton, MenuItem, GlobalStyles, Sheet } from "@mui/joy";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Typography, Box, IconButton, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from '@mui/icons-material/Menu';
-import { toggleSidebar } from "../../../utils/sidebar.utils";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Añadir esta importación
+import Header from "../../../components/core/layout/components/Header"
 
 interface HeaderUserCreationProps {
   title?: React.ReactNode;
@@ -21,62 +20,8 @@ const HeaderUserCreation = ({
 }: HeaderUserCreationProps) => {
   return (
     <>
-      <GlobalStyles
-        styles={(theme) => ({
-          ':root': {
-            '--Header-height': '52px',
-            [theme.breakpoints.up('md')]: {
-              '--Header-height': '0px',
-            },
-          },
-        })}
-      />
-      
-      {/* Header móvil */}
-      <Sheet
-        sx={{
-          display: { xs: 'flex', md: 'none' },
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'fixed',
-          top: 0,
-          left: 0, 
-          right: 0, 
-          width: '100%', 
-          height: 'var(--Header-height)',
-          zIndex: 9995,
-          p: 2,
-          borderBottom: '1px solid',
-          borderColor: 'background.level1',
-          boxShadow: 'sm',
-        }}
-      >
-        {/* Contenedor izquierdo */}
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 1,
-          flex: '0 0 auto',
-          alignItems: 'center'
-        }}>
-          <IconButton
-            onClick={() => toggleSidebar()}
-            variant="outlined"
-            color="neutral"
-            size="sm"
-          >
-            <MenuIcon />
-          </IconButton>
-          
-          <IconButton
-            onClick={onBack || (() => window.history.back())}
-            variant="outlined"
-            color="neutral"
-            size="sm"
-          >
-            <ArrowBackIcon />
-          </IconButton>
-        </Box>
-        
+      {/* Header móvil - usando el Header general con flecha de retroceso */}
+      <Header showBackButton onBack={onBack}>
         {/* Título centrado */}
         <Typography 
           level="h4" 
@@ -124,9 +69,9 @@ const HeaderUserCreation = ({
             </Dropdown>
           )}
         </Box>
-      </Sheet>
+      </Header>
 
-      {/* Header desktop */}
+      {/* Header desktop (se mantiene igual) */}
       <Box
         sx={{
           display: { xs: 'none', md: 'flex' },

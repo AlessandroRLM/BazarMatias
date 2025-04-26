@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormLabel,
@@ -34,9 +33,9 @@ export default function AñadirProveedor() {
         rut: rut,
         category: categoria,
       });
-      navigate("/Suppliers/");
+      navigate({ to: "/Suppliers" });
     } catch (e) {
-      alert("Error al crear proveedor");
+      alert(`No se pudo crear el proveedor. Motivo: ${e || "Error desconocido"}`);
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { fetchSuppliers, deleteSupplier } from "../../services/inventoryService";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
 
 interface Supplier {
   id: string;
@@ -26,55 +27,6 @@ interface Filters<T> {
   search?: string;
   category?: string;
 }
-
-const columns: ColumnDef<Supplier>[] = [
-  { accessorKey: "nombre", header: "Nombre", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
-  { accessorKey: "direccion", header: "Dirección"},
-  { accessorKey: "telefono", header: "Teléfono" },
-  { accessorKey: "categoria", header: "Categoría"},
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => (
-      <Stack direction="row" spacing={1}>
-        <IconButton
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="View"
-          component={RouterLink}
-          to={`/Suppliers/ver-proveedor/${row.original.id}`}
-        >
-          <VisibilityIcon />
-        </IconButton>
-        <IconButton
-          component={RouterLink}
-          to={`/Suppliers/editar-proveedor/${row.original.id}`}
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="Edit"
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          variant="plain"
-          color="danger"
-          size="sm"
-          aria-label="Delete"
-          onClick={async () => {
-            if (window.confirm(`¿Seguro que deseas eliminar a ${row.original.nombre}?`)) {
-              await deleteSupplier(row.original.id);
-              setRefreshFlag(f => !f);
-            }
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-  },
-];
 
 export default function SuppliersManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
@@ -138,9 +90,86 @@ export default function SuppliersManagementPage() {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [supplierToDelete, setSupplierToDelete] = useState<{ id: string; nombre: string } | null>(null);
+
+  const handleConfirmDelete = async () => {
+    if (supplierToDelete) {
+      try {
+        await deleteSupplier(supplierToDelete.id);
+        setRefreshFlag(f => !f);
+      } catch (error) {
+        alert('Error al eliminar proveedor');
+      } finally {
+        setDeleteDialogOpen(false);
+        setSupplierToDelete(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSupplierToDelete(null);
+  };
+
+  // Mueve la definición de columns aquí:
+  const columns: ColumnDef<Supplier>[] = [
+    { accessorKey: "nombre", header: "Nombre", cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> },
+    { accessorKey: "direccion", header: "Dirección"},
+    { accessorKey: "telefono", header: "Teléfono" },
+    { accessorKey: "categoria", header: "Categoría"},
+    {
+      id: "actions",
+      header: "Acciones",
+      cell: ({ row }) => (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="View"
+            component={RouterLink}
+            to={`/Suppliers/ver-proveedor/${row.original.id}`}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            component={RouterLink}
+            to={`/Suppliers/editar-proveedor/${row.original.id}`}
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="Edit"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            variant="plain"
+            color="danger"
+            size="sm"
+            aria-label="Delete"
+            onClick={() => {
+              setSupplierToDelete({ id: row.original.id, nombre: row.original.nombre });
+              setDeleteDialogOpen(true);
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
+      {/* Diálogo de confirmación para eliminar proveedor */}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        userName={supplierToDelete?.nombre || ''}
+      />
       <Box component="main" sx={{ flex: 1, p: 3, pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, maxWidth: '1600px', mx: 'auto', width: '100%' }}>
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">

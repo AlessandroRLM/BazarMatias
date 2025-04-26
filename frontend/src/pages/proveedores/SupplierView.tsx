@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { fetchSupplier } from "../../services/inventoryService";
 
 export default function VerProveedor() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
   const [proveedor, setProveedor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 

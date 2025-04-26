@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormLabel,
@@ -14,7 +13,7 @@ import { fetchSupplier, updateSupplier } from "../../services/inventoryService";
 import { useNavigate, useParams } from "@tanstack/react-router";
 
 export default function EditarProveedor() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -27,16 +26,20 @@ export default function EditarProveedor() {
   useEffect(() => {
     if (!id) return;
     fetchSupplier(id).then(proveedor => {
-      setNombre(proveedor.nombre);
-      setDireccion(proveedor.direccion);
-      setTelefono(proveedor.telefono);
-      setCorreo(proveedor.correo);
-      setRut(proveedor.rut);
-      setCategoria(proveedor.categoria);
+      setNombre(proveedor.name ?? "");
+      setDireccion(proveedor.address ?? "");
+      setTelefono(proveedor.phone ?? "");
+      setCorreo(proveedor.email ?? "");
+      setRut(proveedor.rut ?? "");
+      setCategoria(proveedor.category ?? "");
     });
   }, [id]);
 
   const handleSubmit = async () => {
+    if (!id) {
+      alert("ID de proveedor no encontrado.");
+      return;
+    }
     setLoading(true);
     try {
       await updateSupplier(id, {
@@ -47,7 +50,7 @@ export default function EditarProveedor() {
         rut: rut,
         category: categoria,
       });
-      navigate("/Suppliers/");
+      navigate({ to: "/Suppliers" });
     } catch (e) {
       alert("Error al actualizar proveedor");
     } finally {

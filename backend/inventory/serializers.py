@@ -39,6 +39,7 @@ class ProductSerializer(serializers.Serializer):
     )
     supplier_id = ObjectIdField(
         required=True,
+        allow_null=True,
         help_text="ID del proveedor asociado a este producto"
     )
 

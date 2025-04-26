@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControl,
   FormLabel,
@@ -9,8 +8,8 @@ import {
   Stack
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
-import { useState } from "react";
-import { createProduct } from "../../services/inventoryService";
+import { useState, useEffect } from "react";
+import { createProduct, fetchSuppliers } from "../../services/inventoryService";
 import { useNavigate } from "@tanstack/react-router";
 
 export default function AñadirProducto() {
@@ -18,21 +17,36 @@ export default function AñadirProducto() {
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [proveedor, setProveedor] = useState(""); // Nuevo estado para el proveedor
   const [loading, setLoading] = useState(false);
+  const [proveedores, setProveedores] = useState([]); // Lista de proveedores
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Obtener la lista de proveedores al cargar el componente
+    fetchSuppliers().then(data => setProveedores(data));
+  }, []);
+
   const handleSubmit = async () => {
+    if (!nombre || !precio || !stock || !categoria) {
+      alert("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
     setLoading(true);
     try {
       await createProduct({
         name: nombre,
-        price: Number(precio),
+        price_clp: Number(precio),
         stock: Number(stock),
         category: categoria,
+        supplier_id: proveedor || null,
       });
-      navigate("/Inventory/productos");
+      alert("Producto creado exitosamente.");
+      // Redirigir a la página de gestión de productos después de crear el producto
+      navigate({ to: "/Inventory/productos" });
     } catch (e) {
-      alert("Error al crear producto");
+      alert(`No se pudo crear el producto. Motivo: ${e || "Error desconocido"}`);
     } finally {
       setLoading(false);
     }
@@ -41,7 +55,7 @@ export default function AñadirProducto() {
   return (
     <Information
       title="Añadir Producto"
-      sectionTitle="Informacion del Producto"
+      sectionTitle="Información del Producto"
       footerContent={
         <>
           <Button 
@@ -82,6 +96,17 @@ export default function AñadirProducto() {
           <Option value="utiles">Útiles escolares</Option>
           <Option value="oficina">Oficina</Option>
           <Option value="otros">Otros</Option>
+        </Select>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Proveedor</FormLabel>
+        <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")} placeholder="Nombre del proveedor">
+          <Option value="">Ninguno</Option>
+          {proveedores.map(proveedor => (
+            <Option key={proveedor.id} value={proveedor.id}>
+              {proveedor.name}
+            </Option>
+          ))}
         </Select>
       </FormControl>
     </Information>

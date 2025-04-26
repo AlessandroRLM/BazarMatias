@@ -8,18 +8,28 @@ import {
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { useEffect, useState } from "react";
-import { fetchProduct } from "../../services/inventoryService";
+import { fetchProduct, fetchSupplier } from "../../services/inventoryService";
 import { useParams } from "@tanstack/react-router";
 
 export default function VerProducto() {
-  const { id } = useParams(); // Asegúrate de que la ruta tenga el parámetro :id
+  const { id } = useParams({ strict: false });
   const [producto, setProducto] = useState<any>(null);
+  const [proveedor, setProveedor] = useState<any>(null); // Estado para el proveedor
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
+
+    // Obtener el producto
     fetchProduct(id)
-      .then(data => setProducto(data))
+      .then(data => {
+        setProducto(data);
+
+        // Si el producto tiene un supplier_id, obtener los detalles del proveedor
+        if (data.supplier_id) {
+          fetchSupplier(data.supplier_id).then(setProveedor);
+        }
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -56,7 +66,7 @@ export default function VerProducto() {
         <FormControl sx={{ flex: 1 }}>
           <FormLabel>Precio (CLP$)</FormLabel>
           <Typography level="body-md" sx={{ p: 1, bgcolor: 'background.level1', borderRadius: 'sm' }}>
-            ${producto.price}
+            ${producto.price_clp}
           </Typography>
         </FormControl>
         <FormControl sx={{ flex: 1 }}>
@@ -80,6 +90,14 @@ export default function VerProducto() {
         <FormLabel>Categoría</FormLabel>
         <Typography level="body-md" sx={{ p: 1, bgcolor: 'background.level1', borderRadius: 'sm' }}>
           {producto.category}
+        </Typography>
+      </FormControl>
+
+      {/* Proveedor */}
+      <FormControl>
+        <FormLabel>Proveedor</FormLabel>
+        <Typography level="body-md" sx={{ p: 1, bgcolor: 'background.level1', borderRadius: 'sm' }}>
+          {proveedor?.name || "Ninguno"}
         </Typography>
       </FormControl>
     </Information>

@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
 import { fetchProducts, deleteProduct } from "../../services/inventoryService";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
 
 interface InventoryItem {
   id: string;
@@ -27,77 +28,6 @@ interface Filters {
   stockStatus?: string;
 }
 
-const columns: ColumnDef<InventoryItem>[] = [
-  { 
-    accessorKey: "nombre", 
-    header: "Producto", 
-    cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
-  },
-  { 
-    accessorKey: "categoria", 
-    header: "Categoría" 
-  },
-  { 
-    accessorKey: "precio", 
-    header: "Precio", 
-    cell: info => `$${info.getValue<number>()}` 
-  },
-  { 
-    accessorKey: "stock", 
-    header: "Stock", 
-    cell: info => {
-      const stock = info.getValue<number>();
-      return (
-        <Typography color={stock > 20 ? 'success' : stock > 0 ? 'warning' : 'danger'}>
-          {stock} unidades
-        </Typography>
-      );
-    } 
-  },
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => (
-      <Stack direction="row" spacing={1}>
-        <IconButton
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="View"
-          component={RouterLink}
-          to={`/Inventory/productos/ver-producto/${row.original.id}`}
-        >
-          <VisibilityIcon />
-        </IconButton>
-        <IconButton
-          component={RouterLink}
-          to={`/Inventory/productos/editar-producto/${row.original.id}`}
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="Edit"
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          variant="plain"
-          color="danger"
-          size="sm"
-          aria-label="Delete"
-          onClick={async () => {
-            if (window.confirm("¿Seguro que deseas eliminar este producto?")) {
-              await deleteProduct(row.original.id);
-              setRefreshFlag(f => !f);
-            }
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-  },
-];
-
 export default function InventoryManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -105,6 +35,8 @@ export default function InventoryManagementPage() {
   const [data, setData] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<{ id: string; nombre: string } | null>(null);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -138,7 +70,7 @@ export default function InventoryManagementPage() {
           nombre: item.name,
           categoria: item.category,
           stock: item.stock,
-          precio: item.price,
+          precio: item.price_clp,
           lastUpdated: item.lastUpdated,
         }))
       ))
@@ -178,47 +110,145 @@ export default function InventoryManagementPage() {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header />
-      <Box component="main" sx={{ 
-        flex: 1, 
-        p: 3, 
-        pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, 
-        maxWidth: '1600px', 
-        mx: 'auto', 
-        width: '100%' 
-      }}>
-        <Stack spacing={3}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography level="h2">Gestión de Productos</Typography>
-            <Button 
-              component={Link}
-              to="/Inventory/productos/ProductCreation"
-              variant="solid" 
-              color="primary"
-            >
-              Añadir Producto
-            </Button>
-          </Stack>
-          <FilterOptions<Filters>
-            onChangeFilters={handleFilterChange}
-            selects={selectConfigs}
-          />
-          <CustomTable<InventoryItem>
-            data={filteredData}
-            columns={columns}
-            pagination={pagination}
-            paginationOptions={{ 
-              onPaginationChange: setPagination, 
-              rowCount: filteredData.length 
+  const handleConfirmDelete = async () => {
+    if (productToDelete) {
+      try {
+        await deleteProduct(productToDelete.id);
+        setRefreshFlag(f => !f);
+      } catch (error) {
+        alert('Error al eliminar producto');
+      } finally {
+        setDeleteDialogOpen(false);
+        setProductToDelete(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setProductToDelete(null);
+  };
+
+  const columns: ColumnDef<InventoryItem>[] = [
+    { 
+      accessorKey: "nombre", 
+      header: "Producto", 
+      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
+    },
+    { 
+      accessorKey: "categoria", 
+      header: "Categoría" 
+    },
+    { 
+      accessorKey: "precio", 
+      header: "Precio", 
+      cell: info => `$${info.getValue<number>()}` 
+    },
+    { 
+      accessorKey: "stock", 
+      header: "Stock", 
+      cell: info => {
+        const stock = info.getValue<number>();
+        return (
+          <Typography color={stock > 20 ? 'success' : stock > 0 ? 'warning' : 'danger'}>
+            {stock} unidades
+          </Typography>
+        );
+      } 
+    },
+    {
+      id: "actions",
+      header: "Acciones",
+      cell: ({ row }) => (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="View"
+            component={RouterLink}
+            to={`/Inventory/productos/ver-producto/${row.original.id}`}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            component={RouterLink}
+            to={`/Inventory/productos/editar-producto/${row.original.id}`}
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="Edit"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            variant="plain"
+            color="danger"
+            size="sm"
+            aria-label="Delete"
+            onClick={() => {
+              setProductToDelete({ id: row.original.id, nombre: row.original.nombre });
+              setDeleteDialogOpen(true);
             }}
-            sorting={sorting}
-            onSortingChange={setSorting}
-            isLoading={loading}
-          />
+          >
+            <DeleteIcon />
+          </IconButton>
         </Stack>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="Eliminar Producto"
+        content={`¿Estás seguro de que deseas eliminar el producto "${productToDelete?.nombre}"?`}
+        onConfirm={handleConfirmDelete}
+        onClose={handleCancelDelete}
+        userName={productToDelete?.nombre || "Producto desconocido"}
+      />
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Header />
+        <Box component="main" sx={{ 
+          flex: 1, 
+          p: 3, 
+          pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, 
+          maxWidth: '1600px', 
+          mx: 'auto', 
+          width: '100%' 
+        }}>
+          <Stack spacing={3}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography level="h2">Gestión de Productos</Typography>
+              <Button 
+                component={Link}
+                to="/Inventory/productos/ProductCreation"
+                variant="solid" 
+                color="primary"
+              >
+                Añadir Producto
+              </Button>
+            </Stack>
+            <FilterOptions<Filters>
+              onChangeFilters={handleFilterChange}
+              selects={selectConfigs}
+            />
+            <CustomTable<InventoryItem>
+              data={filteredData}
+              columns={columns}
+              pagination={pagination}
+              paginationOptions={{ 
+                onPaginationChange: setPagination, 
+                rowCount: filteredData.length 
+              }}
+              sorting={sorting}
+              onSortingChange={setSorting}
+              isLoading={loading}
+            />
+          </Stack>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

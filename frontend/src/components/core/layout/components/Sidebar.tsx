@@ -156,7 +156,7 @@ const SidebarInventorykList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to="/Inventory/productos">
+                        <SidebarLink to="/inventario/productos">
                             Gestión de Productos
                         </SidebarLink>
                     </ListItem>
@@ -260,7 +260,7 @@ const SidebarSuppliersList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to="/Suppliers">
+                        <SidebarLink to="/proveedores">
                             Gestión de Proveedores
                         </SidebarLink>
                     </ListItem>
@@ -348,7 +348,7 @@ const SidebarFooter = () => {
                         padding: 0,
                     }}
                 >
-                    <Typography level='body-sm' fontWeight='bold'>{user?.email}</Typography>
+                    <Typography level='body-sm' textOverflow={'ellipsis'} fontWeight='bold'>{user?.first_name + ' ' + user?.last_name.slice(0, 1) + '.'}</Typography>
                     <Typography level='body-xs'> {user?.position} </Typography>
                 </Box>
                 <IconButton onClick={() => logout()}>

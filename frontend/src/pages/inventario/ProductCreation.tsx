@@ -44,7 +44,7 @@ export default function AñadirProducto() {
       });
       alert("Producto creado exitosamente.");
       // Redirigir a la página de gestión de productos después de crear el producto
-      navigate({ to: "/Inventory/productos" });
+      navigate({ to: "/inventario/productos" });
     } catch (e) {
       alert(`No se pudo crear el producto. Motivo: ${e || "Error desconocido"}`);
     } finally {

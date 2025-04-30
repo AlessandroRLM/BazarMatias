@@ -61,7 +61,7 @@ export default function EditarProducto() {
         category: categoria,
         supplier_id: proveedor || null,
       });
-      navigate({ to: "/Inventory/productos" });
+      navigate({ to: "/inventario/productos" });
     } catch (e) {
       alert("Error al actualizar producto");
     } finally {

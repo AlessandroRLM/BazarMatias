@@ -50,7 +50,7 @@ export default function EditarProveedor() {
         rut: rut,
         category: categoria,
       });
-      navigate({ to: "/Suppliers" });
+      navigate({ to: "/proveedores" });
     } catch (e) {
       alert("Error al actualizar proveedor");
     } finally {

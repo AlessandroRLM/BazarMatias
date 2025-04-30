@@ -9,9 +9,9 @@ import IconLink from "../../components/administracion/IconLink/IconLink"
 function statusTypeMapper(statusType: string): ReactNode {
     switch (statusType) {
         case 'success':
-            return <Chip color="success" endDecorator={<Check/>}>{'Éxito'}</Chip>
+            return <Chip size="sm" color="success" endDecorator={<Check/>}>{'Éxito'}</Chip>
         case 'error':
-            return <Chip color="danger" endDecorator={<Error/>}>{'Error'}</Chip>
+            return <Chip size="sm" color="danger" endDecorator={<Error/>}>{'Error'}</Chip>
         default:
             return statusType
     }
@@ -20,17 +20,17 @@ function statusTypeMapper(statusType: string): ReactNode {
 function actionTypeMapper(actionType: string): ReactNode {
     switch (actionType) {
         case 'LOGIN':
-            return <Chip color="primary">{'Inicio de Sesión'}</Chip>
+            return <Chip size="sm" color="primary">{'Inicio de Sesión'}</Chip>
         case 'LOGOUT':
-            return <Chip color="primary">{'Cierre de Sesión'}</Chip>
+            return <Chip size="sm" color="primary">{'Cierre de Sesión'}</Chip>
         case 'VIEW':
-            return <Chip color="primary">{'Visualización'}</Chip>
+            return <Chip size="sm" color="primary">{'Visualización'}</Chip>
         case 'CREATE':
-            return <Chip color="success">{'Creación'}</Chip>
+            return <Chip size="sm" color="success">{'Creación'}</Chip>
         case 'UPDATE':
-            return <Chip color="warning">{'Actualización'}</Chip>
+            return <Chip size="sm" color="warning">{'Actualización'}</Chip>
         case 'DELETE':
-            return <Chip color="danger">{'Eliminación'}</Chip>
+            return <Chip size="sm" color="danger">{'Eliminación'}</Chip>
         default:
             return actionType
     }
@@ -70,7 +70,7 @@ export const USER_ACTIVITY_COLUMNS = [
     columnHelper.accessor('id',{
         id: 'actions',
         header: 'Acciones',
-        cell: info => <IconLink color="neutral" to={'/administracion/usuarios/actividad-de-usuario/$id'} params={{id: info.getValue()}}><RemoveRedEye/></IconLink>,
+        cell: info => <IconLink size="sm" color="neutral" to={'/administracion/usuarios/actividad-de-usuario/$id'} params={{id: info.getValue()}}><RemoveRedEye/></IconLink>,
         enableSorting: false
     })
 ]

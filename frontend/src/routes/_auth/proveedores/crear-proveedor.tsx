@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import CreateSuppliers  from '../../../pages/proveedores/CreateSuppliers'
 
-export const Route = createFileRoute('/_auth/Suppliers/crear-proveedor')({
+export const Route = createFileRoute('/_auth/proveedores/crear-proveedor')({
   component: SuppliersPage
 })
 

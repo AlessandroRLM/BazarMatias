@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import InventoryManagementPage from '../../../../pages/Inventory/InventoryManagementPage'
+import InventoryManagementPage from '../../../../pages/inventario/InventoryManagementPage'
 
-export const Route = createFileRoute('/_auth/Inventory/productos/')({
+export const Route = createFileRoute('/_auth/inventario/productos/')({
   component: ProductsRouteComponent
 })
 

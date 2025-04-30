@@ -26,7 +26,7 @@ const layout = () => {
                         lg: '100dvh',
                     },
                     overflowY: 'auto',
-                    gap: 1,
+                    gap: 2,
                 }}
             >
                 <Outlet />

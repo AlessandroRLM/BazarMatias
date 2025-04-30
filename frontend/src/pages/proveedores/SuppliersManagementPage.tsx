@@ -129,13 +129,13 @@ export default function SuppliersManagementPage() {
             size="sm"
             aria-label="View"
             component={RouterLink}
-            to={`/Suppliers/ver-proveedor/${row.original.id}`}
+            to={`/proveedores/ver-proveedor/${row.original.id}`}
           >
             <VisibilityIcon />
           </IconButton>
           <IconButton
             component={RouterLink}
-            to={`/Suppliers/editar-proveedor/${row.original.id}`}
+            to={`/proveedores/editar-proveedor/${row.original.id}`}
             variant="plain"
             color="neutral"
             size="sm"

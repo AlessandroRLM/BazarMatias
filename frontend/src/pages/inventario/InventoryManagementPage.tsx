@@ -167,13 +167,13 @@ export default function InventoryManagementPage() {
             size="sm"
             aria-label="View"
             component={RouterLink}
-            to={`/Inventory/productos/ver-producto/${row.original.id}`}
+            to={`/inventario/productos/ver-producto/${row.original.id}`}
           >
             <VisibilityIcon />
           </IconButton>
           <IconButton
             component={RouterLink}
-            to={`/Inventory/productos/editar-producto/${row.original.id}`}
+            to={`/inventario/productos/editar-producto/${row.original.id}`}
             variant="plain"
             color="neutral"
             size="sm"
@@ -223,7 +223,7 @@ export default function InventoryManagementPage() {
               <Typography level="h2">Gestión de Productos</Typography>
               <Button 
                 component={Link}
-                to="/Inventory/productos/ProductCreation"
+                to="/inventario/productos/ProductCreation"
                 variant="solid" 
                 color="primary"
               >

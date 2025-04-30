@@ -33,7 +33,7 @@ export default function AñadirProveedor() {
         rut: rut,
         category: categoria,
       });
-      navigate({ to: "/Suppliers" });
+      navigate({ to: "/proveedores" });
     } catch (e) {
       alert(`No se pudo crear el proveedor. Motivo: ${e || "Error desconocido"}`);
     } finally {

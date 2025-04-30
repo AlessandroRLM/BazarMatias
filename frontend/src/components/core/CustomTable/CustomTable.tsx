@@ -76,7 +76,7 @@ export default function CustomTable<T extends Record<string, any>>({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th key={header.id} colSpan={header.colSpan} >
+                  <th style={{padding: '12px 6px'}} key={header.id} colSpan={header.colSpan} >
                     {header.isPlaceholder ? null :
                       header.column.getCanSort() ? (
                       <Link
@@ -132,13 +132,13 @@ export default function CustomTable<T extends Record<string, any>>({
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody >
           {table.getRowModel().rows.map((row) => {
             return (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <td key={cell.id}>
+                    <td style={{fontSize: 'var(--joy-fontSize-xs)', overflow: 'hidden', textOverflow: 'ellipsis'}} key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

@@ -14,22 +14,22 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthProveedoresIndexImport } from './routes/_auth/proveedores/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
-import { Route as AuthSuppliersIndexImport } from './routes/_auth/Suppliers/index'
-import { Route as AuthSuppliersCrearProveedorImport } from './routes/_auth/Suppliers/crear-proveedor'
+import { Route as AuthProveedoresCrearProveedorImport } from './routes/_auth/proveedores/crear-proveedor'
+import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
-import { Route as AuthInventoryProductosIndexImport } from './routes/_auth/Inventory/productos/index'
+import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
+import { Route as AuthProveedoresEditarProveedorIdImport } from './routes/_auth/proveedores/editar-proveedor.$id'
+import { Route as AuthInventarioProductosCrearProductoImport } from './routes/_auth/inventario/productos/crear-producto'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
-import { Route as AuthSuppliersVerProveedorIdImport } from './routes/_auth/Suppliers/ver-proveedor.$id'
-import { Route as AuthSuppliersEditarProveedorIdImport } from './routes/_auth/Suppliers/editar-proveedor.$id'
-import { Route as AuthInventoryProductosProductCreationImport } from './routes/_auth/Inventory/productos/ProductCreation'
+import { Route as AuthInventarioProductosVerProductoIdImport } from './routes/_auth/inventario/productos/ver-producto.$id'
+import { Route as AuthInventarioProductosEditarProductoIdImport } from './routes/_auth/inventario/productos/editar-producto.$id'
 import { Route as AuthAdministracionUsuariosVerUsuarioRutImport } from './routes/_auth/administracion/usuarios/ver-usuario.$rut'
 import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './routes/_auth/administracion/usuarios/editar-usuario.$rut'
 import { Route as AuthAdministracionUsuariosActividadDeUsuarioIdImport } from './routes/_auth/administracion/usuarios/actividad-de-usuario.$id'
-import { Route as AuthInventoryProductosVerProductoIdImport } from './routes/_auth/Inventory/productos/ver-producto.$id'
-import { Route as AuthInventoryProductosEditarProductoIdImport } from './routes/_auth/Inventory/productos/editar-producto.$id'
 
 // Create/Update Routes
 
@@ -50,22 +50,29 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthProveedoresIndexRoute = AuthProveedoresIndexImport.update({
+  id: '/proveedores/',
+  path: '/proveedores/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 const AuthHomeIndexRoute = AuthHomeIndexImport.update({
   id: '/home/',
   path: '/home/',
   getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthSuppliersIndexRoute = AuthSuppliersIndexImport.update({
-  id: '/Suppliers/',
-  path: '/Suppliers/',
-  getParentRoute: () => AuthRoute,
-} as any)
+const AuthProveedoresCrearProveedorRoute =
+  AuthProveedoresCrearProveedorImport.update({
+    id: '/proveedores/crear-proveedor',
+    path: '/proveedores/crear-proveedor',
+    getParentRoute: () => AuthRoute,
+  } as any)
 
-const AuthSuppliersCrearProveedorRoute =
-  AuthSuppliersCrearProveedorImport.update({
-    id: '/Suppliers/crear-proveedor',
-    path: '/Suppliers/crear-proveedor',
+const AuthInventarioProductosIndexRoute =
+  AuthInventarioProductosIndexImport.update({
+    id: '/inventario/productos/',
+    path: '/inventario/productos/',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -83,10 +90,24 @@ const AuthAdministracionPerfilIndexRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthInventoryProductosIndexRoute =
-  AuthInventoryProductosIndexImport.update({
-    id: '/Inventory/productos/',
-    path: '/Inventory/productos/',
+const AuthProveedoresVerProveedorIdRoute =
+  AuthProveedoresVerProveedorIdImport.update({
+    id: '/proveedores/ver-proveedor/$id',
+    path: '/proveedores/ver-proveedor/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresEditarProveedorIdRoute =
+  AuthProveedoresEditarProveedorIdImport.update({
+    id: '/proveedores/editar-proveedor/$id',
+    path: '/proveedores/editar-proveedor/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventarioProductosCrearProductoRoute =
+  AuthInventarioProductosCrearProductoImport.update({
+    id: '/inventario/productos/crear-producto',
+    path: '/inventario/productos/crear-producto',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -104,24 +125,17 @@ const AuthAdministracionUsuariosActividadDeUsuariosRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthSuppliersVerProveedorIdRoute =
-  AuthSuppliersVerProveedorIdImport.update({
-    id: '/Suppliers/ver-proveedor/$id',
-    path: '/Suppliers/ver-proveedor/$id',
+const AuthInventarioProductosVerProductoIdRoute =
+  AuthInventarioProductosVerProductoIdImport.update({
+    id: '/inventario/productos/ver-producto/$id',
+    path: '/inventario/productos/ver-producto/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthSuppliersEditarProveedorIdRoute =
-  AuthSuppliersEditarProveedorIdImport.update({
-    id: '/Suppliers/editar-proveedor/$id',
-    path: '/Suppliers/editar-proveedor/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthInventoryProductosProductCreationRoute =
-  AuthInventoryProductosProductCreationImport.update({
-    id: '/Inventory/productos/ProductCreation',
-    path: '/Inventory/productos/ProductCreation',
+const AuthInventarioProductosEditarProductoIdRoute =
+  AuthInventarioProductosEditarProductoIdImport.update({
+    id: '/inventario/productos/editar-producto/$id',
+    path: '/inventario/productos/editar-producto/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -143,20 +157,6 @@ const AuthAdministracionUsuariosActividadDeUsuarioIdRoute =
   AuthAdministracionUsuariosActividadDeUsuarioIdImport.update({
     id: '/administracion/usuarios/actividad-de-usuario/$id',
     path: '/administracion/usuarios/actividad-de-usuario/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthInventoryProductosVerProductoIdRoute =
-  AuthInventoryProductosVerProductoIdImport.update({
-    id: '/Inventory/productos/ver-producto/$id',
-    path: '/Inventory/productos/ver-producto/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthInventoryProductosEditarProductoIdRoute =
-  AuthInventoryProductosEditarProductoIdImport.update({
-    id: '/Inventory/productos/editar-producto/$id',
-    path: '/Inventory/productos/editar-producto/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -185,18 +185,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/_auth/Suppliers/crear-proveedor': {
-      id: '/_auth/Suppliers/crear-proveedor'
-      path: '/Suppliers/crear-proveedor'
-      fullPath: '/Suppliers/crear-proveedor'
-      preLoaderRoute: typeof AuthSuppliersCrearProveedorImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/Suppliers/': {
-      id: '/_auth/Suppliers/'
-      path: '/Suppliers'
-      fullPath: '/Suppliers'
-      preLoaderRoute: typeof AuthSuppliersIndexImport
+    '/_auth/proveedores/crear-proveedor': {
+      id: '/_auth/proveedores/crear-proveedor'
+      path: '/proveedores/crear-proveedor'
+      fullPath: '/proveedores/crear-proveedor'
+      preLoaderRoute: typeof AuthProveedoresCrearProveedorImport
       parentRoute: typeof AuthImport
     }
     '/_auth/home/': {
@@ -206,25 +199,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthHomeIndexImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/Inventory/productos/ProductCreation': {
-      id: '/_auth/Inventory/productos/ProductCreation'
-      path: '/Inventory/productos/ProductCreation'
-      fullPath: '/Inventory/productos/ProductCreation'
-      preLoaderRoute: typeof AuthInventoryProductosProductCreationImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/Suppliers/editar-proveedor/$id': {
-      id: '/_auth/Suppliers/editar-proveedor/$id'
-      path: '/Suppliers/editar-proveedor/$id'
-      fullPath: '/Suppliers/editar-proveedor/$id'
-      preLoaderRoute: typeof AuthSuppliersEditarProveedorIdImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/Suppliers/ver-proveedor/$id': {
-      id: '/_auth/Suppliers/ver-proveedor/$id'
-      path: '/Suppliers/ver-proveedor/$id'
-      fullPath: '/Suppliers/ver-proveedor/$id'
-      preLoaderRoute: typeof AuthSuppliersVerProveedorIdImport
+    '/_auth/proveedores/': {
+      id: '/_auth/proveedores/'
+      path: '/proveedores'
+      fullPath: '/proveedores'
+      preLoaderRoute: typeof AuthProveedoresIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/administracion/usuarios/actividad-de-usuarios': {
@@ -241,11 +220,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosCrearUsuarioImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/Inventory/productos/': {
-      id: '/_auth/Inventory/productos/'
-      path: '/Inventory/productos'
-      fullPath: '/Inventory/productos'
-      preLoaderRoute: typeof AuthInventoryProductosIndexImport
+    '/_auth/inventario/productos/crear-producto': {
+      id: '/_auth/inventario/productos/crear-producto'
+      path: '/inventario/productos/crear-producto'
+      fullPath: '/inventario/productos/crear-producto'
+      preLoaderRoute: typeof AuthInventarioProductosCrearProductoImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/editar-proveedor/$id': {
+      id: '/_auth/proveedores/editar-proveedor/$id'
+      path: '/proveedores/editar-proveedor/$id'
+      fullPath: '/proveedores/editar-proveedor/$id'
+      preLoaderRoute: typeof AuthProveedoresEditarProveedorIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/ver-proveedor/$id': {
+      id: '/_auth/proveedores/ver-proveedor/$id'
+      path: '/proveedores/ver-proveedor/$id'
+      fullPath: '/proveedores/ver-proveedor/$id'
+      preLoaderRoute: typeof AuthProveedoresVerProveedorIdImport
       parentRoute: typeof AuthImport
     }
     '/_auth/administracion/perfil/': {
@@ -262,18 +255,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosIndexImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/Inventory/productos/editar-producto/$id': {
-      id: '/_auth/Inventory/productos/editar-producto/$id'
-      path: '/Inventory/productos/editar-producto/$id'
-      fullPath: '/Inventory/productos/editar-producto/$id'
-      preLoaderRoute: typeof AuthInventoryProductosEditarProductoIdImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/Inventory/productos/ver-producto/$id': {
-      id: '/_auth/Inventory/productos/ver-producto/$id'
-      path: '/Inventory/productos/ver-producto/$id'
-      fullPath: '/Inventory/productos/ver-producto/$id'
-      preLoaderRoute: typeof AuthInventoryProductosVerProductoIdImport
+    '/_auth/inventario/productos/': {
+      id: '/_auth/inventario/productos/'
+      path: '/inventario/productos'
+      fullPath: '/inventario/productos'
+      preLoaderRoute: typeof AuthInventarioProductosIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/administracion/usuarios/actividad-de-usuario/$id': {
@@ -297,55 +283,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosVerUsuarioRutImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/productos/editar-producto/$id': {
+      id: '/_auth/inventario/productos/editar-producto/$id'
+      path: '/inventario/productos/editar-producto/$id'
+      fullPath: '/inventario/productos/editar-producto/$id'
+      preLoaderRoute: typeof AuthInventarioProductosEditarProductoIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/inventario/productos/ver-producto/$id': {
+      id: '/_auth/inventario/productos/ver-producto/$id'
+      path: '/inventario/productos/ver-producto/$id'
+      fullPath: '/inventario/productos/ver-producto/$id'
+      preLoaderRoute: typeof AuthInventarioProductosVerProductoIdImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface AuthRouteChildren {
-  AuthSuppliersCrearProveedorRoute: typeof AuthSuppliersCrearProveedorRoute
-  AuthSuppliersIndexRoute: typeof AuthSuppliersIndexRoute
+  AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
-  AuthInventoryProductosProductCreationRoute: typeof AuthInventoryProductosProductCreationRoute
-  AuthSuppliersEditarProveedorIdRoute: typeof AuthSuppliersEditarProveedorIdRoute
-  AuthSuppliersVerProveedorIdRoute: typeof AuthSuppliersVerProveedorIdRoute
+  AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  AuthInventoryProductosIndexRoute: typeof AuthInventoryProductosIndexRoute
+  AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
+  AuthProveedoresEditarProveedorIdRoute: typeof AuthProveedoresEditarProveedorIdRoute
+  AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
-  AuthInventoryProductosEditarProductoIdRoute: typeof AuthInventoryProductosEditarProductoIdRoute
-  AuthInventoryProductosVerProductoIdRoute: typeof AuthInventoryProductosVerProductoIdRoute
+  AuthInventarioProductosIndexRoute: typeof AuthInventarioProductosIndexRoute
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   AuthAdministracionUsuariosEditarUsuarioRutRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   AuthAdministracionUsuariosVerUsuarioRutRoute: typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  AuthInventarioProductosEditarProductoIdRoute: typeof AuthInventarioProductosEditarProductoIdRoute
+  AuthInventarioProductosVerProductoIdRoute: typeof AuthInventarioProductosVerProductoIdRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthSuppliersCrearProveedorRoute: AuthSuppliersCrearProveedorRoute,
-  AuthSuppliersIndexRoute: AuthSuppliersIndexRoute,
+  AuthProveedoresCrearProveedorRoute: AuthProveedoresCrearProveedorRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
-  AuthInventoryProductosProductCreationRoute:
-    AuthInventoryProductosProductCreationRoute,
-  AuthSuppliersEditarProveedorIdRoute: AuthSuppliersEditarProveedorIdRoute,
-  AuthSuppliersVerProveedorIdRoute: AuthSuppliersVerProveedorIdRoute,
+  AuthProveedoresIndexRoute: AuthProveedoresIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuariosRoute:
     AuthAdministracionUsuariosActividadDeUsuariosRoute,
   AuthAdministracionUsuariosCrearUsuarioRoute:
     AuthAdministracionUsuariosCrearUsuarioRoute,
-  AuthInventoryProductosIndexRoute: AuthInventoryProductosIndexRoute,
+  AuthInventarioProductosCrearProductoRoute:
+    AuthInventarioProductosCrearProductoRoute,
+  AuthProveedoresEditarProveedorIdRoute: AuthProveedoresEditarProveedorIdRoute,
+  AuthProveedoresVerProveedorIdRoute: AuthProveedoresVerProveedorIdRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
-  AuthInventoryProductosEditarProductoIdRoute:
-    AuthInventoryProductosEditarProductoIdRoute,
-  AuthInventoryProductosVerProductoIdRoute:
-    AuthInventoryProductosVerProductoIdRoute,
+  AuthInventarioProductosIndexRoute: AuthInventarioProductosIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute:
     AuthAdministracionUsuariosActividadDeUsuarioIdRoute,
   AuthAdministracionUsuariosEditarUsuarioRutRoute:
     AuthAdministracionUsuariosEditarUsuarioRutRoute,
   AuthAdministracionUsuariosVerUsuarioRutRoute:
     AuthAdministracionUsuariosVerUsuarioRutRoute,
+  AuthInventarioProductosEditarProductoIdRoute:
+    AuthInventarioProductosEditarProductoIdRoute,
+  AuthInventarioProductosVerProductoIdRoute:
+    AuthInventarioProductosVerProductoIdRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -354,44 +354,44 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/Suppliers/crear-proveedor': typeof AuthSuppliersCrearProveedorRoute
-  '/Suppliers': typeof AuthSuppliersIndexRoute
+  '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
-  '/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
-  '/Suppliers/editar-proveedor/$id': typeof AuthSuppliersEditarProveedorIdRoute
-  '/Suppliers/ver-proveedor/$id': typeof AuthSuppliersVerProveedorIdRoute
+  '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/Inventory/productos': typeof AuthInventoryProductosIndexRoute
+  '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
-  '/Inventory/productos/editar-producto/$id': typeof AuthInventoryProductosEditarProductoIdRoute
-  '/Inventory/productos/ver-producto/$id': typeof AuthInventoryProductosVerProductoIdRoute
+  '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
+  '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/Suppliers/crear-proveedor': typeof AuthSuppliersCrearProveedorRoute
-  '/Suppliers': typeof AuthSuppliersIndexRoute
+  '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
-  '/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
-  '/Suppliers/editar-proveedor/$id': typeof AuthSuppliersEditarProveedorIdRoute
-  '/Suppliers/ver-proveedor/$id': typeof AuthSuppliersVerProveedorIdRoute
+  '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/Inventory/productos': typeof AuthInventoryProductosIndexRoute
+  '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
-  '/Inventory/productos/editar-producto/$id': typeof AuthInventoryProductosEditarProductoIdRoute
-  '/Inventory/productos/ver-producto/$id': typeof AuthInventoryProductosVerProductoIdRoute
+  '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
+  '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
 
 export interface FileRoutesById {
@@ -399,22 +399,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/_auth/Suppliers/crear-proveedor': typeof AuthSuppliersCrearProveedorRoute
-  '/_auth/Suppliers/': typeof AuthSuppliersIndexRoute
+  '/_auth/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
-  '/_auth/Inventory/productos/ProductCreation': typeof AuthInventoryProductosProductCreationRoute
-  '/_auth/Suppliers/editar-proveedor/$id': typeof AuthSuppliersEditarProveedorIdRoute
-  '/_auth/Suppliers/ver-proveedor/$id': typeof AuthSuppliersVerProveedorIdRoute
+  '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
-  '/_auth/Inventory/productos/': typeof AuthInventoryProductosIndexRoute
+  '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/_auth/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
-  '/_auth/Inventory/productos/editar-producto/$id': typeof AuthInventoryProductosEditarProductoIdRoute
-  '/_auth/Inventory/productos/ver-producto/$id': typeof AuthInventoryProductosVerProductoIdRoute
+  '/_auth/inventario/productos/': typeof AuthInventarioProductosIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/_auth/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/_auth/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
+  '/_auth/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
 
 export interface FileRouteTypes {
@@ -423,64 +423,64 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
-    | '/Suppliers/crear-proveedor'
-    | '/Suppliers'
+    | '/proveedores/crear-proveedor'
     | '/home'
-    | '/Inventory/productos/ProductCreation'
-    | '/Suppliers/editar-proveedor/$id'
-    | '/Suppliers/ver-proveedor/$id'
+    | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
-    | '/Inventory/productos'
+    | '/inventario/productos/crear-producto'
+    | '/proveedores/editar-proveedor/$id'
+    | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
-    | '/Inventory/productos/editar-producto/$id'
-    | '/Inventory/productos/ver-producto/$id'
+    | '/inventario/productos'
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
+    | '/inventario/productos/editar-producto/$id'
+    | '/inventario/productos/ver-producto/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | ''
     | '/login'
-    | '/Suppliers/crear-proveedor'
-    | '/Suppliers'
+    | '/proveedores/crear-proveedor'
     | '/home'
-    | '/Inventory/productos/ProductCreation'
-    | '/Suppliers/editar-proveedor/$id'
-    | '/Suppliers/ver-proveedor/$id'
+    | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
-    | '/Inventory/productos'
+    | '/inventario/productos/crear-producto'
+    | '/proveedores/editar-proveedor/$id'
+    | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
-    | '/Inventory/productos/editar-producto/$id'
-    | '/Inventory/productos/ver-producto/$id'
+    | '/inventario/productos'
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
+    | '/inventario/productos/editar-producto/$id'
+    | '/inventario/productos/ver-producto/$id'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/login'
-    | '/_auth/Suppliers/crear-proveedor'
-    | '/_auth/Suppliers/'
+    | '/_auth/proveedores/crear-proveedor'
     | '/_auth/home/'
-    | '/_auth/Inventory/productos/ProductCreation'
-    | '/_auth/Suppliers/editar-proveedor/$id'
-    | '/_auth/Suppliers/ver-proveedor/$id'
+    | '/_auth/proveedores/'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
-    | '/_auth/Inventory/productos/'
+    | '/_auth/inventario/productos/crear-producto'
+    | '/_auth/proveedores/editar-proveedor/$id'
+    | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
-    | '/_auth/Inventory/productos/editar-producto/$id'
-    | '/_auth/Inventory/productos/ver-producto/$id'
+    | '/_auth/inventario/productos/'
     | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
     | '/_auth/administracion/usuarios/editar-usuario/$rut'
     | '/_auth/administracion/usuarios/ver-usuario/$rut'
+    | '/_auth/inventario/productos/editar-producto/$id'
+    | '/_auth/inventario/productos/ver-producto/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -517,49 +517,37 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
-        "/_auth/Suppliers/crear-proveedor",
-        "/_auth/Suppliers/",
+        "/_auth/proveedores/crear-proveedor",
         "/_auth/home/",
-        "/_auth/Inventory/productos/ProductCreation",
-        "/_auth/Suppliers/editar-proveedor/$id",
-        "/_auth/Suppliers/ver-proveedor/$id",
+        "/_auth/proveedores/",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
         "/_auth/administracion/usuarios/crear-usuario",
-        "/_auth/Inventory/productos/",
+        "/_auth/inventario/productos/crear-producto",
+        "/_auth/proveedores/editar-proveedor/$id",
+        "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
-        "/_auth/Inventory/productos/editar-producto/$id",
-        "/_auth/Inventory/productos/ver-producto/$id",
+        "/_auth/inventario/productos/",
         "/_auth/administracion/usuarios/actividad-de-usuario/$id",
         "/_auth/administracion/usuarios/editar-usuario/$rut",
-        "/_auth/administracion/usuarios/ver-usuario/$rut"
+        "/_auth/administracion/usuarios/ver-usuario/$rut",
+        "/_auth/inventario/productos/editar-producto/$id",
+        "/_auth/inventario/productos/ver-producto/$id"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
     },
-    "/_auth/Suppliers/crear-proveedor": {
-      "filePath": "_auth/Suppliers/crear-proveedor.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/Suppliers/": {
-      "filePath": "_auth/Suppliers/index.tsx",
+    "/_auth/proveedores/crear-proveedor": {
+      "filePath": "_auth/proveedores/crear-proveedor.tsx",
       "parent": "/_auth"
     },
     "/_auth/home/": {
       "filePath": "_auth/home/index.tsx",
       "parent": "/_auth"
     },
-    "/_auth/Inventory/productos/ProductCreation": {
-      "filePath": "_auth/Inventory/productos/ProductCreation.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/Suppliers/editar-proveedor/$id": {
-      "filePath": "_auth/Suppliers/editar-proveedor.$id.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/Suppliers/ver-proveedor/$id": {
-      "filePath": "_auth/Suppliers/ver-proveedor.$id.tsx",
+    "/_auth/proveedores/": {
+      "filePath": "_auth/proveedores/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/usuarios/actividad-de-usuarios": {
@@ -570,8 +558,16 @@ export const routeTree = rootRoute
       "filePath": "_auth/administracion/usuarios/crear-usuario.tsx",
       "parent": "/_auth"
     },
-    "/_auth/Inventory/productos/": {
-      "filePath": "_auth/Inventory/productos/index.tsx",
+    "/_auth/inventario/productos/crear-producto": {
+      "filePath": "_auth/inventario/productos/crear-producto.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/editar-proveedor/$id": {
+      "filePath": "_auth/proveedores/editar-proveedor.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ver-proveedor/$id": {
+      "filePath": "_auth/proveedores/ver-proveedor.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/perfil/": {
@@ -582,12 +578,8 @@ export const routeTree = rootRoute
       "filePath": "_auth/administracion/usuarios/index.tsx",
       "parent": "/_auth"
     },
-    "/_auth/Inventory/productos/editar-producto/$id": {
-      "filePath": "_auth/Inventory/productos/editar-producto.$id.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/Inventory/productos/ver-producto/$id": {
-      "filePath": "_auth/Inventory/productos/ver-producto.$id.tsx",
+    "/_auth/inventario/productos/": {
+      "filePath": "_auth/inventario/productos/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/administracion/usuarios/actividad-de-usuario/$id": {
@@ -600,6 +592,14 @@ export const routeTree = rootRoute
     },
     "/_auth/administracion/usuarios/ver-usuario/$rut": {
       "filePath": "_auth/administracion/usuarios/ver-usuario.$rut.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/productos/editar-producto/$id": {
+      "filePath": "_auth/inventario/productos/editar-producto.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/productos/ver-producto/$id": {
+      "filePath": "_auth/inventario/productos/ver-producto.$id.tsx",
       "parent": "/_auth"
     }
   }

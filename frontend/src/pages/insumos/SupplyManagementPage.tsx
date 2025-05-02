@@ -91,13 +91,13 @@ const columns: ColumnDef<SupplyItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventory/insumos/ver-insumo`}
+          to={`/Inventario/insumos/ver-insumo`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventory/insumos/editar-insumo`}
+          to={`/Inventario/insumos/editar-insumo`}
           variant="plain"
           color="neutral"
           size="sm"
@@ -196,7 +196,7 @@ export default function SupplyManagementPage() {
             <Typography level="h2">Gestión de Insumos</Typography>
             <Button 
               component={Link}
-              to="/Inventory/insumos/crear-insumo"
+              to="/Inventario/insumos/crear-insumo"
               variant="solid" 
               color="primary"
             >

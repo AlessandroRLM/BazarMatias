@@ -84,13 +84,13 @@ const columns: ColumnDef<ShrinkageItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventory/mermas/ver-merma/${row.original.id}`}
+          to={`/Inventario/mermas/ver-merma`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventory/mermas/editar-merma/${row.original.id}`}
+          to={`/Inventario/mermas/editar-merma`}
           variant="plain"
           color="neutral"
           size="sm"
@@ -190,11 +190,11 @@ export default function ShrinkageManagementPage() {
             <Typography level="h2">Gestión de Mermas</Typography>
             <Button 
               component={Link}
-              to="/Inventory/mermas/registrar-merma"
+              to="/Inventario/mermas/crear-merma"
               variant="solid" 
               color="primary"
             >
-              Registrar Merma
+              Añadir Merma
             </Button>
           </Stack>
           

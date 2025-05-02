@@ -161,12 +161,12 @@ const SidebarInventorykList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/inventario/insumos">
                             Gestión de Insumos
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/inventario/mermas">
                             Gestión de Mermas
                         </SidebarLink>
                     </ListItem>

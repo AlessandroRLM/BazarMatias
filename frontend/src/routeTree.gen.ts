@@ -17,9 +17,10 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthProveedoresIndexImport } from './routes/_auth/proveedores/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
 import { Route as AuthProveedoresCrearProveedorImport } from './routes/_auth/proveedores/crear-proveedor'
-import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventario/dashboard'
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
+import { Route as AuthInventarioMermasIndexImport } from './routes/_auth/inventario/mermas/index'
+import { Route as AuthInventarioInsumosIndexImport } from './routes/_auth/inventario/insumos/index'
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
@@ -71,12 +72,6 @@ const AuthProveedoresCrearProveedorRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthInventarioDashboardRoute = AuthInventarioDashboardImport.update({
-  id: '/inventario/dashboard',
-  path: '/inventario/dashboard',
-  getParentRoute: () => AuthRoute,
-} as any)
-
 const AuthAdministracionDashboardRoute =
   AuthAdministracionDashboardImport.update({
     id: '/administracion/dashboard',
@@ -90,6 +85,20 @@ const AuthInventarioProductosIndexRoute =
     path: '/inventario/productos/',
     getParentRoute: () => AuthRoute,
   } as any)
+
+const AuthInventarioMermasIndexRoute = AuthInventarioMermasIndexImport.update({
+  id: '/inventario/mermas/',
+  path: '/inventario/mermas/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthInventarioInsumosIndexRoute = AuthInventarioInsumosIndexImport.update(
+  {
+    id: '/inventario/insumos/',
+    path: '/inventario/insumos/',
+    getParentRoute: () => AuthRoute,
+  } as any,
+)
 
 const AuthAdministracionUsuariosIndexRoute =
   AuthAdministracionUsuariosIndexImport.update({
@@ -207,13 +216,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionDashboardImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/inventario/dashboard': {
-      id: '/_auth/inventario/dashboard'
-      path: '/inventario/dashboard'
-      fullPath: '/inventario/dashboard'
-      preLoaderRoute: typeof AuthInventarioDashboardImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/proveedores/crear-proveedor': {
       id: '/_auth/proveedores/crear-proveedor'
       path: '/proveedores/crear-proveedor'
@@ -284,6 +286,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosIndexImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/insumos/': {
+      id: '/_auth/inventario/insumos/'
+      path: '/inventario/insumos'
+      fullPath: '/inventario/insumos'
+      preLoaderRoute: typeof AuthInventarioInsumosIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/inventario/mermas/': {
+      id: '/_auth/inventario/mermas/'
+      path: '/inventario/mermas'
+      fullPath: '/inventario/mermas'
+      preLoaderRoute: typeof AuthInventarioMermasIndexImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/inventario/productos/': {
       id: '/_auth/inventario/productos/'
       path: '/inventario/productos'
@@ -333,7 +349,6 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
-  AuthInventarioDashboardRoute: typeof AuthInventarioDashboardRoute
   AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
   AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
@@ -344,6 +359,8 @@ interface AuthRouteChildren {
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
+  AuthInventarioInsumosIndexRoute: typeof AuthInventarioInsumosIndexRoute
+  AuthInventarioMermasIndexRoute: typeof AuthInventarioMermasIndexRoute
   AuthInventarioProductosIndexRoute: typeof AuthInventarioProductosIndexRoute
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   AuthAdministracionUsuariosEditarUsuarioRutRoute: typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -354,7 +371,6 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAdministracionDashboardRoute: AuthAdministracionDashboardRoute,
-  AuthInventarioDashboardRoute: AuthInventarioDashboardRoute,
   AuthProveedoresCrearProveedorRoute: AuthProveedoresCrearProveedorRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
   AuthProveedoresIndexRoute: AuthProveedoresIndexRoute,
@@ -368,6 +384,8 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthProveedoresVerProveedorIdRoute: AuthProveedoresVerProveedorIdRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
+  AuthInventarioInsumosIndexRoute: AuthInventarioInsumosIndexRoute,
+  AuthInventarioMermasIndexRoute: AuthInventarioMermasIndexRoute,
   AuthInventarioProductosIndexRoute: AuthInventarioProductosIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute:
     AuthAdministracionUsuariosActividadDeUsuarioIdRoute,
@@ -388,7 +406,6 @@ export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
-  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
@@ -399,6 +416,8 @@ export interface FileRoutesByFullPath {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/inventario/insumos': typeof AuthInventarioInsumosIndexRoute
+  '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -412,7 +431,6 @@ export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
-  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
@@ -423,6 +441,8 @@ export interface FileRoutesByTo {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
+  '/inventario/insumos': typeof AuthInventarioInsumosIndexRoute
+  '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -437,7 +457,6 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
-  '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/_auth/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
@@ -448,6 +467,8 @@ export interface FileRoutesById {
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
+  '/_auth/inventario/insumos/': typeof AuthInventarioInsumosIndexRoute
+  '/_auth/inventario/mermas/': typeof AuthInventarioMermasIndexRoute
   '/_auth/inventario/productos/': typeof AuthInventarioProductosIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
@@ -463,7 +484,6 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
-    | '/inventario/dashboard'
     | '/proveedores/crear-proveedor'
     | '/home'
     | '/proveedores'
@@ -474,6 +494,8 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/inventario/insumos'
+    | '/inventario/mermas'
     | '/inventario/productos'
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
@@ -486,7 +508,6 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
-    | '/inventario/dashboard'
     | '/proveedores/crear-proveedor'
     | '/home'
     | '/proveedores'
@@ -497,6 +518,8 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
+    | '/inventario/insumos'
+    | '/inventario/mermas'
     | '/inventario/productos'
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
@@ -509,7 +532,6 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/login'
     | '/_auth/administracion/dashboard'
-    | '/_auth/inventario/dashboard'
     | '/_auth/proveedores/crear-proveedor'
     | '/_auth/home/'
     | '/_auth/proveedores/'
@@ -520,6 +542,8 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
+    | '/_auth/inventario/insumos/'
+    | '/_auth/inventario/mermas/'
     | '/_auth/inventario/productos/'
     | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
     | '/_auth/administracion/usuarios/editar-usuario/$rut'
@@ -563,7 +587,6 @@ export const routeTree = rootRoute
       "filePath": "_auth.tsx",
       "children": [
         "/_auth/administracion/dashboard",
-        "/_auth/inventario/dashboard",
         "/_auth/proveedores/crear-proveedor",
         "/_auth/home/",
         "/_auth/proveedores/",
@@ -574,6 +597,8 @@ export const routeTree = rootRoute
         "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
+        "/_auth/inventario/insumos/",
+        "/_auth/inventario/mermas/",
         "/_auth/inventario/productos/",
         "/_auth/administracion/usuarios/actividad-de-usuario/$id",
         "/_auth/administracion/usuarios/editar-usuario/$rut",
@@ -587,10 +612,6 @@ export const routeTree = rootRoute
     },
     "/_auth/administracion/dashboard": {
       "filePath": "_auth/administracion/dashboard.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/inventario/dashboard": {
-      "filePath": "_auth/inventario/dashboard.tsx",
       "parent": "/_auth"
     },
     "/_auth/proveedores/crear-proveedor": {
@@ -631,6 +652,14 @@ export const routeTree = rootRoute
     },
     "/_auth/administracion/usuarios/": {
       "filePath": "_auth/administracion/usuarios/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/insumos/": {
+      "filePath": "_auth/inventario/insumos/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/mermas/": {
+      "filePath": "_auth/inventario/mermas/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/inventario/productos/": {

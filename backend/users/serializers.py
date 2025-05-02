@@ -29,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id',
+            'last_login',
             'first_name',
             'last_name',
             'national_id',
@@ -159,3 +160,14 @@ class ChangePasswordSerializer(serializers.Serializer):
         if len(data['password']) < 8:
             raise serializers.ValidationError("La contraseña debe tener al menos 8 caracteres.")
         return data
+    
+class AdministrationMetricsSerializer(serializers.Serializer):
+    amount_users = serializers.IntegerField()
+    amount_admins = serializers.IntegerField()
+    recent_users = serializers.JSONField()
+    active_users_count = serializers.IntegerField()  
+    inactive_users_count = serializers.IntegerField()  
+    
+    class Meta:
+        read_only_fields = ['amount_users', 'amount_admins', 'recent_users', 'active_users']
+    

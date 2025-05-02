@@ -76,48 +76,48 @@ export default function CustomTable<T extends Record<string, any>>({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th style={{padding: '12px 6px'}} key={header.id} colSpan={header.colSpan} >
+                  <th style={{ padding: '12px 6px' }} key={header.id} colSpan={header.colSpan} >
                     {header.isPlaceholder ? null :
                       header.column.getCanSort() ? (
-                      <Link
-                        {...{ onClick: header.column.getToggleSortingHandler() }}
-                        key={header.id}
-                        underline="none"
-                        color="neutral"
-                        component={'a'}
-                        endDecorator={<ArrowDropDown />}
-                        sx={[
-                          header.column.getCanSort() && {
-                            '&:hover': {
-                              textDecoration: 'none',
-                              color: 'primary.plainColor',
+                        <Link
+                          {...{ onClick: header.column.getToggleSortingHandler() }}
+                          key={header.id}
+                          underline="none"
+                          color="neutral"
+                          component={'a'}
+                          endDecorator={<ArrowDropDown />}
+                          sx={[
+                            header.column.getCanSort() && {
+                              '&:hover': {
+                                textDecoration: 'none',
+                                color: 'primary.plainColor',
+                              },
+                              '& svg': {
+                                transition: '0.2s',
+                                transform: 'rotate(0deg)'
+                              }
                             },
-                            '& svg': {
-                              transition: '0.2s',
-                              transform: 'rotate(0deg)'
-                            }
-                          },
 
-                          header.column.getIsSorted() && {
-                            color: 'primary.plainColor',
-                            fontWeight: 'bold',
-                          },
+                            header.column.getIsSorted() && {
+                              color: 'primary.plainColor',
+                              fontWeight: 'bold',
+                            },
 
-                          header.column.getIsSorted() === 'desc' && {
-                            '& svg': { transform: 'rotate(0deg)' }
-                          },
+                            header.column.getIsSorted() === 'desc' && {
+                              '& svg': { transform: 'rotate(0deg)' }
+                            },
 
-                          header.column.getIsSorted() === 'asc' && {
-                            '& svg': { transform: 'rotate(180deg)' }
-                          },
+                            header.column.getIsSorted() === 'asc' && {
+                              '& svg': { transform: 'rotate(180deg)' }
+                            },
 
-                        ]}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </Link>) : (
+                          ]}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </Link>) : (
                         <Typography level='body-sm' color="neutral" fontWeight={600}>
                           {flexRender(
                             header.column.columnDef.header,
@@ -138,7 +138,7 @@ export default function CustomTable<T extends Record<string, any>>({
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <td style={{fontSize: 'var(--joy-fontSize-xs)', overflow: 'hidden', textOverflow: 'ellipsis'}} key={cell.id}>
+                    <td style={{ fontSize: 'var(--joy-fontSize-xs)', overflow: 'hidden', textOverflow: 'ellipsis' }} key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

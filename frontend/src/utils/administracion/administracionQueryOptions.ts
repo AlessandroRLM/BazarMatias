@@ -2,9 +2,19 @@ import { queryOptions } from "@tanstack/react-query";
 import { userActivitySearchType } from "../../schemas/administracion/userActivitySearchSchema";
 import AxiosInstance from "../../helpers/AxiosInstance";
 import { CustomPagination } from "../../types/core.types";
-import { UserActivity } from "../../types/administracion.types";
+import { administrationMetrics, UserActivity } from "../../types/administracion.types";
 import { AxiosResponse } from "axios";
 import { User } from "../../types/auth.types";
+
+export const administrationMetricsQueryOptions = () => {
+    return queryOptions({
+        queryKey: ['metrics'],
+        queryFn: async () => {
+            const response: AxiosResponse<administrationMetrics> = await AxiosInstance.get('/api/users/users/metrics')
+            return response
+        }
+    })
+}
 
 export const userDetailQueryOptions = (rut: string) => {
     return queryOptions({

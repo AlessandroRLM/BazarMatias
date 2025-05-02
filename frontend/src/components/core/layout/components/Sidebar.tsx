@@ -124,7 +124,7 @@ const SidebarAdminList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/administracion/dashboard">
                             Dashboard
                         </SidebarLink>
                     </ListItem>
@@ -171,7 +171,7 @@ const SidebarInventorykList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/inventario/dashboard">
                             Dashboard
                         </SidebarLink>
                     </ListItem>

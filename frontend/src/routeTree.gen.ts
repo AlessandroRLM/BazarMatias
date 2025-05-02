@@ -17,6 +17,8 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthProveedoresIndexImport } from './routes/_auth/proveedores/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
 import { Route as AuthProveedoresCrearProveedorImport } from './routes/_auth/proveedores/crear-proveedor'
+import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventario/dashboard'
+import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
@@ -66,6 +68,19 @@ const AuthProveedoresCrearProveedorRoute =
   AuthProveedoresCrearProveedorImport.update({
     id: '/proveedores/crear-proveedor',
     path: '/proveedores/crear-proveedor',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventarioDashboardRoute = AuthInventarioDashboardImport.update({
+  id: '/inventario/dashboard',
+  path: '/inventario/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthAdministracionDashboardRoute =
+  AuthAdministracionDashboardImport.update({
+    id: '/administracion/dashboard',
+    path: '/administracion/dashboard',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -185,6 +200,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/_auth/administracion/dashboard': {
+      id: '/_auth/administracion/dashboard'
+      path: '/administracion/dashboard'
+      fullPath: '/administracion/dashboard'
+      preLoaderRoute: typeof AuthAdministracionDashboardImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/inventario/dashboard': {
+      id: '/_auth/inventario/dashboard'
+      path: '/inventario/dashboard'
+      fullPath: '/inventario/dashboard'
+      preLoaderRoute: typeof AuthInventarioDashboardImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/proveedores/crear-proveedor': {
       id: '/_auth/proveedores/crear-proveedor'
       path: '/proveedores/crear-proveedor'
@@ -303,6 +332,8 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthRouteChildren {
+  AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
+  AuthInventarioDashboardRoute: typeof AuthInventarioDashboardRoute
   AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
   AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
@@ -322,6 +353,8 @@ interface AuthRouteChildren {
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthAdministracionDashboardRoute: AuthAdministracionDashboardRoute,
+  AuthInventarioDashboardRoute: AuthInventarioDashboardRoute,
   AuthProveedoresCrearProveedorRoute: AuthProveedoresCrearProveedorRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
   AuthProveedoresIndexRoute: AuthProveedoresIndexRoute,
@@ -354,6 +387,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
@@ -376,6 +411,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
@@ -399,6 +436,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/_auth/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
@@ -423,6 +462,8 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/administracion/dashboard'
+    | '/inventario/dashboard'
     | '/proveedores/crear-proveedor'
     | '/home'
     | '/proveedores'
@@ -444,6 +485,8 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/administracion/dashboard'
+    | '/inventario/dashboard'
     | '/proveedores/crear-proveedor'
     | '/home'
     | '/proveedores'
@@ -465,6 +508,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/login'
+    | '/_auth/administracion/dashboard'
+    | '/_auth/inventario/dashboard'
     | '/_auth/proveedores/crear-proveedor'
     | '/_auth/home/'
     | '/_auth/proveedores/'
@@ -517,6 +562,8 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
+        "/_auth/administracion/dashboard",
+        "/_auth/inventario/dashboard",
         "/_auth/proveedores/crear-proveedor",
         "/_auth/home/",
         "/_auth/proveedores/",
@@ -537,6 +584,14 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/_auth/administracion/dashboard": {
+      "filePath": "_auth/administracion/dashboard.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/dashboard": {
+      "filePath": "_auth/inventario/dashboard.tsx",
+      "parent": "/_auth"
     },
     "/_auth/proveedores/crear-proveedor": {
       "filePath": "_auth/proveedores/crear-proveedor.tsx",

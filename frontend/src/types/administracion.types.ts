@@ -30,3 +30,12 @@ export interface Data {
     status_code: number
     status_type: string
 }
+
+
+export interface administrationMetrics {
+    amount_users: number
+    amount_admins: number
+    recent_users: User[]
+    active_users_count: number
+    inactive_users_count: number
+}

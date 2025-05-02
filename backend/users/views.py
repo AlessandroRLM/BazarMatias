@@ -6,7 +6,7 @@ from .filters import UserActivityFilter
 import django_filters.rest_framework
 from django_filters import UnknownFieldBehavior
 from .models import User, UserActivity
-from .serializers import UserSerializer, UserActivitySerializer, ChangePasswordSerializer
+from .serializers import UserSerializer, UserActivitySerializer, ChangePasswordSerializer, AdministrationMetricsSerializer
 from .decorators import log_activity
 from .pagination import CustomPagination
 from rest_framework import status
@@ -15,13 +15,16 @@ from rest_framework import status
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAdminUser,)  # Cambiar a IsAdmin cuando se implemente autenticación
+    # Cambiar a IsAdmin cuando se implemente autenticación
+    permission_classes = (permissions.IsAdminUser,)
     lookup_field = 'national_id'
 
     # Filtros y búsqueda
-    filter_backends = [ filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['is_active', 'is_staff']  # Aquí los campos para filtrar
-    search_fields = ['username', 'email', 'first_name', 'last_name']  # Campos para búsqueda
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    # Aquí los campos para filtrar
+    filterset_fields = ['is_active', 'is_staff']
+    search_fields = ['username', 'email', 'first_name',
+                     'last_name']  # Campos para búsqueda
     ordering_fields = ['id', 'username', 'email']
     ordering = ['id']
 
@@ -51,13 +54,14 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=201)
-    
+
     @log_activity('update', 'Actualizar usuario')
     def update(self, request, *args, **kwargs):
         """Actualiza un usuario existente"""
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
@@ -68,12 +72,43 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=204)
-    
+
     @log_activity('VIEW', 'Ver usuario autenticado')
     @action(detail=False, methods=['get'])
     def me(self, request):
         """Endpoint adicional para obtener datos del usuario autenticado"""
         serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+    @log_activity('VIEW', 'Ver metricas de la administración')
+    @action(detail=False, methods=['get'])
+    def metrics(self, request):
+
+        #Recoge el total de usuarios
+        total_users = User.objects.count()
+
+        #Recoge el total de administradores
+        total_admins = User.objects.filter(is_superuser=True).count()
+
+        #Recoge los primeros 5 usuarios
+        recent_users = User.objects.order_by('-last_login')[:5]
+        recent_users_data = UserSerializer(
+            recent_users, many=True, context={'request': request}).data
+
+        #Recoge el numero usuarios activos y los que no
+        active_users = User.objects.filter(is_active=True).count()
+        inactive_users = User.objects.filter(is_active=False).count()
+        
+        metrics_data = {
+            'amount_users': total_users,
+            'amount_admins': total_admins,
+            'recent_users': recent_users_data,
+            'active_users_count': active_users,
+            'inactive_users_count': inactive_users,
+        }
+
+        serializer = AdministrationMetricsSerializer(instance=metrics_data)
+
         return Response(serializer.data)
 
     @log_activity('update', 'Actualizar usuario')
@@ -90,13 +125,15 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = UserActivity.objects.all()
     serializer_class = UserActivitySerializer
-    permission_classes = (permissions.IsAdminUser,) #cambiar a IsAdmin cuando se implemente autenticación
+    # cambiar a IsAdmin cuando se implemente autenticación
+    permission_classes = (permissions.IsAdminUser,)
     pagination_class = CustomPagination
-    
+
     # Filtros y búsqueda
-    filter_backends = [ django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter, filters.SearchFilter]
     filterset_class = UserActivityFilter
     unknown_field_behavior = UnknownFieldBehavior.WARN
     ordering_fields = ['timestamp', 'user', 'action_type',]
-    search_fields = ['description', 'user__first_name', 'user__last_name', 'data__status_type']
-    
+    search_fields = ['description', 'user__first_name',
+                     'user__last_name', 'data__status_type']

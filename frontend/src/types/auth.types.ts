@@ -1,5 +1,6 @@
 export interface User {
     id: string
+    last_login: string
     first_name: string
     last_name: string
     national_id: string

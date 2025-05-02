@@ -2,11 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { CssBaseline, CssVarsProvider, extendTheme, GlobalStyles } from '@mui/joy'
+import { createTheme, ThemeProvider, THEME_ID as MATERIAL_THEME_ID } from '@mui/material'
 declare module '@mui/joy/Avatar' {
   interface AvatarPropsSizeOverrides {
     profile:true
   }
 }
+
+const materialTheme = createTheme()
 
 const theme = extendTheme({
   components: {
@@ -28,24 +31,26 @@ const theme = extendTheme({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <CssVarsProvider theme={theme}>
-      <CssBaseline>
-        <GlobalStyles
-          styles={(theme) => ({
-            ':root': {
-              '--Sidebar-width': '220px',
-              [theme.breakpoints.up('lg')]: {
-                '--Sidebar-width': '240px',
+    <ThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme}}>
+      <CssVarsProvider theme={theme}>
+        <CssBaseline>
+          <GlobalStyles
+            styles={(theme) => ({
+              ':root': {
+                '--Sidebar-width': '220px',
+                [theme.breakpoints.up('lg')]: {
+                  '--Sidebar-width': '240px',
+                },
+                '--Header-height': '56px',
+                [theme.breakpoints.up('md')]: {
+                  '--Header-height': '0px',
+                },
               },
-              '--Header-height': '56px',
-              [theme.breakpoints.up('md')]: {
-                '--Header-height': '0px',
-              },
-            },
-          })}
-        />
-        <App />
-      </CssBaseline>
-    </CssVarsProvider>
+            })}
+          />
+          <App />
+        </CssBaseline>
+      </CssVarsProvider>
+    </ThemeProvider>
   </StrictMode>,
 )

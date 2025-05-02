@@ -176,7 +176,7 @@ export default function SuppliersManagementPage() {
             <Typography level="h2">Gestión de Proveedores</Typography>
             <Button 
               component={Link}
-              to="/Suppliers/crear-proveedor"
+              to="/proveedores/crear-proveedor"
               variant="solid" 
               color="primary"
             >

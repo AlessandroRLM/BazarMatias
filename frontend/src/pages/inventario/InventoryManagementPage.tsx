@@ -223,7 +223,7 @@ export default function InventoryManagementPage() {
               <Typography level="h2">Gestión de Productos</Typography>
               <Button 
                 component={Link}
-                to="/inventario/productos/ProductCreation"
+                to="/inventario/productos/crear-producto"
                 variant="solid" 
                 color="primary"
               >

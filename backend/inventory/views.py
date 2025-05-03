@@ -28,13 +28,19 @@ class ProductViewSet(viewsets.ModelViewSet):
 class SupplyViewSet(viewsets.ModelViewSet):
     queryset = Supply.objects.all()
     serializer_class = SupplySerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category']
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'category', 'stock']
+    ordering = ['name']
 
 class ShrinkageViewSet(viewsets.ModelViewSet):
     queryset = Shrinkage.objects.all()
     serializer_class = ShrinkageSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category']
     search_fields = ['product', 'category', 'observation']
     ordering_fields = ['product', 'category', 'quantity', 'price']
+    ordering = ['product']

@@ -48,11 +48,18 @@ class ProductSerializer(serializers.ModelSerializer):
         return None
 
 class SupplySerializer(serializers.ModelSerializer):
+    id = ObjectIdField(read_only=True)
+    stock = serializers.IntegerField()
+
     class Meta:
         model = Supply
         fields = '__all__'
 
 class ShrinkageSerializer(serializers.ModelSerializer):
+    id = ObjectIdField(read_only=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    quantity = serializers.IntegerField()
+
     class Meta:
         model = Shrinkage
         fields = '__all__'

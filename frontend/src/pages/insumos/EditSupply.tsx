@@ -14,7 +14,7 @@ import { useParams, useNavigate } from "@tanstack/react-router";
 import { fetchSupply, updateSupply } from "../../services/inventoryService";
 
 export default function EditarInsumo() {
-  const params = useParams({ from: "/Inventario/insumos/editar-insumo/$id" });
+  const { id } = useParams({ strict: false });
   const navigate = useNavigate();
   const [form, setForm] = useState<any>({
     name: "",
@@ -23,15 +23,15 @@ export default function EditarInsumo() {
   });
 
   useEffect(() => {
-    fetchSupply(params.id).then(data => setForm(data));
-  }, [params.id]);
+    fetchSupply(id).then(data => setForm(data));
+  }, [id]);
 
   const handleChange = (field: string, value: any) => {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    await updateSupply(params.id, form);
+    await updateSupply(id, form);
     navigate({ to: "/Inventario/insumos" });
   };
 

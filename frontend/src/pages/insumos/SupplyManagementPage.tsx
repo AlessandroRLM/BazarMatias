@@ -17,7 +17,6 @@ interface SupplyItem {
   name: string;
   category: string;
   stock: number;
-  unit?: string;
 }
 
 interface Filters {
@@ -60,13 +59,13 @@ const columns: ColumnDef<SupplyItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventario/insumos/ver-insumo/${row.original.id}`}
+          to={`/inventario/insumos/ver-insumo/${row.original.id}`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventario/insumos/editar-insumo/${row.original.id}`}
+          to={`/inventario/insumos/editar-insumo/${row.original.id}`}
           variant="plain"
           color="neutral"
           size="sm"

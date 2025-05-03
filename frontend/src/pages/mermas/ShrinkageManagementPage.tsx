@@ -57,13 +57,13 @@ const columns: ColumnDef<ShrinkageItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventario/mermas/ver-merma/${row.original.id}`}
+          to={`/inventario/mermas/ver-merma/${row.original.id}`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventario/mermas/editar-merma/${row.original.id}`}
+          to={`/inventario/mermas/editar-merma/${row.original.id}`}
           variant="plain"
           color="neutral"
           size="sm"

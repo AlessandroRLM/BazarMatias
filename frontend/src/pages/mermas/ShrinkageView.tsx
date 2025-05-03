@@ -13,12 +13,12 @@ import { useParams } from "@tanstack/react-router";
 import { fetchShrinkage } from "../../services/inventoryService";
 
 export default function VerMerma() {
-  const params = useParams({ from: "/Inventario/mermas/ver-merma/$id" });
+  const { id } = useParams({ strict: false });
   const [mermaData, setMermaData] = useState<any>(null);
 
   useEffect(() => {
-    fetchShrinkage(params.id).then(setMermaData);
-  }, [params.id]);
+    fetchShrinkage(id).then(setMermaData);
+  }, [id]);
 
   if (!mermaData) return <Typography>Cargando...</Typography>;
 
@@ -53,7 +53,9 @@ export default function VerMerma() {
           <FormControl sx={{ flex: 1 }}>
             <FormLabel>Precio (CLP$)</FormLabel>
             <Typography level="body-md" sx={{ p: 1, bgcolor: 'background.level1', borderRadius: 'sm' }}>
-              ${mermaData.price?.toFixed(2)}
+              {mermaData.price !== undefined && mermaData.price !== null
+                ? `$${Number(mermaData.price).toFixed(2)}`
+                : "—"}
             </Typography>
           </FormControl>
           <FormControl sx={{ flex: 1 }}>

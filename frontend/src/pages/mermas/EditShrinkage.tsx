@@ -14,7 +14,7 @@ import { useParams, useNavigate } from "@tanstack/react-router";
 import { fetchShrinkage, updateShrinkage } from "../../services/inventoryService";
 
 export default function EditarMerma() {
-  const params = useParams({ from: "/Inventario/mermas/editar-merma/$id" });
+  const { id } = useParams({ strict: false });
   const navigate = useNavigate();
   const [form, setForm] = useState<any>({
     product: "",
@@ -25,15 +25,15 @@ export default function EditarMerma() {
   });
 
   useEffect(() => {
-    fetchShrinkage(params.id).then(data => setForm(data));
-  }, [params.id]);
+    fetchShrinkage(id).then(data => setForm(data));
+  }, [id]);
 
   const handleChange = (field: string, value: any) => {
     setForm((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    await updateShrinkage(params.id, form);
+    await updateShrinkage(id, form);
     navigate({ to: "/Inventario/mermas" });
   };
 

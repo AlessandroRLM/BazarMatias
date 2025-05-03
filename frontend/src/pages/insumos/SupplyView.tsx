@@ -12,12 +12,12 @@ import { useParams } from "@tanstack/react-router";
 import { fetchSupply } from "../../services/inventoryService";
 
 export default function VerInsumo() {
-  const params = useParams({ from: "/Inventario/insumos/ver-insumo/$id" });
+  const { id } = useParams({ strict: false });
   const [insumoData, setInsumoData] = useState<any>(null);
 
   useEffect(() => {
-    fetchSupply(params.id).then(setInsumoData);
-  }, [params.id]);
+    fetchSupply(id).then(setInsumoData);
+  }, [id]);
 
   if (!insumoData) return <Typography>Cargando...</Typography>;
 

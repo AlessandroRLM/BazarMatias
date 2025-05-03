@@ -36,6 +36,10 @@ import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
 import { Route as AuthInventarioProductosVerProductoIdImport } from './routes/_auth/inventario/productos/ver-producto.$id'
 import { Route as AuthInventarioProductosEditarProductoIdImport } from './routes/_auth/inventario/productos/editar-producto.$id'
+import { Route as AuthInventarioMermasVerMermaIdImport } from './routes/_auth/inventario/mermas/ver-merma.$id'
+import { Route as AuthInventarioMermasEditarMermaIdImport } from './routes/_auth/inventario/mermas/editar-merma.$id'
+import { Route as AuthInventarioInsumosVerInsumoIdImport } from './routes/_auth/inventario/insumos/ver-insumo.$id'
+import { Route as AuthInventarioInsumosEditarInsumoIdImport } from './routes/_auth/inventario/insumos/editar-insumo.$id'
 import { Route as AuthAdministracionUsuariosVerUsuarioRutImport } from './routes/_auth/administracion/usuarios/ver-usuario.$rut'
 import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './routes/_auth/administracion/usuarios/editar-usuario.$rut'
 import { Route as AuthAdministracionUsuariosActividadDeUsuarioIdImport } from './routes/_auth/administracion/usuarios/actividad-de-usuario.$id'
@@ -209,6 +213,34 @@ const AuthInventarioProductosEditarProductoIdRoute =
     id: '/inventario/productos/editar-producto/$id',
     path: '/inventario/productos/editar-producto/$id',
     getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventarioMermasVerMermaIdRoute =
+  AuthInventarioMermasVerMermaIdImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthInventarioMermasVerMermaRoute,
+  } as any)
+
+const AuthInventarioMermasEditarMermaIdRoute =
+  AuthInventarioMermasEditarMermaIdImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthInventarioMermasEditarMermaRoute,
+  } as any)
+
+const AuthInventarioInsumosVerInsumoIdRoute =
+  AuthInventarioInsumosVerInsumoIdImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthInventarioInsumosVerInsumoRoute,
+  } as any)
+
+const AuthInventarioInsumosEditarInsumoIdRoute =
+  AuthInventarioInsumosEditarInsumoIdImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthInventarioInsumosEditarInsumoRoute,
   } as any)
 
 const AuthAdministracionUsuariosVerUsuarioRutRoute =
@@ -418,6 +450,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosVerUsuarioRutImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/insumos/editar-insumo/$id': {
+      id: '/_auth/inventario/insumos/editar-insumo/$id'
+      path: '/$id'
+      fullPath: '/inventario/insumos/editar-insumo/$id'
+      preLoaderRoute: typeof AuthInventarioInsumosEditarInsumoIdImport
+      parentRoute: typeof AuthInventarioInsumosEditarInsumoImport
+    }
+    '/_auth/inventario/insumos/ver-insumo/$id': {
+      id: '/_auth/inventario/insumos/ver-insumo/$id'
+      path: '/$id'
+      fullPath: '/inventario/insumos/ver-insumo/$id'
+      preLoaderRoute: typeof AuthInventarioInsumosVerInsumoIdImport
+      parentRoute: typeof AuthInventarioInsumosVerInsumoImport
+    }
+    '/_auth/inventario/mermas/editar-merma/$id': {
+      id: '/_auth/inventario/mermas/editar-merma/$id'
+      path: '/$id'
+      fullPath: '/inventario/mermas/editar-merma/$id'
+      preLoaderRoute: typeof AuthInventarioMermasEditarMermaIdImport
+      parentRoute: typeof AuthInventarioMermasEditarMermaImport
+    }
+    '/_auth/inventario/mermas/ver-merma/$id': {
+      id: '/_auth/inventario/mermas/ver-merma/$id'
+      path: '/$id'
+      fullPath: '/inventario/mermas/ver-merma/$id'
+      preLoaderRoute: typeof AuthInventarioMermasVerMermaIdImport
+      parentRoute: typeof AuthInventarioMermasVerMermaImport
+    }
     '/_auth/inventario/productos/editar-producto/$id': {
       id: '/_auth/inventario/productos/editar-producto/$id'
       path: '/inventario/productos/editar-producto/$id'
@@ -437,6 +497,65 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AuthInventarioInsumosEditarInsumoRouteChildren {
+  AuthInventarioInsumosEditarInsumoIdRoute: typeof AuthInventarioInsumosEditarInsumoIdRoute
+}
+
+const AuthInventarioInsumosEditarInsumoRouteChildren: AuthInventarioInsumosEditarInsumoRouteChildren =
+  {
+    AuthInventarioInsumosEditarInsumoIdRoute:
+      AuthInventarioInsumosEditarInsumoIdRoute,
+  }
+
+const AuthInventarioInsumosEditarInsumoRouteWithChildren =
+  AuthInventarioInsumosEditarInsumoRoute._addFileChildren(
+    AuthInventarioInsumosEditarInsumoRouteChildren,
+  )
+
+interface AuthInventarioInsumosVerInsumoRouteChildren {
+  AuthInventarioInsumosVerInsumoIdRoute: typeof AuthInventarioInsumosVerInsumoIdRoute
+}
+
+const AuthInventarioInsumosVerInsumoRouteChildren: AuthInventarioInsumosVerInsumoRouteChildren =
+  {
+    AuthInventarioInsumosVerInsumoIdRoute:
+      AuthInventarioInsumosVerInsumoIdRoute,
+  }
+
+const AuthInventarioInsumosVerInsumoRouteWithChildren =
+  AuthInventarioInsumosVerInsumoRoute._addFileChildren(
+    AuthInventarioInsumosVerInsumoRouteChildren,
+  )
+
+interface AuthInventarioMermasEditarMermaRouteChildren {
+  AuthInventarioMermasEditarMermaIdRoute: typeof AuthInventarioMermasEditarMermaIdRoute
+}
+
+const AuthInventarioMermasEditarMermaRouteChildren: AuthInventarioMermasEditarMermaRouteChildren =
+  {
+    AuthInventarioMermasEditarMermaIdRoute:
+      AuthInventarioMermasEditarMermaIdRoute,
+  }
+
+const AuthInventarioMermasEditarMermaRouteWithChildren =
+  AuthInventarioMermasEditarMermaRoute._addFileChildren(
+    AuthInventarioMermasEditarMermaRouteChildren,
+  )
+
+interface AuthInventarioMermasVerMermaRouteChildren {
+  AuthInventarioMermasVerMermaIdRoute: typeof AuthInventarioMermasVerMermaIdRoute
+}
+
+const AuthInventarioMermasVerMermaRouteChildren: AuthInventarioMermasVerMermaRouteChildren =
+  {
+    AuthInventarioMermasVerMermaIdRoute: AuthInventarioMermasVerMermaIdRoute,
+  }
+
+const AuthInventarioMermasVerMermaRouteWithChildren =
+  AuthInventarioMermasVerMermaRoute._addFileChildren(
+    AuthInventarioMermasVerMermaRouteChildren,
+  )
+
 interface AuthRouteChildren {
   AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
   AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
@@ -445,11 +564,11 @@ interface AuthRouteChildren {
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
   AuthInventarioInsumosCrearInsumoRoute: typeof AuthInventarioInsumosCrearInsumoRoute
-  AuthInventarioInsumosEditarInsumoRoute: typeof AuthInventarioInsumosEditarInsumoRoute
-  AuthInventarioInsumosVerInsumoRoute: typeof AuthInventarioInsumosVerInsumoRoute
+  AuthInventarioInsumosEditarInsumoRoute: typeof AuthInventarioInsumosEditarInsumoRouteWithChildren
+  AuthInventarioInsumosVerInsumoRoute: typeof AuthInventarioInsumosVerInsumoRouteWithChildren
   AuthInventarioMermasCrearMermaRoute: typeof AuthInventarioMermasCrearMermaRoute
-  AuthInventarioMermasEditarMermaRoute: typeof AuthInventarioMermasEditarMermaRoute
-  AuthInventarioMermasVerMermaRoute: typeof AuthInventarioMermasVerMermaRoute
+  AuthInventarioMermasEditarMermaRoute: typeof AuthInventarioMermasEditarMermaRouteWithChildren
+  AuthInventarioMermasVerMermaRoute: typeof AuthInventarioMermasVerMermaRouteWithChildren
   AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
   AuthProveedoresEditarProveedorIdRoute: typeof AuthProveedoresEditarProveedorIdRoute
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
@@ -476,11 +595,14 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthAdministracionUsuariosCrearUsuarioRoute,
   AuthInventarioInsumosCrearInsumoRoute: AuthInventarioInsumosCrearInsumoRoute,
   AuthInventarioInsumosEditarInsumoRoute:
-    AuthInventarioInsumosEditarInsumoRoute,
-  AuthInventarioInsumosVerInsumoRoute: AuthInventarioInsumosVerInsumoRoute,
+    AuthInventarioInsumosEditarInsumoRouteWithChildren,
+  AuthInventarioInsumosVerInsumoRoute:
+    AuthInventarioInsumosVerInsumoRouteWithChildren,
   AuthInventarioMermasCrearMermaRoute: AuthInventarioMermasCrearMermaRoute,
-  AuthInventarioMermasEditarMermaRoute: AuthInventarioMermasEditarMermaRoute,
-  AuthInventarioMermasVerMermaRoute: AuthInventarioMermasVerMermaRoute,
+  AuthInventarioMermasEditarMermaRoute:
+    AuthInventarioMermasEditarMermaRouteWithChildren,
+  AuthInventarioMermasVerMermaRoute:
+    AuthInventarioMermasVerMermaRouteWithChildren,
   AuthInventarioProductosCrearProductoRoute:
     AuthInventarioProductosCrearProductoRoute,
   AuthProveedoresEditarProveedorIdRoute: AuthProveedoresEditarProveedorIdRoute,
@@ -515,11 +637,11 @@ export interface FileRoutesByFullPath {
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
-  '/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRoute
-  '/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRoute
+  '/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRouteWithChildren
+  '/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRouteWithChildren
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
-  '/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRoute
-  '/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRoute
+  '/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRouteWithChildren
+  '/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRouteWithChildren
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
@@ -531,6 +653,10 @@ export interface FileRoutesByFullPath {
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/inventario/insumos/editar-insumo/$id': typeof AuthInventarioInsumosEditarInsumoIdRoute
+  '/inventario/insumos/ver-insumo/$id': typeof AuthInventarioInsumosVerInsumoIdRoute
+  '/inventario/mermas/editar-merma/$id': typeof AuthInventarioMermasEditarMermaIdRoute
+  '/inventario/mermas/ver-merma/$id': typeof AuthInventarioMermasVerMermaIdRoute
   '/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
   '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
@@ -546,11 +672,11 @@ export interface FileRoutesByTo {
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
-  '/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRoute
-  '/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRoute
+  '/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRouteWithChildren
+  '/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRouteWithChildren
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
-  '/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRoute
-  '/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRoute
+  '/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRouteWithChildren
+  '/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRouteWithChildren
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
@@ -562,6 +688,10 @@ export interface FileRoutesByTo {
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/inventario/insumos/editar-insumo/$id': typeof AuthInventarioInsumosEditarInsumoIdRoute
+  '/inventario/insumos/ver-insumo/$id': typeof AuthInventarioInsumosVerInsumoIdRoute
+  '/inventario/mermas/editar-merma/$id': typeof AuthInventarioMermasEditarMermaIdRoute
+  '/inventario/mermas/ver-merma/$id': typeof AuthInventarioMermasVerMermaIdRoute
   '/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
   '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
@@ -578,11 +708,11 @@ export interface FileRoutesById {
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/_auth/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
-  '/_auth/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRoute
-  '/_auth/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRoute
+  '/_auth/inventario/insumos/editar-insumo': typeof AuthInventarioInsumosEditarInsumoRouteWithChildren
+  '/_auth/inventario/insumos/ver-insumo': typeof AuthInventarioInsumosVerInsumoRouteWithChildren
   '/_auth/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
-  '/_auth/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRoute
-  '/_auth/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRoute
+  '/_auth/inventario/mermas/editar-merma': typeof AuthInventarioMermasEditarMermaRouteWithChildren
+  '/_auth/inventario/mermas/ver-merma': typeof AuthInventarioMermasVerMermaRouteWithChildren
   '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/_auth/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
@@ -594,6 +724,10 @@ export interface FileRoutesById {
   '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
   '/_auth/administracion/usuarios/editar-usuario/$rut': typeof AuthAdministracionUsuariosEditarUsuarioRutRoute
   '/_auth/administracion/usuarios/ver-usuario/$rut': typeof AuthAdministracionUsuariosVerUsuarioRutRoute
+  '/_auth/inventario/insumos/editar-insumo/$id': typeof AuthInventarioInsumosEditarInsumoIdRoute
+  '/_auth/inventario/insumos/ver-insumo/$id': typeof AuthInventarioInsumosVerInsumoIdRoute
+  '/_auth/inventario/mermas/editar-merma/$id': typeof AuthInventarioMermasEditarMermaIdRoute
+  '/_auth/inventario/mermas/ver-merma/$id': typeof AuthInventarioMermasVerMermaIdRoute
   '/_auth/inventario/productos/editar-producto/$id': typeof AuthInventarioProductosEditarProductoIdRoute
   '/_auth/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
 }
@@ -627,6 +761,10 @@ export interface FileRouteTypes {
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
+    | '/inventario/insumos/editar-insumo/$id'
+    | '/inventario/insumos/ver-insumo/$id'
+    | '/inventario/mermas/editar-merma/$id'
+    | '/inventario/mermas/ver-merma/$id'
     | '/inventario/productos/editar-producto/$id'
     | '/inventario/productos/ver-producto/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -657,6 +795,10 @@ export interface FileRouteTypes {
     | '/administracion/usuarios/actividad-de-usuario/$id'
     | '/administracion/usuarios/editar-usuario/$rut'
     | '/administracion/usuarios/ver-usuario/$rut'
+    | '/inventario/insumos/editar-insumo/$id'
+    | '/inventario/insumos/ver-insumo/$id'
+    | '/inventario/mermas/editar-merma/$id'
+    | '/inventario/mermas/ver-merma/$id'
     | '/inventario/productos/editar-producto/$id'
     | '/inventario/productos/ver-producto/$id'
   id:
@@ -687,6 +829,10 @@ export interface FileRouteTypes {
     | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
     | '/_auth/administracion/usuarios/editar-usuario/$rut'
     | '/_auth/administracion/usuarios/ver-usuario/$rut'
+    | '/_auth/inventario/insumos/editar-insumo/$id'
+    | '/_auth/inventario/insumos/ver-insumo/$id'
+    | '/_auth/inventario/mermas/editar-merma/$id'
+    | '/_auth/inventario/mermas/ver-merma/$id'
     | '/_auth/inventario/productos/editar-producto/$id'
     | '/_auth/inventario/productos/ver-producto/$id'
   fileRoutesById: FileRoutesById
@@ -785,11 +931,17 @@ export const routeTree = rootRoute
     },
     "/_auth/inventario/insumos/editar-insumo": {
       "filePath": "_auth/inventario/insumos/editar-insumo.tsx",
-      "parent": "/_auth"
+      "parent": "/_auth",
+      "children": [
+        "/_auth/inventario/insumos/editar-insumo/$id"
+      ]
     },
     "/_auth/inventario/insumos/ver-insumo": {
       "filePath": "_auth/inventario/insumos/ver-insumo.tsx",
-      "parent": "/_auth"
+      "parent": "/_auth",
+      "children": [
+        "/_auth/inventario/insumos/ver-insumo/$id"
+      ]
     },
     "/_auth/inventario/mermas/crear-merma": {
       "filePath": "_auth/inventario/mermas/crear-merma.tsx",
@@ -797,11 +949,17 @@ export const routeTree = rootRoute
     },
     "/_auth/inventario/mermas/editar-merma": {
       "filePath": "_auth/inventario/mermas/editar-merma.tsx",
-      "parent": "/_auth"
+      "parent": "/_auth",
+      "children": [
+        "/_auth/inventario/mermas/editar-merma/$id"
+      ]
     },
     "/_auth/inventario/mermas/ver-merma": {
       "filePath": "_auth/inventario/mermas/ver-merma.tsx",
-      "parent": "/_auth"
+      "parent": "/_auth",
+      "children": [
+        "/_auth/inventario/mermas/ver-merma/$id"
+      ]
     },
     "/_auth/inventario/productos/crear-producto": {
       "filePath": "_auth/inventario/productos/crear-producto.tsx",
@@ -846,6 +1004,22 @@ export const routeTree = rootRoute
     "/_auth/administracion/usuarios/ver-usuario/$rut": {
       "filePath": "_auth/administracion/usuarios/ver-usuario.$rut.tsx",
       "parent": "/_auth"
+    },
+    "/_auth/inventario/insumos/editar-insumo/$id": {
+      "filePath": "_auth/inventario/insumos/editar-insumo.$id.tsx",
+      "parent": "/_auth/inventario/insumos/editar-insumo"
+    },
+    "/_auth/inventario/insumos/ver-insumo/$id": {
+      "filePath": "_auth/inventario/insumos/ver-insumo.$id.tsx",
+      "parent": "/_auth/inventario/insumos/ver-insumo"
+    },
+    "/_auth/inventario/mermas/editar-merma/$id": {
+      "filePath": "_auth/inventario/mermas/editar-merma.$id.tsx",
+      "parent": "/_auth/inventario/mermas/editar-merma"
+    },
+    "/_auth/inventario/mermas/ver-merma/$id": {
+      "filePath": "_auth/inventario/mermas/ver-merma.$id.tsx",
+      "parent": "/_auth/inventario/mermas/ver-merma"
     },
     "/_auth/inventario/productos/editar-producto/$id": {
       "filePath": "_auth/inventario/productos/editar-producto.$id.tsx",

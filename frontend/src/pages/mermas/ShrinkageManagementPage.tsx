@@ -10,54 +10,26 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
+import { fetchShrinkages, deleteShrinkage } from "../../services/inventoryService";
 
 interface ShrinkageItem {
-  id?: string;
-  name?: string;
-  category?: string;
-  stock?: number;
-  cost?: number;
+  id: string;
+  product: string;
+  price: number;
+  quantity: number;
+  category: string;
+  observation?: string;
 }
 
 interface Filters {
   search?: string;
   category?: string;
-};
-
-const sampleData: ShrinkageItem[] = [
-  {
-    id: "1",
-    name: "Lapiz",
-    category: "Papeleria",
-    stock: 5,
-    cost: 200,
-  },
-  {
-    id: "2",
-    name: "Recma",
-    category: "Papeleria",
-    stock: 8,
-    cost: 1000,
-  },
-  {
-    id: "3",
-    name: "Polera",
-    category: "Ropa",
-    stock: 3,
-    cost: 7000,
-  },
-  {
-    id: "4",
-    name: "Audifonos Gamer",
-    category: "Audifonos",
-    stock: 12,
-    cost: 10000,
-  },
-];
+  stockStatus?: string;
+}
 
 const columns: ColumnDef<ShrinkageItem>[] = [
   { 
-    accessorKey: "name", 
+    accessorKey: "product", 
     header: "Producto", 
     cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
   },
@@ -66,12 +38,13 @@ const columns: ColumnDef<ShrinkageItem>[] = [
     header: "Categoría",
   },
   { 
-    accessorKey: "cost", 
+    accessorKey: "price", 
     header: "Precio", 
+    cell: info => <>${info.getValue<number>()}</>
   },
   { 
-    accessorKey: "stock", 
-    header: "Stock", 
+    accessorKey: "quantity", 
+    header: "Cantidad", 
   },
   {
     id: "actions",
@@ -84,13 +57,13 @@ const columns: ColumnDef<ShrinkageItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventario/mermas/ver-merma`}
+          to={`/Inventario/mermas/ver-merma/${row.original.id}`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventario/mermas/editar-merma`}
+          to={`/Inventario/mermas/editar-merma/${row.original.id}`}
           variant="plain"
           color="neutral"
           size="sm"
@@ -103,7 +76,10 @@ const columns: ColumnDef<ShrinkageItem>[] = [
           color="danger"
           size="sm"
           aria-label="Delete"
-          //onClick={() => handleDeleteClick(row.original.id)}
+          onClick={async () => {
+            await deleteShrinkage(row.original.id);
+            window.location.reload();
+          }}
         >
           <DeleteIcon />
         </IconButton>
@@ -117,7 +93,8 @@ export default function ShrinkageManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
-  const [filteredData, setFilteredData] = useState<ShrinkageItem[]>(sampleData);
+  const [data, setData] = useState<ShrinkageItem[]>([]);
+  const [rowCount, setRowCount] = useState(0);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -126,16 +103,16 @@ export default function ShrinkageManagementPage() {
       placeholder: "Categoría",
       options: [
         { value: "", label: "Todas" },
-        { value: "Papeleria", label: "Papeleria" },
-        { value: "Audifonos", label: "Audifonos" },
-        { value: "Ropa", label: "Ropa" },
+        { value: "daño", label: "Daño físico" },
+        { value: "deterioro", label: "Deterioro" },
+        { value: "otros", label: "Otros" },
       ],
     },
     {
       id: "stockStatus",
-      placeholder: "Stock",
+      placeholder: "Cantidad",
       options: [
-        { value: "", label: "Todos" },
+        { value: "", label: "Todas" },
         { value: "high", label: "Alto (>50)" },
         { value: "medium", label: "Medio (10-50)" },
         { value: "low", label: "Bajo (<10)" },
@@ -143,32 +120,33 @@ export default function ShrinkageManagementPage() {
     },
   ];
 
-  // Efecto para aplicar los filtros
   useEffect(() => {
-    let result = [...sampleData];
-    
-    // Filtro por categoría
-    if (filters.category) {
-      result = result.filter(item => item.category === filters.category);
-    }
-    
-    // Filtro por estado de stock
-    if (filters.stockStatus) {
-      switch (filters.stockStatus) {
-        case "high":
-          result = result.filter(item => item.stock > 50);
-          break;
-        case "medium":
-          result = result.filter(item => item.stock >= 10 && item.stock <= 50);
-          break;
-        case "low":
-          result = result.filter(item => item.stock < 10);
-          break;
+    const fetchData = async () => {
+      const ordering = sorting.length > 0 ? (sorting[0].desc ? `-${sorting[0].id}` : sorting[0].id) : "";
+      const res = await fetchShrinkages({
+        page: pagination.pageIndex + 1,
+        page_size: pagination.pageSize,
+        search: filters.search || "",
+        category: filters.category || "",
+        ordering,
+      });
+      let items = res.results || [];
+      // Filtro de cantidad local
+      if (filters.stockStatus) {
+        items = items.filter((item: ShrinkageItem) => {
+          switch (filters.stockStatus) {
+            case "high": return item.quantity > 50;
+            case "medium": return item.quantity >= 10 && item.quantity <= 50;
+            case "low": return item.quantity < 10;
+            default: return true;
+          }
+        });
       }
-    }
-    
-    setFilteredData(result);
-  }, [filters]);
+      setData(items);
+      setRowCount(res.count || items.length);
+    };
+    fetchData();
+  }, [pagination, sorting, filters]);
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -205,12 +183,12 @@ export default function ShrinkageManagementPage() {
           />
           
           <CustomTable<ShrinkageItem>
-            data={filteredData}
+            data={data}
             columns={columns}
             pagination={pagination}
             paginationOptions={{ 
               onPaginationChange: setPagination, 
-              rowCount: filteredData.length 
+              rowCount: rowCount 
             }}
             sorting={sorting}
             onSortingChange={setSorting}

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Supplier
+from .models import Product, Supplier, Supply, Shrinkage
 from bson import ObjectId
 import re
 
@@ -46,3 +46,13 @@ class ProductSerializer(serializers.ModelSerializer):
             except Supplier.DoesNotExist:
                 return None
         return None
+
+class SupplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supply
+        fields = '__all__'
+
+class ShrinkageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shrinkage
+        fields = '__all__'

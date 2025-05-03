@@ -10,12 +10,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
+import { fetchSupplies, deleteSupply } from "../../services/inventoryService";
 
 interface SupplyItem {
-  id?: string;
-  name?: string;
-  category?: string;
-  stock?: number;
+  id: string;
+  name: string;
+  category: string;
+  stock: number;
+  unit?: string;
 }
 
 interface Filters {
@@ -23,39 +25,6 @@ interface Filters {
   category?: string;
   stockStatus?: string;
 }
-
-const sampleData: SupplyItem[] = [
-  {
-    id: "1",
-    name: "Papel A4",
-    category: "Oficina",
-    stock: 150,
-  },
-  {
-    id: "2",
-    name: "Tóner Negro",
-    category: "Impresión",
-    stock: 12,
-  },
-  {
-    id: "3",
-    name: "Bolígrafos Azules",
-    category: "Oficina",
-    stock: 85,
-  },
-  {
-    id: "4",
-    name: "Carpetas Archivo",
-    category: "Organización",
-    stock: 30,
-  },
-  {
-    id: "5",
-    name: "Cinta Adhesiva",
-    category: "Oficina",
-    stock: 25,
-  },
-];
 
 const columns: ColumnDef<SupplyItem>[] = [
   { 
@@ -91,13 +60,13 @@ const columns: ColumnDef<SupplyItem>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/Inventario/insumos/ver-insumo`}
+          to={`/Inventario/insumos/ver-insumo/${row.original.id}`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/Inventario/insumos/editar-insumo`}
+          to={`/Inventario/insumos/editar-insumo/${row.original.id}`}
           variant="plain"
           color="neutral"
           size="sm"
@@ -110,7 +79,10 @@ const columns: ColumnDef<SupplyItem>[] = [
           color="danger"
           size="sm"
           aria-label="Delete"
-          //onClick={() => handleDeleteClick()}
+          onClick={async () => {
+            await deleteSupply(row.original.id);
+            window.location.reload();
+          }}
         >
           <DeleteIcon />
         </IconButton>
@@ -123,7 +95,8 @@ export default function SupplyManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
-  const [filteredData, setFilteredData] = useState<SupplyItem[]>(sampleData);
+  const [data, setData] = useState<SupplyItem[]>([]);
+  const [rowCount, setRowCount] = useState(0);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -149,32 +122,33 @@ export default function SupplyManagementPage() {
     },
   ];
 
-  // Efecto para aplicar los filtros
   useEffect(() => {
-    let result = [...sampleData];
-    
-    // Filtro por categoría
-    if (filters.category) {
-      result = result.filter(item => item.category === filters.category);
-    }
-    
-    // Filtro por estado de stock
-    if (filters.stockStatus) {
-      switch (filters.stockStatus) {
-        case "high":
-          result = result.filter(item => item.stock > 50);
-          break;
-        case "medium":
-          result = result.filter(item => item.stock >= 10 && item.stock <= 50);
-          break;
-        case "low":
-          result = result.filter(item => item.stock < 10);
-          break;
+    const fetchData = async () => {
+      const ordering = sorting.length > 0 ? (sorting[0].desc ? `-${sorting[0].id}` : sorting[0].id) : "";
+      const res = await fetchSupplies({
+        page: pagination.pageIndex + 1,
+        page_size: pagination.pageSize,
+        search: filters.search || "",
+        category: filters.category || "",
+        ordering,
+      });
+      let items = res.results || [];
+      // Filtro de stock local
+      if (filters.stockStatus) {
+        items = items.filter((item: SupplyItem) => {
+          switch (filters.stockStatus) {
+            case "high": return item.stock > 50;
+            case "medium": return item.stock >= 10 && item.stock <= 50;
+            case "low": return item.stock < 10;
+            default: return true;
+          }
+        });
       }
-    }
-    
-    setFilteredData(result);
-  }, [filters]);
+      setData(items);
+      setRowCount(res.count || items.length);
+    };
+    fetchData();
+  }, [pagination, sorting, filters]);
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -211,12 +185,12 @@ export default function SupplyManagementPage() {
           />
           
           <CustomTable<SupplyItem>
-            data={filteredData}
+            data={data}
             columns={columns}
             pagination={pagination}
             paginationOptions={{ 
               onPaginationChange: setPagination, 
-              rowCount: filteredData.length 
+              rowCount: rowCount 
             }}
             sorting={sorting}
             onSortingChange={setSorting}

@@ -27,7 +27,6 @@ class Supply(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
     stock = models.PositiveIntegerField(default=0)
-    unit = models.CharField(max_length=20, default="unidades")
 
     def __str__(self):
         return self.name

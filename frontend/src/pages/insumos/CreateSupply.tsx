@@ -19,7 +19,6 @@ export default function CrearInsumo() {
     name: "",
     stock: "",
     category: "",
-    unit: "",
   });
 
   const handleChange = (field: string, value: any) => {

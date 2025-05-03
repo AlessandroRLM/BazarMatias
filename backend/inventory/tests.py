@@ -73,7 +73,6 @@ class SupplyModelTestCase(TestCase):
             name="Insumo Test",
             category="Oficina",
             stock=100,
-            unit="unidades"
         )
 
     def tearDown(self):

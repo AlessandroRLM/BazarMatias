@@ -20,7 +20,6 @@ export default function EditarInsumo() {
     name: "",
     stock: "",
     category: "",
-    unit: "",
   });
 
   useEffect(() => {

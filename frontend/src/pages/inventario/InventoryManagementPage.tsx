@@ -65,7 +65,7 @@ export default function InventoryManagementPage() {
     setLoading(true);
     fetchProducts()
       .then(apiData => setData(
-        apiData.map(item => ({
+        (apiData.results || []).map(item => ({
           id: item.id,
           nombre: item.name,
           categoria: item.category,

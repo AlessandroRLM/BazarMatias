@@ -33,18 +33,18 @@ export default function EditarProducto() {
       setPrecio(producto.price_clp ?? "");
       setStock(producto.stock ?? "");
       setCategoria(producto.category ?? "");
-      setProveedor(producto.supplier_id ?? ""); // Cargar el ID del proveedor actual
+      setProveedor(producto.supplier ?? ""); // Cargar el ID del proveedor actual
 
-      // Si hay un supplier_id, obtener el nombre del proveedor
-      if (producto.supplier_id) {
-        fetchSupplier(producto.supplier_id).then(supplier => {
+      // Si hay un supplier, obtener el nombre del proveedor
+      if (producto.supplier) {
+        fetchSupplier(producto.supplier).then(supplier => {
           setProveedorNombre(supplier.name);
         });
       }
     });
 
-    // Obtener la lista de proveedores
-    fetchSuppliers().then(data => setProveedores(data));
+    // Obtener la lista de proveedores al cargar el componente
+    fetchSuppliers().then(data => setProveedores(data.results || []));
   }, [id]);
 
   const handleSubmit = async () => {
@@ -59,7 +59,7 @@ export default function EditarProducto() {
         price_clp: Number(precio),
         stock: Number(stock),
         category: categoria,
-        supplier_id: proveedor || null,
+        supplier: proveedor || null,
       });
       navigate({ to: "/inventario/productos" });
     } catch (e) {
@@ -117,11 +117,11 @@ export default function EditarProducto() {
       </FormControl>
       <FormControl>
         <FormLabel>Proveedor</FormLabel>
-        <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")} placeholder={proveedorNombre || "Nombre del proveedor"}>
+        <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")}>
           <Option value="">Ninguno</Option>
-          {proveedores.map(proveedor => (
-            <Option key={proveedor.id} value={proveedor.id}>
-              {proveedor.name}
+          {proveedores.map(prov => (
+            <Option key={prov.id} value={prov.id}>
+              {prov.name}
             </Option>
           ))}
         </Select>

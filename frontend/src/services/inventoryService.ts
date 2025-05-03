@@ -1,8 +1,24 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 
-// CRUD de Proveedores
-export const fetchSuppliers = async () => {
-  const response = await AxiosInstance.get('/api/inventory/suppliers/');
+// CRUD de Proveedores con paginación, búsqueda y filtros
+export const fetchSuppliers = async ({
+  page = 1,
+  page_size = 10,
+  search = '',
+  category = '',
+  ordering = '',
+}: {
+  page?: number;
+  page_size?: number;
+  search?: string;
+  category?: string;
+  ordering?: string;
+} = {}) => {
+  let url = `/api/inventory/suppliers/?page=${page}&page_size=${page_size}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (category) url += `&category=${encodeURIComponent(category)}`;
+  if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  const response = await AxiosInstance.get(url);
   return response.data;
 };
 
@@ -25,9 +41,28 @@ export const deleteSupplier = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/suppliers/${id}/`);
 };
 
-// CRUD de Productos
-export const fetchProducts = async () => {
-  const response = await AxiosInstance.get('/api/inventory/products/');
+// CRUD de Productos con paginación, búsqueda y filtros
+export const fetchProducts = async ({
+  page = 1,
+  page_size = 10,
+  search = '',
+  category = '',
+  supplier = '',
+  ordering = '',
+}: {
+  page?: number;
+  page_size?: number;
+  search?: string;
+  category?: string;
+  supplier?: string;
+  ordering?: string;
+} = {}) => {
+  let url = `/api/inventory/products/?page=${page}&page_size=${page_size}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (category) url += `&category=${encodeURIComponent(category)}`;
+  if (supplier) url += `&supplier__id=${encodeURIComponent(supplier)}`;
+  if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  const response = await AxiosInstance.get(url);
   return response.data;
 };
 

@@ -54,7 +54,7 @@ export default function SuppliersManagementPage() {
     setLoading(true);
     fetchSuppliers()
       .then(apiData => setData(
-        apiData.map(item => ({
+        (apiData.results || []).map(item => ({
           id: item.id,
           nombre: item.name,
           direccion: item.address,

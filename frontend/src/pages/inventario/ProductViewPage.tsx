@@ -14,20 +14,19 @@ import { useParams } from "@tanstack/react-router";
 export default function VerProducto() {
   const { id } = useParams({ strict: false });
   const [producto, setProducto] = useState<any>(null);
-  const [proveedor, setProveedor] = useState<any>(null); // Estado para el proveedor
+  const [proveedor, setProveedor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
 
-    // Obtener el producto
+    setLoading(true);
+    setProveedor(null); // Limpiar proveedor anterior
     fetchProduct(id)
       .then(data => {
         setProducto(data);
-
-        // Si el producto tiene un supplier_id, obtener los detalles del proveedor
-        if (data.supplier_id) {
-          fetchSupplier(data.supplier_id).then(setProveedor);
+        if (data.supplier) {
+          fetchSupplier(data.supplier).then(setProveedor);
         }
       })
       .finally(() => setLoading(false));

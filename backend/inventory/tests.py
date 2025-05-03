@@ -45,7 +45,7 @@ class ProductModelTestCase(TestCase):
             price_clp=10000.0,
             stock=5,
             category="Tecnología",
-            supplier=self.supplier
+            supplier=str(self.supplier.id)
         )
 
     def tearDown(self):
@@ -55,7 +55,7 @@ class ProductModelTestCase(TestCase):
     def test_product_creation(self):
         self.assertEqual(Product.objects.count(), 1)
         self.assertEqual(self.product.name, "Producto Test")
-        self.assertEqual(self.product.supplier, self.supplier)
+        self.assertEqual(self.product.supplier, str(self.supplier.id))
 
     def test_product_update(self):
         self.product.stock = 10

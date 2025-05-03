@@ -8,7 +8,17 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table"
-import { Button, Link, Select, Sheet, Stack, Table, Typography, Option } from "@mui/joy"
+import { 
+  Button, 
+  Link, 
+  Select, 
+  Sheet, 
+  Stack, 
+  Table, 
+  Typography, 
+  Option,
+  Box
+} from "@mui/joy"
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown"
 
 export const DEFAULT_PAGE_INDEX = 0
@@ -21,6 +31,7 @@ type Props<T extends Record<string, any>> = {
   paginationOptions: Pick<PaginationOptions, "onPaginationChange" | "rowCount">
   sorting: SortingState
   onSortingChange: OnChangeFn<SortingState>
+  isLoading?: boolean
 }
 
 export default function CustomTable<T extends Record<string, any>>({
@@ -30,6 +41,7 @@ export default function CustomTable<T extends Record<string, any>>({
   paginationOptions,
   sorting,
   onSortingChange,
+  isLoading = false,
 }: Props<T>) {
 
   const labelDisplayedRows = ({ from, to, count }: { from: number, to: number, count: number }) => {
@@ -49,28 +61,30 @@ export default function CustomTable<T extends Record<string, any>>({
   })
 
   return (
-    <Sheet
-      className="OrderTableContainer"
-      variant="outlined"
-      sx={{
-        display: { xs: 'none', sm: 'initial' },
-        width: '100%',
-        borderRadius: 'sm',
-        flexShrink: 1,
-        overflow: 'auto',
-        minHeight: 0,
-      }}
-    >
-      <Table
-        stickyHeader
+    <Box sx={{ width: '100%', overflowX: 'auto' }}>
+      <Sheet
+        className="OrderTableContainer"
+        variant="outlined"
         sx={{
-          '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
-          '--Table-headerUnderlineThickness': '1px',
-          '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
-          '--TableCell-paddingY': '4px',
-          '--TableCell-paddingX': '8px',
+          width: '100%',
+          borderRadius: 'sm',
+          flexShrink: 1,
+          minHeight: 0,
+          display: 'inline-block', 
+          minWidth: '100%',
         }}
       >
+        <Table
+          sx={{
+            '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
+            '--Table-headerUnderlineThickness': '1px',
+            '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
+            '--TableCell-paddingY': '4px',
+            '--TableCell-paddingX': '8px',
+            minWidth: '800px',
+            width: '100%',
+          }}
+        > 
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -196,6 +210,7 @@ export default function CustomTable<T extends Record<string, any>>({
         </tfoot>
       </Table>
     </Sheet>
+    </Box>
   )
 
 

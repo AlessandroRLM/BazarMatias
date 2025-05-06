@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
 import { fetchShrinkages, deleteShrinkage } from "../../services/inventoryService";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
 
 interface ShrinkageItem {
   id: string;
@@ -27,74 +28,14 @@ interface Filters {
   stockStatus?: string;
 }
 
-const columns: ColumnDef<ShrinkageItem>[] = [
-  { 
-    accessorKey: "product", 
-    header: "Producto", 
-    cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
-  },
-  { 
-    accessorKey: "category", 
-    header: "Categoría",
-  },
-  { 
-    accessorKey: "price", 
-    header: "Precio", 
-    cell: info => <>${info.getValue<number>()}</>
-  },
-  { 
-    accessorKey: "quantity", 
-    header: "Cantidad", 
-  },
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => (
-      <Stack direction="row" spacing={1}>
-        <IconButton
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="View"
-          component={RouterLink}
-          to={`/inventario/mermas/ver-merma/${row.original.id}`}
-        >
-          <VisibilityIcon />
-        </IconButton>
-        <IconButton
-          component={RouterLink}
-          to={`/inventario/mermas/editar-merma/${row.original.id}`}
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="Edit"
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          variant="plain"
-          color="danger"
-          size="sm"
-          aria-label="Delete"
-          onClick={async () => {
-            await deleteShrinkage(row.original.id);
-            window.location.reload();
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-    size: 150
-  },
-];
-
 export default function ShrinkageManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [data, setData] = useState<ShrinkageItem[]>([]);
   const [rowCount, setRowCount] = useState(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedShrinkage, setSelectedShrinkage] = useState<ShrinkageItem | null>(null);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -152,6 +93,79 @@ export default function ShrinkageManagementPage() {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
+  const handleDeleteClick = (shrinkage: ShrinkageItem) => {
+    setSelectedShrinkage(shrinkage);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedShrinkage) {
+      await deleteShrinkage(selectedShrinkage.id);
+      setConfirmOpen(false);
+      setSelectedShrinkage(null);
+      window.location.reload();
+    }
+  };
+
+  const columns: ColumnDef<ShrinkageItem>[] = [
+    { 
+      accessorKey: "product", 
+      header: "Producto", 
+      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
+    },
+    { 
+      accessorKey: "category", 
+      header: "Categoría",
+    },
+    { 
+      accessorKey: "price", 
+      header: "Precio", 
+      cell: info => <>${info.getValue<number>()}</>
+    },
+    { 
+      accessorKey: "quantity", 
+      header: "Cantidad", 
+    },
+    {
+      id: "actions",
+      header: "Acciones",
+      cell: ({ row }) => (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="View"
+            component={RouterLink}
+            to={`/inventario/mermas/ver-merma/${row.original.id}`}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            component={RouterLink}
+            to={`/inventario/mermas/editar-merma/${row.original.id}`}
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="Edit"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            variant="plain"
+            color="danger"
+            size="sm"
+            aria-label="Delete"
+            onClick={() => handleDeleteClick(row.original)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+      size: 150
+    },
+  ];
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
@@ -195,6 +209,14 @@ export default function ShrinkageManagementPage() {
           />
         </Stack>
       </Box>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        userName={selectedShrinkage?.product || ""}
+        title="Eliminar Merma"
+        content={`¿Estás seguro que quieres eliminar la merma de "${selectedShrinkage?.product}"?`}
+      />
     </Box>
   );
 }

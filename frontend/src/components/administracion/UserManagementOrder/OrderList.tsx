@@ -97,6 +97,8 @@ export default function OrderList() {
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         userName={userToDelete?.name || ''}
+        title="Eliminar Usuario"
+        content={`¿Estás seguro que quieres eliminar al usuario "${userToDelete?.name}"?`}
       />
 
       <Input

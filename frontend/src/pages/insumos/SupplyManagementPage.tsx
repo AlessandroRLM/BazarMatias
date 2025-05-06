@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
 import { fetchSupplies, deleteSupply } from "../../services/inventoryService";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
 
 interface SupplyItem {
   id: string;
@@ -25,77 +26,14 @@ interface Filters {
   stockStatus?: string;
 }
 
-const columns: ColumnDef<SupplyItem>[] = [
-  { 
-    accessorKey: "name", 
-    header: "Nombre", 
-    cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
-  },
-  { 
-    accessorKey: "category", 
-    header: "Categoría" 
-  },
-  { 
-    accessorKey: "stock", 
-    header: "Stock", 
-    cell: info => {
-      const stock = info.getValue<number>();
-      const unit = info.row.original.unit;
-      return (
-        <Typography color={stock > 50 ? 'success' : stock > 10 ? 'warning' : 'danger'}>
-          {stock} {unit}
-        </Typography>
-      );
-    } 
-  },
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => (
-      <Stack direction="row" spacing={1}>
-        <IconButton
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="View"
-          component={RouterLink}
-          to={`/inventario/insumos/ver-insumo/${row.original.id}`}
-        >
-          <VisibilityIcon />
-        </IconButton>
-        <IconButton
-          component={RouterLink}
-          to={`/inventario/insumos/editar-insumo/${row.original.id}`}
-          variant="plain"
-          color="neutral"
-          size="sm"
-          aria-label="Edit"
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          variant="plain"
-          color="danger"
-          size="sm"
-          aria-label="Delete"
-          onClick={async () => {
-            await deleteSupply(row.original.id);
-            window.location.reload();
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-  },
-];
-
 export default function SupplyManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [data, setData] = useState<SupplyItem[]>([]);
   const [rowCount, setRowCount] = useState(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedSupply, setSelectedSupply] = useState<SupplyItem | null>(null);
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -153,6 +91,82 @@ export default function SupplyManagementPage() {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
+  const handleDeleteClick = (supply: SupplyItem) => {
+    setSelectedSupply(supply);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedSupply) {
+      await deleteSupply(selectedSupply.id);
+      setConfirmOpen(false);
+      setSelectedSupply(null);
+      window.location.reload();
+    }
+  };
+
+  const columns: ColumnDef<SupplyItem>[] = [
+    { 
+      accessorKey: "name", 
+      header: "Nombre", 
+      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
+    },
+    { 
+      accessorKey: "category", 
+      header: "Categoría" 
+    },
+    { 
+      accessorKey: "stock", 
+      header: "Stock", 
+      cell: info => {
+        const stock = info.getValue<number>();
+        const unit = info.row.original.unit;
+        return (
+          <Typography color={stock > 50 ? 'success' : stock > 10 ? 'warning' : 'danger'}>
+            {stock} {unit}
+          </Typography>
+        );
+      } 
+    },
+    {
+      id: "actions",
+      header: "Acciones",
+      cell: ({ row }) => (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="View"
+            component={RouterLink}
+            to={`/inventario/insumos/ver-insumo/${row.original.id}`}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            component={RouterLink}
+            to={`/inventario/insumos/editar-insumo/${row.original.id}`}
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="Edit"
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            variant="plain"
+            color="danger"
+            size="sm"
+            aria-label="Delete"
+            onClick={() => handleDeleteClick(row.original)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
@@ -196,6 +210,14 @@ export default function SupplyManagementPage() {
           />
         </Stack>
       </Box>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+        userName={selectedSupply?.name || ""}
+        title="Eliminar Insumo"
+        content={`¿Estás seguro que quieres eliminar el insumo "${selectedSupply?.name}"?`}
+      />
     </Box>
   );
 }

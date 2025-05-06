@@ -10,9 +10,18 @@ interface ConfirmDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   userName: string;
+  title: string;
+  content: string;
 }
 
-export default function ConfirmDialog({ open, onClose, onConfirm, userName }: ConfirmDialogProps) {
+export default function ConfirmDialog({ 
+  open, 
+  onClose, 
+  onConfirm, 
+  userName, 
+  title = "Confirmación",
+  content = `¿Estás seguro que quieres eliminar a ${userName}?`
+}: ConfirmDialogProps) {
   return (
     <Modal open={open} onClose={onClose}>
       <ModalDialog
@@ -20,10 +29,10 @@ export default function ConfirmDialog({ open, onClose, onConfirm, userName }: Co
         aria-describedby="alert-dialog-modal-description"
       >
         <Typography id="alert-dialog-modal-title" level="h2">
-          Confirmación
+          {title}
         </Typography>
         <Typography id="alert-dialog-modal-description" sx={{ mt: 2 }}>
-          ¿Estás seguro que quieres eliminar a {userName}?
+          {content}
           <br />
           <strong>Esta acción no se puede deshacer.</strong>
         </Typography>

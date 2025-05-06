@@ -68,7 +68,7 @@ export default function OrderTable() {
   const [orderBy, setOrderBy] = React.useState<string>('rut');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [userToDelete, setUserToDelete] = React.useState<{ id: string; name: string } | null>(null);
+  const [userToDelete, setUserToDelete] = React.useState<{ rut: string; name: string } | null>(null);
 
   const handleSort = (property: string) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -187,6 +187,8 @@ export default function OrderTable() {
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         userName={userToDelete?.name || ''}
+        title="Eliminar Usuario"
+        content={`¿Estás seguro que quieres eliminar al usuario "${userToDelete?.name}"?`}
       />
 
       <Sheet

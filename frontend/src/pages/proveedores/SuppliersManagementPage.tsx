@@ -169,6 +169,8 @@ export default function SuppliersManagementPage() {
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         userName={supplierToDelete?.nombre || ''}
+        title="Eliminar Proveedor"
+        content={`¿Estás seguro que quieres eliminar al proveedor "${supplierToDelete?.nombre}"?`}
       />
       <Box component="main" sx={{ flex: 1, p: 3, pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, maxWidth: '1600px', mx: 'auto', width: '100%' }}>
         <Stack spacing={3}>

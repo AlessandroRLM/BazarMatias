@@ -8,7 +8,7 @@ const DashboardInventoryPage = () => {
   return (
     <>
         <PageHeader
-            title="Dashboard de Administración"
+            title="Dashboard de Proveedores"
             buttons={[{text: 'Reporte'}]}
         />
         <Stack direction={'row'}>

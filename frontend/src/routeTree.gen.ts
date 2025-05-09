@@ -18,6 +18,7 @@ import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthVentasOrdenesdetrabajoIndexImport } from './routes/_auth/ventas/ordenesdetrabajo/index'
 import { Route as AuthProveedoresProveedoresIndexImport } from './routes/_auth/proveedores/proveedores/index'
+import { Route as AuthProveedoresDevolucionesIndexImport } from './routes/_auth/proveedores/devoluciones/index'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthInventarioMermasIndexImport } from './routes/_auth/inventario/mermas/index'
 import { Route as AuthInventarioInsumosIndexImport } from './routes/_auth/inventario/insumos/index'
@@ -28,6 +29,9 @@ import { Route as AuthVentasOrdenesdetrabajoEditarOrdenTrabajoImport } from './r
 import { Route as AuthVentasOrdenesdetrabajoCrearOrdenTrabajoImport } from './routes/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
 import { Route as AuthProveedoresProveedoresDashboardImport } from './routes/_auth/proveedores/proveedores/dashboard'
 import { Route as AuthProveedoresProveedoresCrearProveedorImport } from './routes/_auth/proveedores/proveedores/crear-proveedor'
+import { Route as AuthProveedoresDevolucionesVerDevolucionImport } from './routes/_auth/proveedores/devoluciones/ver-devolucion'
+import { Route as AuthProveedoresDevolucionesEditarDevolucionImport } from './routes/_auth/proveedores/devoluciones/editar-devolucion'
+import { Route as AuthProveedoresDevolucionesCrearDevolucionImport } from './routes/_auth/proveedores/devoluciones/crear-devolucion'
 import { Route as AuthInventarioProductosCrearProductoImport } from './routes/_auth/inventario/productos/crear-producto'
 import { Route as AuthInventarioMermasCrearMermaImport } from './routes/_auth/inventario/mermas/crear-merma'
 import { Route as AuthInventarioInsumosCrearInsumoImport } from './routes/_auth/inventario/insumos/crear-insumo'
@@ -88,6 +92,13 @@ const AuthProveedoresProveedoresIndexRoute =
   AuthProveedoresProveedoresIndexImport.update({
     id: '/proveedores/proveedores/',
     path: '/proveedores/proveedores/',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresDevolucionesIndexRoute =
+  AuthProveedoresDevolucionesIndexImport.update({
+    id: '/proveedores/devoluciones/',
+    path: '/proveedores/devoluciones/',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -158,6 +169,27 @@ const AuthProveedoresProveedoresCrearProveedorRoute =
   AuthProveedoresProveedoresCrearProveedorImport.update({
     id: '/proveedores/proveedores/crear-proveedor',
     path: '/proveedores/proveedores/crear-proveedor',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresDevolucionesVerDevolucionRoute =
+  AuthProveedoresDevolucionesVerDevolucionImport.update({
+    id: '/proveedores/devoluciones/ver-devolucion',
+    path: '/proveedores/devoluciones/ver-devolucion',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresDevolucionesEditarDevolucionRoute =
+  AuthProveedoresDevolucionesEditarDevolucionImport.update({
+    id: '/proveedores/devoluciones/editar-devolucion',
+    path: '/proveedores/devoluciones/editar-devolucion',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresDevolucionesCrearDevolucionRoute =
+  AuthProveedoresDevolucionesCrearDevolucionImport.update({
+    id: '/proveedores/devoluciones/crear-devolucion',
+    path: '/proveedores/devoluciones/crear-devolucion',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -347,6 +379,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInventarioProductosCrearProductoImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/proveedores/devoluciones/crear-devolucion': {
+      id: '/_auth/proveedores/devoluciones/crear-devolucion'
+      path: '/proveedores/devoluciones/crear-devolucion'
+      fullPath: '/proveedores/devoluciones/crear-devolucion'
+      preLoaderRoute: typeof AuthProveedoresDevolucionesCrearDevolucionImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/devoluciones/editar-devolucion': {
+      id: '/_auth/proveedores/devoluciones/editar-devolucion'
+      path: '/proveedores/devoluciones/editar-devolucion'
+      fullPath: '/proveedores/devoluciones/editar-devolucion'
+      preLoaderRoute: typeof AuthProveedoresDevolucionesEditarDevolucionImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/devoluciones/ver-devolucion': {
+      id: '/_auth/proveedores/devoluciones/ver-devolucion'
+      path: '/proveedores/devoluciones/ver-devolucion'
+      fullPath: '/proveedores/devoluciones/ver-devolucion'
+      preLoaderRoute: typeof AuthProveedoresDevolucionesVerDevolucionImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/proveedores/proveedores/crear-proveedor': {
       id: '/_auth/proveedores/proveedores/crear-proveedor'
       path: '/proveedores/proveedores/crear-proveedor'
@@ -415,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/inventario/productos'
       fullPath: '/inventario/productos'
       preLoaderRoute: typeof AuthInventarioProductosIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/devoluciones/': {
+      id: '/_auth/proveedores/devoluciones/'
+      path: '/proveedores/devoluciones'
+      fullPath: '/proveedores/devoluciones'
+      preLoaderRoute: typeof AuthProveedoresDevolucionesIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/proveedores/proveedores/': {
@@ -521,6 +581,9 @@ interface AuthRouteChildren {
   AuthInventarioInsumosCrearInsumoRoute: typeof AuthInventarioInsumosCrearInsumoRoute
   AuthInventarioMermasCrearMermaRoute: typeof AuthInventarioMermasCrearMermaRoute
   AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
+  AuthProveedoresDevolucionesCrearDevolucionRoute: typeof AuthProveedoresDevolucionesCrearDevolucionRoute
+  AuthProveedoresDevolucionesEditarDevolucionRoute: typeof AuthProveedoresDevolucionesEditarDevolucionRoute
+  AuthProveedoresDevolucionesVerDevolucionRoute: typeof AuthProveedoresDevolucionesVerDevolucionRoute
   AuthProveedoresProveedoresCrearProveedorRoute: typeof AuthProveedoresProveedoresCrearProveedorRoute
   AuthProveedoresProveedoresDashboardRoute: typeof AuthProveedoresProveedoresDashboardRoute
   AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute: typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
@@ -531,6 +594,7 @@ interface AuthRouteChildren {
   AuthInventarioInsumosIndexRoute: typeof AuthInventarioInsumosIndexRoute
   AuthInventarioMermasIndexRoute: typeof AuthInventarioMermasIndexRoute
   AuthInventarioProductosIndexRoute: typeof AuthInventarioProductosIndexRoute
+  AuthProveedoresDevolucionesIndexRoute: typeof AuthProveedoresDevolucionesIndexRoute
   AuthProveedoresProveedoresIndexRoute: typeof AuthProveedoresProveedoresIndexRoute
   AuthVentasOrdenesdetrabajoIndexRoute: typeof AuthVentasOrdenesdetrabajoIndexRoute
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -557,6 +621,12 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInventarioMermasCrearMermaRoute: AuthInventarioMermasCrearMermaRoute,
   AuthInventarioProductosCrearProductoRoute:
     AuthInventarioProductosCrearProductoRoute,
+  AuthProveedoresDevolucionesCrearDevolucionRoute:
+    AuthProveedoresDevolucionesCrearDevolucionRoute,
+  AuthProveedoresDevolucionesEditarDevolucionRoute:
+    AuthProveedoresDevolucionesEditarDevolucionRoute,
+  AuthProveedoresDevolucionesVerDevolucionRoute:
+    AuthProveedoresDevolucionesVerDevolucionRoute,
   AuthProveedoresProveedoresCrearProveedorRoute:
     AuthProveedoresProveedoresCrearProveedorRoute,
   AuthProveedoresProveedoresDashboardRoute:
@@ -572,6 +642,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInventarioInsumosIndexRoute: AuthInventarioInsumosIndexRoute,
   AuthInventarioMermasIndexRoute: AuthInventarioMermasIndexRoute,
   AuthInventarioProductosIndexRoute: AuthInventarioProductosIndexRoute,
+  AuthProveedoresDevolucionesIndexRoute: AuthProveedoresDevolucionesIndexRoute,
   AuthProveedoresProveedoresIndexRoute: AuthProveedoresProveedoresIndexRoute,
   AuthVentasOrdenesdetrabajoIndexRoute: AuthVentasOrdenesdetrabajoIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute:
@@ -609,6 +680,9 @@ export interface FileRoutesByFullPath {
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
+  '/proveedores/devoluciones/editar-devolucion': typeof AuthProveedoresDevolucionesEditarDevolucionRoute
+  '/proveedores/devoluciones/ver-devolucion': typeof AuthProveedoresDevolucionesVerDevolucionRoute
   '/proveedores/proveedores/crear-proveedor': typeof AuthProveedoresProveedoresCrearProveedorRoute
   '/proveedores/proveedores/dashboard': typeof AuthProveedoresProveedoresDashboardRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
@@ -619,6 +693,7 @@ export interface FileRoutesByFullPath {
   '/inventario/insumos': typeof AuthInventarioInsumosIndexRoute
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
+  '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
   '/proveedores/proveedores': typeof AuthProveedoresProveedoresIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -645,6 +720,9 @@ export interface FileRoutesByTo {
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
+  '/proveedores/devoluciones/editar-devolucion': typeof AuthProveedoresDevolucionesEditarDevolucionRoute
+  '/proveedores/devoluciones/ver-devolucion': typeof AuthProveedoresDevolucionesVerDevolucionRoute
   '/proveedores/proveedores/crear-proveedor': typeof AuthProveedoresProveedoresCrearProveedorRoute
   '/proveedores/proveedores/dashboard': typeof AuthProveedoresProveedoresDashboardRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
@@ -655,6 +733,7 @@ export interface FileRoutesByTo {
   '/inventario/insumos': typeof AuthInventarioInsumosIndexRoute
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
+  '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
   '/proveedores/proveedores': typeof AuthProveedoresProveedoresIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -682,6 +761,9 @@ export interface FileRoutesById {
   '/_auth/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/_auth/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/_auth/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
+  '/_auth/proveedores/devoluciones/editar-devolucion': typeof AuthProveedoresDevolucionesEditarDevolucionRoute
+  '/_auth/proveedores/devoluciones/ver-devolucion': typeof AuthProveedoresDevolucionesVerDevolucionRoute
   '/_auth/proveedores/proveedores/crear-proveedor': typeof AuthProveedoresProveedoresCrearProveedorRoute
   '/_auth/proveedores/proveedores/dashboard': typeof AuthProveedoresProveedoresDashboardRoute
   '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
@@ -692,6 +774,7 @@ export interface FileRoutesById {
   '/_auth/inventario/insumos/': typeof AuthInventarioInsumosIndexRoute
   '/_auth/inventario/mermas/': typeof AuthInventarioMermasIndexRoute
   '/_auth/inventario/productos/': typeof AuthInventarioProductosIndexRoute
+  '/_auth/proveedores/devoluciones/': typeof AuthProveedoresDevolucionesIndexRoute
   '/_auth/proveedores/proveedores/': typeof AuthProveedoresProveedoresIndexRoute
   '/_auth/ventas/ordenesdetrabajo/': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -720,6 +803,9 @@ export interface FileRouteTypes {
     | '/inventario/insumos/crear-insumo'
     | '/inventario/mermas/crear-merma'
     | '/inventario/productos/crear-producto'
+    | '/proveedores/devoluciones/crear-devolucion'
+    | '/proveedores/devoluciones/editar-devolucion'
+    | '/proveedores/devoluciones/ver-devolucion'
     | '/proveedores/proveedores/crear-proveedor'
     | '/proveedores/proveedores/dashboard'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
@@ -730,6 +816,7 @@ export interface FileRouteTypes {
     | '/inventario/insumos'
     | '/inventario/mermas'
     | '/inventario/productos'
+    | '/proveedores/devoluciones'
     | '/proveedores/proveedores'
     | '/ventas/ordenesdetrabajo'
     | '/administracion/usuarios/actividad-de-usuario/$id'
@@ -755,6 +842,9 @@ export interface FileRouteTypes {
     | '/inventario/insumos/crear-insumo'
     | '/inventario/mermas/crear-merma'
     | '/inventario/productos/crear-producto'
+    | '/proveedores/devoluciones/crear-devolucion'
+    | '/proveedores/devoluciones/editar-devolucion'
+    | '/proveedores/devoluciones/ver-devolucion'
     | '/proveedores/proveedores/crear-proveedor'
     | '/proveedores/proveedores/dashboard'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
@@ -765,6 +855,7 @@ export interface FileRouteTypes {
     | '/inventario/insumos'
     | '/inventario/mermas'
     | '/inventario/productos'
+    | '/proveedores/devoluciones'
     | '/proveedores/proveedores'
     | '/ventas/ordenesdetrabajo'
     | '/administracion/usuarios/actividad-de-usuario/$id'
@@ -790,6 +881,9 @@ export interface FileRouteTypes {
     | '/_auth/inventario/insumos/crear-insumo'
     | '/_auth/inventario/mermas/crear-merma'
     | '/_auth/inventario/productos/crear-producto'
+    | '/_auth/proveedores/devoluciones/crear-devolucion'
+    | '/_auth/proveedores/devoluciones/editar-devolucion'
+    | '/_auth/proveedores/devoluciones/ver-devolucion'
     | '/_auth/proveedores/proveedores/crear-proveedor'
     | '/_auth/proveedores/proveedores/dashboard'
     | '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
@@ -800,6 +894,7 @@ export interface FileRouteTypes {
     | '/_auth/inventario/insumos/'
     | '/_auth/inventario/mermas/'
     | '/_auth/inventario/productos/'
+    | '/_auth/proveedores/devoluciones/'
     | '/_auth/proveedores/proveedores/'
     | '/_auth/ventas/ordenesdetrabajo/'
     | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
@@ -856,6 +951,9 @@ export const routeTree = rootRoute
         "/_auth/inventario/insumos/crear-insumo",
         "/_auth/inventario/mermas/crear-merma",
         "/_auth/inventario/productos/crear-producto",
+        "/_auth/proveedores/devoluciones/crear-devolucion",
+        "/_auth/proveedores/devoluciones/editar-devolucion",
+        "/_auth/proveedores/devoluciones/ver-devolucion",
         "/_auth/proveedores/proveedores/crear-proveedor",
         "/_auth/proveedores/proveedores/dashboard",
         "/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo",
@@ -866,6 +964,7 @@ export const routeTree = rootRoute
         "/_auth/inventario/insumos/",
         "/_auth/inventario/mermas/",
         "/_auth/inventario/productos/",
+        "/_auth/proveedores/devoluciones/",
         "/_auth/proveedores/proveedores/",
         "/_auth/ventas/ordenesdetrabajo/",
         "/_auth/administracion/usuarios/actividad-de-usuario/$id",
@@ -912,6 +1011,18 @@ export const routeTree = rootRoute
       "filePath": "_auth/inventario/productos/crear-producto.tsx",
       "parent": "/_auth"
     },
+    "/_auth/proveedores/devoluciones/crear-devolucion": {
+      "filePath": "_auth/proveedores/devoluciones/crear-devolucion.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/devoluciones/editar-devolucion": {
+      "filePath": "_auth/proveedores/devoluciones/editar-devolucion.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/devoluciones/ver-devolucion": {
+      "filePath": "_auth/proveedores/devoluciones/ver-devolucion.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/proveedores/proveedores/crear-proveedor": {
       "filePath": "_auth/proveedores/proveedores/crear-proveedor.tsx",
       "parent": "/_auth"
@@ -950,6 +1061,10 @@ export const routeTree = rootRoute
     },
     "/_auth/inventario/productos/": {
       "filePath": "_auth/inventario/productos/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/devoluciones/": {
+      "filePath": "_auth/proveedores/devoluciones/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/proveedores/proveedores/": {

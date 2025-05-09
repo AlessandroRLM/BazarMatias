@@ -223,7 +223,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/ordenesdetrabajo">
                             Gestión de Ordenes de Trabajo
                         </SidebarLink>
                     </ListItem>
@@ -270,7 +270,7 @@ const SidebarSuppliersList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to="/proveedores/ordenesdecompra">
+                        <SidebarLink to="">
                             Gestión de Ordenes de compra
                         </SidebarLink>
                     </ListItem>

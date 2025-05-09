@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import OrderManagementPage  from '../../../../pages/ordendetrabajo/OrderWorkManagementPage'
 
-export const Route = createFileRoute('/_auth/proveedores/ordenesdecompra/')({
-  component: OrderPage
+export const Route = createFileRoute('/_auth/ventas/ordenesdetrabajo/')({
+  component: OrderWorkPage
 })
 
-function OrderPage() {
+function OrderWorkPage() {
   return <OrderManagementPage /> 
 }

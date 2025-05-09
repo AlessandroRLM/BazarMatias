@@ -124,13 +124,13 @@ const columns: ColumnDef<Order>[] = [
           size="sm"
           aria-label="View"
           component={RouterLink}
-          to={`/proveedores/ordenesdecompra/ver-orden-trabajo`}
+          to={`/ventas/ordenesdetrabajo/ver-orden-trabajo`}
         >
           <VisibilityIcon />
         </IconButton>
         <IconButton
           component={RouterLink}
-          to={`/proveedores/ordenesdecompra/editar-orden-trabajo`}
+          to={`/ventas/ordenesdetrabajo/editar-orden-trabajo`}
           variant="plain"
           color="neutral"
           size="sm"
@@ -216,7 +216,7 @@ export default function OrderManagementPage() {
             <Typography level="h2">Lista Ordenes de Trabajo</Typography>
             <Button 
               component={Link}
-              to="/proveedores/ordenesdecompra/crear-orden-trabajo"
+              to="/ventas/ordenesdetrabajo/crear-orden-trabajo"
               variant="solid" 
               color="primary"
             >

@@ -1,4 +1,3 @@
-import { Stack } from "@mui/joy"
 import PageHeader from "../../components/core/PageHeader/PageHeader"
 import DashboardCard from "../../components/core/DashboardCard/DashboardCard"
 import { PersonOutlined, SupervisorAccountOutlined } from "@mui/icons-material"
@@ -6,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { administrationMetricsQueryOptions } from "../../utils/administracion/administracionQueryOptions"
 import ActiveUsersChart from "../../components/administracion/ActiveUsersChart/ActiveUsersChart"
 import RecentUserTable from "../../components/administracion/RecentUserTable/RecentUserTable"
+import DashboardResponsiveDiv from "../../components/core/DashboardResponsiveDiv/DashboardResponsiveDiv"
 
 const DashboardAdministrationPage = () => {
 
@@ -14,43 +14,31 @@ const DashboardAdministrationPage = () => {
 
   return (
     <>
-        <PageHeader
-            title="Dashboard de Administración"
-            buttons={[{text: 'Reporte'}]}
+      <PageHeader
+        title="Dashboard de Administración"
+        buttons={[{ text: 'Reporte' }]}
+      />
+      <DashboardResponsiveDiv>
+        <DashboardCard
+          title="Total de Usuarios"
+          amount={queryResponse?.data.amount_users}
+          icon={<PersonOutlined />}
         />
-        <Stack direction={'row'} alignItems={'center'}
-          sx={(theme) => ({
-            gap: 1,
-            flexWrap: 'wrap',
-            [theme.breakpoints.up('sm')]: {
-              flexWrap: 'nowrap',
-            }
-          })}
-        >
-            <DashboardCard
-                title="Total de Usuarios"
-                amount={queryResponse?.data.amount_users}
-                icon={<PersonOutlined/>}
-            />
-            <DashboardCard
-              title="Total de Administradores"
-              amount={queryResponse?.data.amount_admins}
-              icon={<SupervisorAccountOutlined/>}
-            />
-        </Stack>
+        <DashboardCard
+          title="Total de Administradores"
+          amount={queryResponse?.data.amount_admins}
+          icon={<SupervisorAccountOutlined />}
+        />
+      </DashboardResponsiveDiv>
 
-        <Stack direction={'row'} alignItems={'center'}
-          sx={(theme) => ({
-            gap: 1,
-            flexWrap: 'wrap',
-            [theme.breakpoints.up('sm')]: {
-              flexWrap: 'nowrap',
-            }
-          })}
-        >
-          <RecentUserTable recentUsers={query?.data.data.recent_users}/>
-          <ActiveUsersChart data={query?.data.data}/>
-        </Stack>
+      <DashboardResponsiveDiv>
+        <RecentUserTable
+          recentUsers={query?.data.data.recent_users}
+        />
+        <ActiveUsersChart
+          data={query?.data.data}
+        />
+      </DashboardResponsiveDiv>
     </>
   )
 }

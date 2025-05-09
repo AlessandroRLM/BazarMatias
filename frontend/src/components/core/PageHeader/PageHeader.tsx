@@ -2,6 +2,7 @@ import { Button, Stack, Typography } from '@mui/joy'
 
 interface Button {
   text: string
+  onClick: () => void
 }
 
 type Props = {
@@ -16,11 +17,20 @@ const PageHeader = (props: Props) => {
         {props.title}
       </Typography>
       <Stack direction={'row'} spacing={2} sx={{ width: 'fit-content' }}>
-        {props?.buttons?.map((button) => (
-          <Button variant="solid" color="primary" size="md" sx={{ borderRadius: 'var(--joy-radius-md)' }}>
+        {props?.buttons?.map((button, index) => (
+          <Button
+            key={index}
+            onClick={button.onClick}
+            variant="solid"
+            color="primary"
+            size="md"
+            sx={{
+              borderRadius: 'var(--joy-radius-md)'
+            }}
+          >
             {button.text}
           </Button>
-            ))}
+        ))}
       </Stack>
     </Stack>
   )

@@ -1,19 +1,8 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product, Supplier, Supply, Shrinkage
-from .serializers import ProductSerializer, SupplierSerializer, SupplySerializer, ShrinkageSerializer
+from .models import Product, Supply, Shrinkage
+from .serializers import ProductSerializer, SupplySerializer, ShrinkageSerializer
 from users.pagination import CustomPagination
-
-
-class SupplierViewSet(viewsets.ModelViewSet):
-    queryset = Supplier.objects.all()
-    serializer_class = SupplierSerializer
-    pagination_class = CustomPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category']
-    search_fields = ['name', 'rut', 'email', 'address']
-    ordering_fields = ['name', 'rut']
-    ordering = ['name']
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()

@@ -165,11 +165,12 @@ export default function SuppliersManagementPage() {
       <Header />
       {/* Diálogo de confirmación para eliminar proveedor */}
       <ConfirmDialog
-        open={deleteDialogOpen}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        userName={supplierToDelete?.nombre || ''}
-      />
+              open={deleteDialogOpen}
+              title='Eliminar Usuario'
+              content={`¿Estás seguro de que deseas eliminar a "${supplierToDelete?.nombre}"?`}
+              onClose={handleCancelDelete}
+              onConfirm={handleConfirmDelete}
+            />
       <Box component="main" sx={{ flex: 1, p: 3, pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, maxWidth: '1600px', mx: 'auto', width: '100%' }}>
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">

@@ -1,25 +1,28 @@
-import { Stack } from "@mui/joy"
 import PageHeader from "../../components/core/PageHeader/PageHeader"
 import DashboardCard from "../../components/core/DashboardCard/DashboardCard"
-import MdiPackageVariantClosed from "../../assets/PackageOutlined"
+import PackageOutlined from "../../assets/PackageOutlined"
+import DashboardResponsiveDiv from "../../components/core/DashboardResponsiveDiv/DashboardResponsiveDiv"
 
 
 const DashboardInventoryPage = () => {
   return (
     <>
-        <PageHeader
-            title="Dashboard de Administración"
-            buttons={[{text: 'Reporte'}]}
+      <PageHeader
+        title="Dashboard de Administración"
+        buttons={[{ text: 'Reporte' }]}
+      />
+      <DashboardResponsiveDiv>
+        <DashboardCard
+          title="Total de Usuarios"
+          amount={107}
+          helperTitle="Mes Actual"
+          helperText="+4 desde el mes anterior"
+          icon={<PackageOutlined width={32} height={32} />}
         />
-        <Stack direction={'row'}>
-            <DashboardCard
-                title="Total de Usuarios"
-                amount="107"
-                helperTitle="Mes Actual"
-                helperText="+4 desde el mes anterior"
-                icon={<MdiPackageVariantClosed width={32} height={32}/>}
-            />
-        </Stack>
+      </DashboardResponsiveDiv>
+      <DashboardResponsiveDiv>
+        hola
+      </DashboardResponsiveDiv>
     </>
   )
 }

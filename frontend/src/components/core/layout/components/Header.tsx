@@ -23,7 +23,7 @@ const Header = ({ children, showBackButton = false, onBack }: HeaderProps) => {
                 right: 0, 
                 width: '100%',
                 height: 'var(--Header-height)',
-                zIndex: 9995,
+                zIndex: 995,
                 p: 2,
                 gap: 1,
                 borderBottom: '1px solid',

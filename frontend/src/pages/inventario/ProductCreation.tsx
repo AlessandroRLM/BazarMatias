@@ -70,6 +70,7 @@ export default function AñadirProducto() {
       navigate({ to: "/inventario/productos" });
     } catch (e) {
       alert(`No se pudo crear el producto. Motivo: ${e || "Error desconocido"}`);
+      console.error(e)
     } finally {
       setLoading(false);
     }

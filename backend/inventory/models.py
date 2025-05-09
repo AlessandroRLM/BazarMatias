@@ -1,27 +1,18 @@
 from django.db import models
-from django_mongodb_backend.fields import ObjectIdField
-
-class Supplier(models.Model):
-    name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    phone = models.CharField(max_length=20)
-    email = models.EmailField()
-    rut = models.CharField(max_length=13, unique=True)
-    category = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
 
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
     price_clp = models.FloatField()
+    iva = models.BooleanField(default=True)
     stock = models.IntegerField()
     category = models.CharField(max_length=100)
-    supplier = models.CharField(max_length=24, null=True, blank=True)
+    supplier = models.CharField(max_length=100)
+    data = models.JSONField(null=True, blank=True)  # Campo de datos dinamicos
 
     def __str__(self):
         return self.name
+
 
 class Supply(models.Model):
     name = models.CharField(max_length=100)
@@ -30,6 +21,7 @@ class Supply(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Shrinkage(models.Model):
     product = models.CharField(max_length=100)

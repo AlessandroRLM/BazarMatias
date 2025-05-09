@@ -48,7 +48,7 @@ const SidebarOverlay = () => {
             className="Sidebar-overlay"
             sx={{
                 position: 'fixed',
-                zIndex: 9998,
+                zIndex: 998,
                 top: 0,
                 left: 0,
                 width: '100vw',
@@ -270,7 +270,7 @@ const SidebarSuppliersList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/proveedores/ordenes-de-compra">
                             Gestión de Ordenes de compra
                         </SidebarLink>
                     </ListItem>
@@ -370,7 +370,7 @@ const Sidebar = () => {
                     md: 'none',
                 },
                 transition: 'transform 0.4s, width 0.4s',
-                zIndex: 10000,
+                zIndex: 1000,
                 height: '100dvh',
                 width: 'var(--Sidebar-width)',
                 top: 0,

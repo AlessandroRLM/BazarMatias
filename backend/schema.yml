@@ -57,6 +57,39 @@ paths:
   /api/inventory/products/:
     get:
       operationId: inventory_products_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: supplier
+        schema:
+          type: string
       tags:
       - inventory
       security:
@@ -67,9 +100,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/PaginatedProductList'
           description: ''
     post:
       operationId: inventory_products_create
@@ -104,7 +135,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this product.
         required: true
       tags:
       - inventory
@@ -124,7 +156,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this product.
         required: true
       tags:
       - inventory
@@ -150,13 +183,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
           description: ''
+    patch:
+      operationId: inventory_products_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
     delete:
       operationId: inventory_products_destroy
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this product.
         required: true
       tags:
       - inventory
@@ -166,9 +232,38 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/inventory/suppliers/:
+  /api/inventory/shrinkages/:
     get:
-      operationId: inventory_suppliers_list
+      operationId: inventory_shrinkages_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - inventory
       security:
@@ -179,14 +274,846 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Supplier'
+                $ref: '#/components/schemas/PaginatedShrinkageList'
           description: ''
     post:
-      operationId: inventory_suppliers_create
+      operationId: inventory_shrinkages_create
       tags:
       - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
+  /api/inventory/shrinkages/{id}/:
+    get:
+      operationId: inventory_shrinkages_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shrinkage.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
+    put:
+      operationId: inventory_shrinkages_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shrinkage.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
+    patch:
+      operationId: inventory_shrinkages_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shrinkage.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShrinkage'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShrinkage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShrinkage'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
+    delete:
+      operationId: inventory_shrinkages_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shrinkage.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/inventory/supplies/:
+    get:
+      operationId: inventory_supplies_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplyList'
+          description: ''
+    post:
+      operationId: inventory_supplies_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supply'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supply'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+  /api/inventory/supplies/{id}/:
+    get:
+      operationId: inventory_supplies_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supply.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+    put:
+      operationId: inventory_supplies_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supply.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supply'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supply'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+    patch:
+      operationId: inventory_supplies_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supply.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupply'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupply'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupply'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+    delete:
+      operationId: inventory_supplies_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supply.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/sales/clients/:
+    get:
+      operationId: sales_clients_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClientList'
+          description: ''
+    post:
+      operationId: sales_clients_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Client'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+  /api/sales/clients/{id}/:
+    get:
+      operationId: sales_clients_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this client.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    put:
+      operationId: sales_clients_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this client.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Client'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    patch:
+      operationId: sales_clients_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this client.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClient'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    delete:
+      operationId: sales_clients_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this client.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/sales/sales/:
+    get:
+      operationId: sales_sales_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSaleList'
+          description: ''
+    post:
+      operationId: sales_sales_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Sale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Sale'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+  /api/sales/sales/{id}/:
+    get:
+      operationId: sales_sales_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+    put:
+      operationId: sales_sales_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Sale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Sale'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+    patch:
+      operationId: sales_sales_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+    delete:
+      operationId: sales_sales_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/suppliers/buy_orders/:
+    get:
+      operationId: suppliers_buy_orders_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBuyOrderList'
+          description: ''
+    post:
+      operationId: suppliers_buy_orders_create
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyOrder'
+          description: ''
+  /api/suppliers/buy_orders/{id}/:
+    get:
+      operationId: suppliers_buy_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this buy order.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyOrder'
+          description: ''
+    put:
+      operationId: suppliers_buy_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this buy order.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuyOrder'
+        required: true
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyOrder'
+          description: ''
+    patch:
+      operationId: suppliers_buy_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this buy order.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBuyOrder'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyOrder'
+          description: ''
+    delete:
+      operationId: suppliers_buy_orders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this buy order.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/suppliers/suppliers/:
+    get:
+      operationId: suppliers_suppliers_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplierList'
+          description: ''
+    post:
+      operationId: suppliers_suppliers_create
+      tags:
+      - suppliers
       requestBody:
         content:
           application/json:
@@ -209,17 +1136,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Supplier'
           description: ''
-  /api/inventory/suppliers/{id}/:
+  /api/suppliers/suppliers/{id}/:
     get:
-      operationId: inventory_suppliers_retrieve
+      operationId: suppliers_suppliers_retrieve
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this supplier.
         required: true
       tags:
-      - inventory
+      - suppliers
       security:
       - knoxApiToken: []
       - {}
@@ -231,15 +1159,16 @@ paths:
                 $ref: '#/components/schemas/Supplier'
           description: ''
     put:
-      operationId: inventory_suppliers_update
+      operationId: suppliers_suppliers_update
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this supplier.
         required: true
       tags:
-      - inventory
+      - suppliers
       requestBody:
         content:
           application/json:
@@ -262,16 +1191,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/Supplier'
           description: ''
-    delete:
-      operationId: inventory_suppliers_destroy
+    patch:
+      operationId: suppliers_suppliers_partial_update
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this supplier.
         required: true
       tags:
-      - inventory
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+          description: ''
+    delete:
+      operationId: suppliers_suppliers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this supplier.
+        required: true
+      tags:
+      - suppliers
       security:
       - knoxApiToken: []
       - {}
@@ -588,6 +1550,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
+  /api/users/users/metrics/:
+    get:
+      operationId: users_users_metrics_retrieve
+      tags:
+      - users
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
 components:
   schemas:
     ActionTypeEnum:
@@ -608,6 +1584,98 @@ components:
         * `LOGIN` - Iniciar sesión
         * `LOGOUT` - Cerrar sesión
         * `OTHER` - Otro
+    BuyOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuyOrderDetail'
+        net_amount:
+          type: integer
+        iva:
+          type: integer
+        total_amount:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: Status Buy Order
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        supplier:
+          type: string
+          maxLength: 100
+      required:
+      - created_at
+      - details
+      - id
+      - supplier
+    BuyOrderDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        product:
+          type: string
+          maxLength: 100
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        unit_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - product
+      - unit_price
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        national_id:
+          type: string
+          maxLength: 12
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 12
+      required:
+      - first_name
+      - id
+      - last_name
+      - national_id
+    DocumentTypeEnum:
+      enum:
+      - FAC
+      - BOL
+      type: string
+      description: |-
+        * `FAC` - Factura
+        * `BOL` - Boleta
     Login:
       type: object
       properties:
@@ -618,6 +1686,167 @@ components:
       required:
       - email
       - password
+    PaginatedBuyOrderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuyOrder'
+    PaginatedClientList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+    PaginatedProductList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    PaginatedSaleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sale'
+    PaginatedShrinkageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shrinkage'
+    PaginatedSupplierList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+    PaginatedSupplyList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supply'
     PaginatedUserActivityList:
       type: object
       required:
@@ -641,12 +1870,192 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserActivity'
+    PatchedBuyOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuyOrderDetail'
+        net_amount:
+          type: integer
+        iva:
+          type: integer
+        total_amount:
+          type: integer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: Status Buy Order
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        supplier:
+          type: string
+          maxLength: 100
+    PatchedClient:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        national_id:
+          type: string
+          maxLength: 12
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 12
+    PatchedProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        price_clp:
+          type: number
+          format: double
+        iva:
+          type: boolean
+        stock:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        category:
+          type: string
+          maxLength: 100
+        supplier:
+          type: string
+          maxLength: 100
+        data:
+          nullable: true
+    PatchedSale:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleDetail'
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        folio:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        net_amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
+        iva:
+          type: integer
+          readOnly: true
+        total_amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        client:
+          type: integer
+          nullable: true
+    PatchedShrinkage:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        quantity:
+          type: integer
+        product:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
+        observation:
+          type: string
+          nullable: true
+    PatchedSupplier:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        address:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        rut:
+          type: string
+          maxLength: 13
+        category:
+          type: string
+          maxLength: 100
+    PatchedSupply:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        stock:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
     PatchedUser:
       type: object
       properties:
         id:
           type: string
           readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
         first_name:
           type: string
           maxLength: 150
@@ -677,6 +2086,20 @@ components:
           title: Active
           description: Designates whether this user should be treated as active. Unselect
             this instead of deleting accounts.
+    PaymentMethodEnum:
+      enum:
+      - EF
+      - TC
+      - TD
+      - TR
+      - OT
+      type: string
+      description: |-
+        * `EF` - Efectivo
+        * `TC` - Tarjeta Crédito
+        * `TD` - Tarjeta Débito
+        * `TR` - Transferencia
+        * `OT` - Otro
     Product:
       type: object
       properties:
@@ -685,31 +2108,142 @@ components:
           readOnly: true
         name:
           type: string
-          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
-            ]+$
           maxLength: 255
         price_clp:
           type: number
           format: double
-          minimum: 0.01
+        iva:
+          type: boolean
         stock:
           type: integer
-          minimum: 0
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         category:
           type: string
-          pattern: ^[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
-            ]+$
           maxLength: 100
-        supplier_id:
+        supplier:
           type: string
-          description: ID del proveedor asociado a este producto
+          maxLength: 100
+        data:
+          nullable: true
       required:
       - category
       - id
       - name
       - price_clp
       - stock
-      - supplier_id
+      - supplier
+    Sale:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleDetail'
+        document_type:
+          $ref: '#/components/schemas/DocumentTypeEnum'
+        folio:
+          type: integer
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        net_amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
+        iva:
+          type: integer
+          readOnly: true
+        total_amount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        client:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - details
+      - folio
+      - id
+      - iva
+      - net_amount
+      - total_amount
+    SaleDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        product:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        unit_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        discount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - product
+      - unit_price
+    Shrinkage:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        quantity:
+          type: integer
+        product:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
+        observation:
+          type: string
+          nullable: true
+      required:
+      - category
+      - id
+      - price
+      - product
+      - quantity
+    StatusEnum:
+      enum:
+      - RE
+      - PE
+      - AP
+      type: string
+      description: |-
+        * `RE` - Rechazado
+        * `PE` - Pendiente
+        * `AP` - Aprobado
     Supplier:
       type: object
       properties:
@@ -718,29 +2252,22 @@ components:
           readOnly: true
         name:
           type: string
-          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
-            ]+$
           maxLength: 255
         address:
           type: string
-          pattern: ^[a-zA-Z0-9\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
-            ,.#-]+$
           maxLength: 255
         phone:
           type: string
-          pattern: ^\+?[0-9]{9,15}$
           maxLength: 20
         email:
           type: string
           format: email
+          maxLength: 254
         rut:
           type: string
-          pattern: ^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]{1}$
           maxLength: 13
         category:
           type: string
-          pattern: ^[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00c1\u00c9\u00cd\u00d3\u00da\u00f1\u00d1
-            ]+$
           maxLength: 100
       required:
       - address
@@ -750,12 +2277,35 @@ components:
       - name
       - phone
       - rut
+    Supply:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        stock:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
+      required:
+      - category
+      - id
+      - name
+      - stock
     User:
       type: object
       properties:
         id:
           type: string
           readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
         first_name:
           type: string
           maxLength: 150

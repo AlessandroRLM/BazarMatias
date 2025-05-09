@@ -206,7 +206,6 @@ export default function InventoryManagementPage() {
         content={`¿Estás seguro de que deseas eliminar el producto "${productToDelete?.nombre}"?`}
         onConfirm={handleConfirmDelete}
         onClose={handleCancelDelete}
-        userName={productToDelete?.nombre || "Producto desconocido"}
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />

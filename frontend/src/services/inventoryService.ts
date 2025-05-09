@@ -14,7 +14,7 @@ export const fetchSuppliers = async ({
   category?: string;
   ordering?: string;
 } = {}) => {
-  let url = `/api/inventory/suppliers/?page=${page}&page_size=${page_size}`;
+  let url = `/api/suppliers/suppliers/?page=${page}&page_size=${page_size}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
   if (category) url += `&category=${encodeURIComponent(category)}`;
   if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
@@ -23,22 +23,22 @@ export const fetchSuppliers = async ({
 };
 
 export const fetchSupplier = async (id: string) => {
-  const response = await AxiosInstance.get(`/api/inventory/suppliers/${id}/`);
+  const response = await AxiosInstance.get(`/api/suppliers/suppliers/${id}/`);
   return response.data;
 };
 
 export const createSupplier = async (supplier: any) => {
-  const response = await AxiosInstance.post('/api/inventory/suppliers/', supplier);
+  const response = await AxiosInstance.post('/api/suppliers/suppliers/', supplier);
   return response.data;
 };
 
 export const updateSupplier = async (id: string, supplier: any) => {
-  const response = await AxiosInstance.put(`/api/inventory/suppliers/${id}/`, supplier);
+  const response = await AxiosInstance.put(`/api/suppliers/suppliers/${id}/`, supplier);
   return response.data;
 };
 
 export const deleteSupplier = async (id: string) => {
-  await AxiosInstance.delete(`/api/inventory/suppliers/${id}/`);
+  await AxiosInstance.delete(`/api/suppliers/suppliers/${id}/`);
 };
 
 // CRUD de Productos con paginación, búsqueda y filtros

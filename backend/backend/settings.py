@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'users',
     'authentication',
     'inventory',
+    'suppliers',
+    'sales',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +146,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 REST_FRAMEWORK = {
+    'ENCODERS': {
+        'django.http.response.JsonResponse': 'backend.utils.MongoJSONEncoder',
+    },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
         'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
@@ -151,6 +156,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # URL del frontend en desarrollo
+    "http://127.0.0.1:3000"
 ]
 
 REST_KNOX = {

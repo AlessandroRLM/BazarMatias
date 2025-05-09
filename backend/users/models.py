@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django_mongodb_backend.fields import ObjectIdField
+from django_mongodb_backend.fields import ObjectIdField #type: ignore
 from django.db import models
 import re
 

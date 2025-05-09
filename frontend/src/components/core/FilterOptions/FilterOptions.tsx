@@ -4,10 +4,11 @@ import useDebounce from "../../../hooks/core/useDebounce"
 import { DateRangePicker } from "../DateRangeInput/DateRangeInput"
 import { DatePicker } from "../DatePicker/DatePicker"
 import dayjs from "dayjs"
+import { Filters } from "../../../types/core.types"
 
 
 export type SelectOption = {
-    value: string | number
+    value: string | number | null
     label: string
 }
 

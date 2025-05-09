@@ -184,9 +184,10 @@ export default function OrderTable() {
 
       <ConfirmDialog
         open={deleteDialogOpen}
+        title='Eliminar Usuario'
+        content={`¿Estás seguro de que deseas eliminar a "${userToDelete?.name}"?`}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        userName={userToDelete?.name || ''}
       />
 
       <Sheet

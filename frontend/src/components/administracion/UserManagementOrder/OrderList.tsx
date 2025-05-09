@@ -94,9 +94,10 @@ export default function OrderList() {
     <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
       <ConfirmDialog
         open={deleteDialogOpen}
+        title='Eliminar Usuario'
+        content={`¿Estás seguro de que deseas eliminar a "${userToDelete?.name}"?`}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        userName={userToDelete?.name || ''}
       />
 
       <Input

@@ -16,7 +16,10 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthProveedoresIndexImport } from './routes/_auth/proveedores/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
+import { Route as AuthProveedoresOrdenesDeCompraImport } from './routes/_auth/proveedores/ordenes-de-compra'
 import { Route as AuthProveedoresCrearProveedorImport } from './routes/_auth/proveedores/crear-proveedor'
+import { Route as AuthProveedoresCrearOrdenesDeCompraImport } from './routes/_auth/proveedores/crear-ordenes-de-compra'
+import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventario/dashboard'
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthInventarioMermasIndexImport } from './routes/_auth/inventario/mermas/index'
@@ -24,7 +27,10 @@ import { Route as AuthInventarioInsumosIndexImport } from './routes/_auth/invent
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
+import { Route as AuthProveedoresVerOrdenesDeCompraIdImport } from './routes/_auth/proveedores/ver-ordenes-de-compra.$id'
+import { Route as AuthProveedoresEliminarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/eliminar-ordenes-de-compra.$id'
 import { Route as AuthProveedoresEditarProveedorIdImport } from './routes/_auth/proveedores/editar-proveedor.$id'
+import { Route as AuthProveedoresEditarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/editar-ordenes-de-compra.$id'
 import { Route as AuthInventarioProductosCrearProductoImport } from './routes/_auth/inventario/productos/crear-producto'
 import { Route as AuthInventarioMermasCrearMermaImport } from './routes/_auth/inventario/mermas/crear-merma'
 import { Route as AuthInventarioInsumosCrearInsumoImport } from './routes/_auth/inventario/insumos/crear-insumo'
@@ -71,12 +77,32 @@ const AuthHomeIndexRoute = AuthHomeIndexImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AuthProveedoresOrdenesDeCompraRoute =
+  AuthProveedoresOrdenesDeCompraImport.update({
+    id: '/proveedores/ordenes-de-compra',
+    path: '/proveedores/ordenes-de-compra',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthProveedoresCrearProveedorRoute =
   AuthProveedoresCrearProveedorImport.update({
     id: '/proveedores/crear-proveedor',
     path: '/proveedores/crear-proveedor',
     getParentRoute: () => AuthRoute,
   } as any)
+
+const AuthProveedoresCrearOrdenesDeCompraRoute =
+  AuthProveedoresCrearOrdenesDeCompraImport.update({
+    id: '/proveedores/crear-ordenes-de-compra',
+    path: '/proveedores/crear-ordenes-de-compra',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventarioDashboardRoute = AuthInventarioDashboardImport.update({
+  id: '/inventario/dashboard',
+  path: '/inventario/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 const AuthAdministracionDashboardRoute =
   AuthAdministracionDashboardImport.update({
@@ -127,10 +153,31 @@ const AuthProveedoresVerProveedorIdRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthProveedoresVerOrdenesDeCompraIdRoute =
+  AuthProveedoresVerOrdenesDeCompraIdImport.update({
+    id: '/proveedores/ver-ordenes-de-compra/$id',
+    path: '/proveedores/ver-ordenes-de-compra/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresEliminarOrdenesDeCompraIdRoute =
+  AuthProveedoresEliminarOrdenesDeCompraIdImport.update({
+    id: '/proveedores/eliminar-ordenes-de-compra/$id',
+    path: '/proveedores/eliminar-ordenes-de-compra/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthProveedoresEditarProveedorIdRoute =
   AuthProveedoresEditarProveedorIdImport.update({
     id: '/proveedores/editar-proveedor/$id',
     path: '/proveedores/editar-proveedor/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresEditarOrdenesDeCompraIdRoute =
+  AuthProveedoresEditarOrdenesDeCompraIdImport.update({
+    id: '/proveedores/editar-ordenes-de-compra/$id',
+    path: '/proveedores/editar-ordenes-de-compra/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -264,11 +311,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionDashboardImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/dashboard': {
+      id: '/_auth/inventario/dashboard'
+      path: '/inventario/dashboard'
+      fullPath: '/inventario/dashboard'
+      preLoaderRoute: typeof AuthInventarioDashboardImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/crear-ordenes-de-compra': {
+      id: '/_auth/proveedores/crear-ordenes-de-compra'
+      path: '/proveedores/crear-ordenes-de-compra'
+      fullPath: '/proveedores/crear-ordenes-de-compra'
+      preLoaderRoute: typeof AuthProveedoresCrearOrdenesDeCompraImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/proveedores/crear-proveedor': {
       id: '/_auth/proveedores/crear-proveedor'
       path: '/proveedores/crear-proveedor'
       fullPath: '/proveedores/crear-proveedor'
       preLoaderRoute: typeof AuthProveedoresCrearProveedorImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/ordenes-de-compra': {
+      id: '/_auth/proveedores/ordenes-de-compra'
+      path: '/proveedores/ordenes-de-compra'
+      fullPath: '/proveedores/ordenes-de-compra'
+      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraImport
       parentRoute: typeof AuthImport
     }
     '/_auth/home/': {
@@ -320,11 +388,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInventarioProductosCrearProductoImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/proveedores/editar-ordenes-de-compra/$id': {
+      id: '/_auth/proveedores/editar-ordenes-de-compra/$id'
+      path: '/proveedores/editar-ordenes-de-compra/$id'
+      fullPath: '/proveedores/editar-ordenes-de-compra/$id'
+      preLoaderRoute: typeof AuthProveedoresEditarOrdenesDeCompraIdImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/proveedores/editar-proveedor/$id': {
       id: '/_auth/proveedores/editar-proveedor/$id'
       path: '/proveedores/editar-proveedor/$id'
       fullPath: '/proveedores/editar-proveedor/$id'
       preLoaderRoute: typeof AuthProveedoresEditarProveedorIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/eliminar-ordenes-de-compra/$id': {
+      id: '/_auth/proveedores/eliminar-ordenes-de-compra/$id'
+      path: '/proveedores/eliminar-ordenes-de-compra/$id'
+      fullPath: '/proveedores/eliminar-ordenes-de-compra/$id'
+      preLoaderRoute: typeof AuthProveedoresEliminarOrdenesDeCompraIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/ver-ordenes-de-compra/$id': {
+      id: '/_auth/proveedores/ver-ordenes-de-compra/$id'
+      path: '/proveedores/ver-ordenes-de-compra/$id'
+      fullPath: '/proveedores/ver-ordenes-de-compra/$id'
+      preLoaderRoute: typeof AuthProveedoresVerOrdenesDeCompraIdImport
       parentRoute: typeof AuthImport
     }
     '/_auth/proveedores/ver-proveedor/$id': {
@@ -439,7 +528,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
+  AuthInventarioDashboardRoute: typeof AuthInventarioDashboardRoute
+  AuthProveedoresCrearOrdenesDeCompraRoute: typeof AuthProveedoresCrearOrdenesDeCompraRoute
   AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
+  AuthProveedoresOrdenesDeCompraRoute: typeof AuthProveedoresOrdenesDeCompraRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
   AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
@@ -447,7 +539,10 @@ interface AuthRouteChildren {
   AuthInventarioInsumosCrearInsumoRoute: typeof AuthInventarioInsumosCrearInsumoRoute
   AuthInventarioMermasCrearMermaRoute: typeof AuthInventarioMermasCrearMermaRoute
   AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
+  AuthProveedoresEditarOrdenesDeCompraIdRoute: typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   AuthProveedoresEditarProveedorIdRoute: typeof AuthProveedoresEditarProveedorIdRoute
+  AuthProveedoresEliminarOrdenesDeCompraIdRoute: typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
+  AuthProveedoresVerOrdenesDeCompraIdRoute: typeof AuthProveedoresVerOrdenesDeCompraIdRoute
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
@@ -467,7 +562,11 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAdministracionDashboardRoute: AuthAdministracionDashboardRoute,
+  AuthInventarioDashboardRoute: AuthInventarioDashboardRoute,
+  AuthProveedoresCrearOrdenesDeCompraRoute:
+    AuthProveedoresCrearOrdenesDeCompraRoute,
   AuthProveedoresCrearProveedorRoute: AuthProveedoresCrearProveedorRoute,
+  AuthProveedoresOrdenesDeCompraRoute: AuthProveedoresOrdenesDeCompraRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
   AuthProveedoresIndexRoute: AuthProveedoresIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuariosRoute:
@@ -478,7 +577,13 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInventarioMermasCrearMermaRoute: AuthInventarioMermasCrearMermaRoute,
   AuthInventarioProductosCrearProductoRoute:
     AuthInventarioProductosCrearProductoRoute,
+  AuthProveedoresEditarOrdenesDeCompraIdRoute:
+    AuthProveedoresEditarOrdenesDeCompraIdRoute,
   AuthProveedoresEditarProveedorIdRoute: AuthProveedoresEditarProveedorIdRoute,
+  AuthProveedoresEliminarOrdenesDeCompraIdRoute:
+    AuthProveedoresEliminarOrdenesDeCompraIdRoute,
+  AuthProveedoresVerOrdenesDeCompraIdRoute:
+    AuthProveedoresVerOrdenesDeCompraIdRoute,
   AuthProveedoresVerProveedorIdRoute: AuthProveedoresVerProveedorIdRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
   AuthAdministracionUsuariosIndexRoute: AuthAdministracionUsuariosIndexRoute,
@@ -510,7 +615,10 @@ export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
+  '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
+  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
@@ -518,7 +626,10 @@ export interface FileRoutesByFullPath {
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
+  '/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
@@ -541,7 +652,10 @@ export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
+  '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
+  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
@@ -549,7 +663,10 @@ export interface FileRoutesByTo {
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
+  '/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
@@ -573,7 +690,10 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
+  '/_auth/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/_auth/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
+  '/_auth/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
@@ -581,7 +701,10 @@ export interface FileRoutesById {
   '/_auth/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
   '/_auth/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
   '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
+  '/_auth/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/_auth/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
+  '/_auth/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
+  '/_auth/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
@@ -606,7 +729,10 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
+    | '/inventario/dashboard'
+    | '/proveedores/crear-ordenes-de-compra'
     | '/proveedores/crear-proveedor'
+    | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
@@ -614,7 +740,10 @@ export interface FileRouteTypes {
     | '/inventario/insumos/crear-insumo'
     | '/inventario/mermas/crear-merma'
     | '/inventario/productos/crear-producto'
+    | '/proveedores/editar-ordenes-de-compra/$id'
     | '/proveedores/editar-proveedor/$id'
+    | '/proveedores/eliminar-ordenes-de-compra/$id'
+    | '/proveedores/ver-ordenes-de-compra/$id'
     | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
@@ -636,7 +765,10 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
+    | '/inventario/dashboard'
+    | '/proveedores/crear-ordenes-de-compra'
     | '/proveedores/crear-proveedor'
+    | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
@@ -644,7 +776,10 @@ export interface FileRouteTypes {
     | '/inventario/insumos/crear-insumo'
     | '/inventario/mermas/crear-merma'
     | '/inventario/productos/crear-producto'
+    | '/proveedores/editar-ordenes-de-compra/$id'
     | '/proveedores/editar-proveedor/$id'
+    | '/proveedores/eliminar-ordenes-de-compra/$id'
+    | '/proveedores/ver-ordenes-de-compra/$id'
     | '/proveedores/ver-proveedor/$id'
     | '/administracion/perfil'
     | '/administracion/usuarios'
@@ -666,7 +801,10 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/login'
     | '/_auth/administracion/dashboard'
+    | '/_auth/inventario/dashboard'
+    | '/_auth/proveedores/crear-ordenes-de-compra'
     | '/_auth/proveedores/crear-proveedor'
+    | '/_auth/proveedores/ordenes-de-compra'
     | '/_auth/home/'
     | '/_auth/proveedores/'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
@@ -674,7 +812,10 @@ export interface FileRouteTypes {
     | '/_auth/inventario/insumos/crear-insumo'
     | '/_auth/inventario/mermas/crear-merma'
     | '/_auth/inventario/productos/crear-producto'
+    | '/_auth/proveedores/editar-ordenes-de-compra/$id'
     | '/_auth/proveedores/editar-proveedor/$id'
+    | '/_auth/proveedores/eliminar-ordenes-de-compra/$id'
+    | '/_auth/proveedores/ver-ordenes-de-compra/$id'
     | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
@@ -727,7 +868,10 @@ export const routeTree = rootRoute
       "filePath": "_auth.tsx",
       "children": [
         "/_auth/administracion/dashboard",
+        "/_auth/inventario/dashboard",
+        "/_auth/proveedores/crear-ordenes-de-compra",
         "/_auth/proveedores/crear-proveedor",
+        "/_auth/proveedores/ordenes-de-compra",
         "/_auth/home/",
         "/_auth/proveedores/",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
@@ -735,7 +879,10 @@ export const routeTree = rootRoute
         "/_auth/inventario/insumos/crear-insumo",
         "/_auth/inventario/mermas/crear-merma",
         "/_auth/inventario/productos/crear-producto",
+        "/_auth/proveedores/editar-ordenes-de-compra/$id",
         "/_auth/proveedores/editar-proveedor/$id",
+        "/_auth/proveedores/eliminar-ordenes-de-compra/$id",
+        "/_auth/proveedores/ver-ordenes-de-compra/$id",
         "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
@@ -760,8 +907,20 @@ export const routeTree = rootRoute
       "filePath": "_auth/administracion/dashboard.tsx",
       "parent": "/_auth"
     },
+    "/_auth/inventario/dashboard": {
+      "filePath": "_auth/inventario/dashboard.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/crear-ordenes-de-compra": {
+      "filePath": "_auth/proveedores/crear-ordenes-de-compra.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/proveedores/crear-proveedor": {
       "filePath": "_auth/proveedores/crear-proveedor.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ordenes-de-compra": {
+      "filePath": "_auth/proveedores/ordenes-de-compra.tsx",
       "parent": "/_auth"
     },
     "/_auth/home/": {
@@ -792,8 +951,20 @@ export const routeTree = rootRoute
       "filePath": "_auth/inventario/productos/crear-producto.tsx",
       "parent": "/_auth"
     },
+    "/_auth/proveedores/editar-ordenes-de-compra/$id": {
+      "filePath": "_auth/proveedores/editar-ordenes-de-compra.$id.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/proveedores/editar-proveedor/$id": {
       "filePath": "_auth/proveedores/editar-proveedor.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/eliminar-ordenes-de-compra/$id": {
+      "filePath": "_auth/proveedores/eliminar-ordenes-de-compra.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ver-ordenes-de-compra/$id": {
+      "filePath": "_auth/proveedores/ver-ordenes-de-compra.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/proveedores/ver-proveedor/$id": {

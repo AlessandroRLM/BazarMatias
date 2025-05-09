@@ -18,6 +18,7 @@ interface FormSelectProps<T extends FieldValues> {
   disabled?: boolean;
   fullWidht?: boolean;
   error?: FieldError;
+  onChange?: (value: any) => void
 }
 
 const FormSelect = <T extends FieldValues>({
@@ -30,12 +31,13 @@ const FormSelect = <T extends FieldValues>({
   disabled = false,
   fullWidht = false,
   error,
+  onChange
 }: FormSelectProps<T>) => {
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, value, ...field } }) => (
+      render={({ field: { onChange: fieldOnChange, value, ...field } }) => (
         <FormControl
           error={!!error}
           sx={{ mb: 2, width: fullWidht ? "100%" : "auto" }}
@@ -44,7 +46,15 @@ const FormSelect = <T extends FieldValues>({
           <Select
             {...field}
             value={value || ""}
-            onChange={(e, newValue) => onChange(newValue)}
+            onChange={(e, newValue) => {
+              // Primero actualizamos el estado del formulario
+              fieldOnChange(newValue);
+              
+              // Luego ejecutamos el manejador personalizado si existe
+              if (onChange) {
+                onChange(newValue);
+              }
+            }}
             size={size}
             disabled={disabled}
             placeholder={placeholder}

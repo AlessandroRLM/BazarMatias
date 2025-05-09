@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import ReturnView from '../../../../pages/devoluciones/ReturnView'
 
-export const Route = createFileRoute('/_auth/proveedores/devoluciones/ver-devolucion')({
+export const Route = createFileRoute('/_auth/proveedores/devoluciones/ver-devolucion/$id')({
   component: ReturnViewPage
 })
 

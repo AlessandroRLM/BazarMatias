@@ -9,34 +9,55 @@ import {
 } from "@mui/joy";
 import CustomTable from "../../components/core/CustomTable/CustomTable";
 import { ColumnDef } from "@tanstack/react-table";
+import { fetchReturnSupplier, fetchSupplier } from "../../services/inventoryService";
+import { useParams } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 
 export default function ReturnView() {
-  const returnData = {
-    provider: "Proveedor Ejemplo S.A.",
-    rut: "12.345.678-9",
-    email: "contacto@proveedor.com",
-    phone: "+56 9 8765 4321",
-    issueDate: "2023-11-15",
-    returnNumber: "DEV-2023-0456",
-    products: [
-      {
-        id: "1",
-        name: "Producto XYZ-2000",
-        productStatus: "Nuevo",
-        status: "Defectuoso",
-        quantity: 3,
-        reason: "Daños en el embalaje"
-      },
-      {
-        id: "2",
-        name: "Producto ABC-1000",
-        productStatus: "Usado",
-        status: "Devuelto",
-        quantity: 1,
-        reason: "No cumplió expectativas"
-      }
-    ]
-  };
+  const { id } = useParams({ strict: false });
+  const [returnData, setReturnData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    fetchReturnSupplier(id)
+      .then(async data => {
+        // Obtener datos del proveedor si es posible
+        let supplierData = { rut: "", email: "", phone: "" };
+        if (data.supplier) {
+          try {
+            const s = await fetchSupplier(data.supplier);
+            supplierData = {
+              rut: s.rut || "",
+              email: s.email || "",
+              phone: s.phone || ""
+            };
+          } catch { /* proveedor no encontrado */ }
+        }
+        const products = [{
+          id: data.product,
+          name: data.product_name || "",
+          status: data.status || "",
+          quantity: data.quantity || 0,
+          productStatus: data.product_condition || "",
+          reason: data.reason || "",
+        }];
+        setReturnData({
+          provider: data.supplier_name || data.provider,
+          rut: supplierData.rut,
+          email: supplierData.email,
+          phone: supplierData.phone,
+          issueDate: data.purchase_date || "",
+          returnNumber: data.purchase_number || "",
+          products,
+        });
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <Typography>Cargando...</Typography>;
+  if (!returnData) return <Typography>No se encontró la devolución.</Typography>;
 
   const productColumns: ColumnDef<typeof returnData.products[0]>[] = [
     { 
@@ -45,7 +66,7 @@ export default function ReturnView() {
       cell: info => <Typography>{info.getValue<string>()}</Typography>
     },
     { 
-      accessorKey: "status", 
+      accessorKey: "productStatus", // <-- Estado del producto
       header: "Estado del producto",
       cell: info => <Typography>{info.getValue<string>()}</Typography>
     },
@@ -55,7 +76,7 @@ export default function ReturnView() {
       cell: info => <Typography>{info.getValue<number>()}</Typography>
     },
     { 
-      accessorKey: "productStatus", 
+      accessorKey: "status", // <-- Estatus
       header: "Estatus",
       cell: info => <Typography>{info.getValue<string>()}</Typography>
     },

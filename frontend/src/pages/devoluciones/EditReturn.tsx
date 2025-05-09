@@ -8,75 +8,205 @@ import {
   Option,
   Typography,
   Grid,
-  Stack
+  Stack,
+  CircularProgress
 } from "@mui/joy";
 import CustomTable from "../../components/core/CustomTable/CustomTable";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { fetchReturnSupplier, updateReturnSupplier, fetchSuppliers, fetchSupplier, fetchProducts } from "../../services/inventoryService";
+import { useParams, useNavigate } from "@tanstack/react-router";
+
+interface ReturnProduct {
+  id: string;
+  name: string;
+  status: string;
+  quantity: number;
+  productStatus: string;
+  reason: string;
+}
+
+interface ReturnData {
+  provider: string;
+  rut: string;
+  email: string;
+  phone: string;
+  issueDate: string;
+  returnNumber: string;
+  products: ReturnProduct[];
+}
 
 export default function ReturnEdit() {
-  const [returnData, setReturnData] = useState({
-    provider: "Proveedor Ejemplo S.A.",
-    rut: "12.345.678-9",
-    email: "contacto@proveedor.com",
-    phone: "+56 9 8765 4321",
-    issueDate: "2023-11-15",
-    returnNumber: "DEV-2023-0456",
-    products: [
-      {
-        id: "1",
-        name: "Producto XYZ-2000",
-        status: "Defectuoso",
-        quantity: 3,
-        productStatus: "Nuevo",
-        reason: "Daños en el embalaje"
-      },
-      {
-        id: "2",
-        name: "Producto ABC-1000",
-        status: "Devuelto",
-        quantity: 1,
-        productStatus: "Usado",
-        reason: "No cumplió expectativas"
-      }
-    ]
-  });
+  const { id } = useParams({ strict: false });
+  const navigate = useNavigate();
+  const [returnData, setReturnData] = useState<ReturnData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
 
-  const handleChange = (field: string, value: string) => {
-    setReturnData(prev => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    fetchSuppliers().then(data => setSuppliers(data.results || []));
+    fetchProducts().then(data => setProducts(data.results || []));
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      setIsLoading(true);
+      fetchReturnSupplier(id)
+        .then(async (data) => {
+          let supplierData = { rut: "", email: "", phone: "" };
+          if (data.supplier) {
+            try {
+              const s = await fetchSupplier(data.supplier);
+              supplierData = {
+                rut: s.rut || "",
+                email: s.email || "",
+                phone: s.phone || ""
+              };
+            } catch { /* proveedor no encontrado */ }
+          }
+          const transformed: ReturnData = {
+            provider: data.supplier, // Usar el id para el Select
+            rut: supplierData.rut,
+            email: supplierData.email,
+            phone: supplierData.phone,
+            issueDate: data.purchase_date || "",
+            returnNumber: data.purchase_number || "",
+            products: [
+              {
+                id: data.product,
+                name: data.product_name || "",
+                status: data.status || "",
+                quantity: data.quantity || 0,
+                productStatus: data.product_condition || "",
+                reason: data.reason || "",
+              }
+            ]
+          };
+          setReturnData(transformed);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          toast.error('Error al cargar la devolución');
+          setIsLoading(false);
+        });
+    }
+  }, [id]);
+
+  const handleChange = (field: keyof ReturnData, value: string) => {
+    setReturnData(prev => prev ? ({ ...prev, [field]: value }) : null);
   };
 
-  const handleProductChange = (id: string, field: string, value: string) => {
-    setReturnData(prev => ({
-      ...prev,
-      products: prev.products.map(product => 
-        product.id === id ? { ...product, [field]: value } : product
-      )
-    }));
+  const handleProductChange = (id: string, field: keyof ReturnProduct, value: string | number) => {
+    setReturnData(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        products: prev.products.map(product => 
+          product.id === id ? { ...product, [field]: value } : product
+        )
+      };
+    });
   };
 
-  const productColumns: ColumnDef<typeof returnData.products[0]>[] = [
+  const handleProviderChange = async (value: string) => {
+    setReturnData(prev => {
+      if (!prev) return null;
+      return { ...prev, provider: value };
+    });
+    try {
+      const s = await fetchSupplier(value);
+      setReturnData(prev => prev ? ({
+        ...prev,
+        rut: s.rut || "",
+        email: s.email || "",
+        phone: s.phone || ""
+      }) : null);
+    } catch { /* proveedor no encontrado */ }
+  };
+
+  const handleConfirm = async () => {
+    if (!returnData || !id) return;
+
+    // Transformar los datos al formato esperado por el backend
+    const payload = {
+      supplier: returnData.provider,
+      purchase_date: returnData.issueDate,
+      purchase_number: returnData.returnNumber,
+      // Solo soporta un producto, ajusta si hay varios
+      product: returnData.products[0]?.id,
+      product_condition: returnData.products[0]?.productStatus,
+      quantity: returnData.products[0]?.quantity,
+      reason: returnData.products[0]?.reason,
+      status: returnData.products[0]?.status,
+    };
+
+    try {
+      await updateReturnSupplier(id, payload);
+      toast.success('¡Devolución actualizada con éxito!', {
+        style: {
+          borderRadius: '8px',
+          background: '#333',
+          color: '#fff',
+        },
+        icon: '✅',
+      });
+      navigate({ to: "/proveedores/devoluciones" });
+    } catch (error) {
+      toast.error('Error al actualizar la devolución');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!returnData) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography color="danger">No se pudo cargar la información de la devolución</Typography>
+      </Box>
+    );
+  }
+
+  const productColumns: ColumnDef<ReturnProduct>[] = [
     { 
-      accessorKey: "name", 
+      accessorKey: "name",
       header: "Producto",
       cell: ({ row }) => (
-        <Input 
-          value={row.original.name}
-          onChange={(e) => handleProductChange(row.original.id, 'name', e.target.value)}
-        />
+        <Select
+          value={row.original.id}
+          onChange={(_, value) => {
+            // Busca el producto seleccionado
+            const selected = products.find(p => p.id === value);
+            handleProductChange(row.original.id, 'id', value as string);
+            handleProductChange(row.original.id, 'name', selected ? selected.name : "");
+          }}
+          placeholder="Seleccione producto"
+        >
+          {products.map(p => (
+            <Option key={p.id} value={p.id}>{p.name}</Option>
+          ))}
+        </Select>
       )
     },
     { 
-      accessorKey: "status", 
-      header: "Estado del producto",
+      accessorKey: "productStatus",
+      header: "Estado del Producto",
       cell: ({ row }) => (
         <Select
-          value={row.original.status}
-          onChange={(e, value) => handleProductChange(row.original.id, 'status', value as string)}
+          value={row.original.productStatus}
+          onChange={(e, value) => handleProductChange(row.original.id, 'productStatus', value as string)}
         >
-          <Option value="Defectuoso">Defectuoso</Option>
-          <Option value="Devuelto">Devuelto</Option>
+          <Option value="Nuevo">Nuevo</Option>
           <Option value="Usado">Usado</Option>
+          <Option value="Dañado">Dañado</Option>
+          <Option value="Defectuoso">Defectuoso</Option>
         </Select>
       )
     },
@@ -87,20 +217,21 @@ export default function ReturnEdit() {
         <Input 
           type="number"
           value={row.original.quantity}
-          onChange={(e) => handleProductChange(row.original.id, 'quantity', e.target.value)}
+          onChange={(e) => handleProductChange(row.original.id, 'quantity', parseInt(e.target.value) || 0)}
         />
       )
     },
     { 
-      accessorKey: "productStatus", 
+      accessorKey: "status",
       header: "Estatus",
       cell: ({ row }) => (
         <Select
-          value={row.original.productStatus}
-          onChange={(e, value) => handleProductChange(row.original.id, 'productStatus', value as string)}
+          value={row.original.status}
+          onChange={(e, value) => handleProductChange(row.original.id, 'status', value as string)}
         >
-          <Option value="Nuevo">Nuevo</Option>
-          <Option value="Usado">Usado</Option>
+          <Option value="Pendiente">Pendiente</Option>
+          <Option value="Resuelto">Resuelto</Option>
+          <Option value="Denegado">Denegado</Option>
         </Select>
       )
     },
@@ -127,9 +258,7 @@ export default function ReturnEdit() {
         p: 3,
         mb: 3
       }}>
-
         <Grid container spacing={3}>
-
           <Grid xs={12} md={6}>
             <Box sx={{ 
               border: '1px solid', 
@@ -143,17 +272,22 @@ export default function ReturnEdit() {
               <Stack spacing={2}>
                 <FormControl>
                   <FormLabel>Nombre Proveedor</FormLabel>
-                  <Input 
-                    value={returnData.provider} 
-                    onChange={(e) => handleChange('provider', e.target.value)}
-                  />
+                  <Select
+                    value={returnData.provider}
+                    onChange={(_, value) => handleProviderChange(value ?? "")}
+                    placeholder="Seleccione proveedor"
+                  >
+                    {suppliers.map(s => (
+                      <Option key={s.id} value={s.id}>{s.name}</Option>
+                    ))}
+                  </Select>
                 </FormControl>
 
                 <FormControl>
                   <FormLabel>RUT</FormLabel>
                   <Input 
                     value={returnData.rut}
-                    onChange={(e) => handleChange('rut', e.target.value)}
+                    disabled
                   />
                 </FormControl>
 
@@ -161,7 +295,7 @@ export default function ReturnEdit() {
                   <FormLabel>Email</FormLabel>
                   <Input 
                     value={returnData.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
+                    disabled
                   />
                 </FormControl>
 
@@ -169,7 +303,7 @@ export default function ReturnEdit() {
                   <FormLabel>Teléfono</FormLabel>
                   <Input 
                     value={returnData.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
+                    disabled
                   />
                 </FormControl>
               </Stack>
@@ -211,18 +345,22 @@ export default function ReturnEdit() {
         <Box sx={{ mt: 3 }}>
           <Typography level="h4" sx={{ mb: 2 }}>Productos devueltos</Typography>
           
-          <CustomTable
-            data={returnData.products}
-            columns={productColumns}
-            pagination={{ pageIndex: 0, pageSize: 10 }}
-            paginationOptions={{
-              onPaginationChange: () => {},
-              rowCount: returnData.products.length
-            }}
-            sorting={[]}
-            onSortingChange={() => {}}
-            manualPagination={false}
-          />
+          {returnData.products && returnData.products.length > 0 ? (
+            <CustomTable
+              data={returnData.products}
+              columns={productColumns}
+              pagination={{ pageIndex: 0, pageSize: 10 }}
+              paginationOptions={{
+                onPaginationChange: () => {},
+                rowCount: returnData.products.length
+              }}
+              sorting={[]}
+              onSortingChange={() => {}}
+              manualPagination={false}
+            />
+          ) : (
+            <Typography>No hay productos en esta devolución</Typography>
+          )}
         </Box>
       </Box>
 
@@ -243,6 +381,7 @@ export default function ReturnEdit() {
         <Button 
           variant="solid" 
           color="primary"
+          onClick={handleConfirm}
           sx={{ width: 150 }}
         >
           Confirmar

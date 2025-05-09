@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Supplier, Supply, Shrinkage
+from .models import Product, Supplier, Supply, Shrinkage, ReturnSupplier
 from bson import ObjectId
 import re
 
@@ -63,3 +63,34 @@ class ShrinkageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shrinkage
         fields = '__all__'
+
+class ReturnSupplierSerializer(serializers.ModelSerializer):
+    id = ObjectIdField(read_only=True)
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    supplier_name = serializers.ReadOnlyField(source='supplier.name')
+    product_name = serializers.ReadOnlyField(source='product.name')
+
+    class Meta:
+        model = ReturnSupplier
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        if "status" in validated_data:
+            if instance.status == "Resuelto" and validated_data["status"] == "Pendiente":
+                raise serializers.ValidationError("No se puede cambiar el estado de 'Resuelto' a 'Pendiente'")
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        # Forzar conversión segura de todos los ObjectId potenciales
+        for key, value in rep.items():
+            if isinstance(value, ObjectId):
+                rep[key] = str(value)
+
+        # Asegurar también el ID del modelo si no se encuentra en el diccionario
+        if hasattr(instance, 'id') and isinstance(instance.id, ObjectId):
+            rep['id'] = str(instance.id)
+
+        return rep

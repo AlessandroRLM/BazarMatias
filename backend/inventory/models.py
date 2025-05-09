@@ -40,3 +40,17 @@ class Shrinkage(models.Model):
 
     def __str__(self):
         return self.product
+
+class ReturnSupplier(models.Model):
+    supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    product_condition = models.CharField(max_length=100)
+    reason = models.TextField()
+    purchase_number = models.CharField(max_length=50)
+    purchase_date = models.DateField()
+    return_date = models.DateField()
+    status = models.CharField(max_length=50, default="Pendiente")
+
+    def __str__(self):
+        return f"{self.product.name} - {self.supplier.name} ({self.return_date})"

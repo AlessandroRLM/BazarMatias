@@ -15,6 +15,9 @@ import { Box, CircularProgress } from '@mui/joy'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
+// 🔥 Toast imports
+import { Toaster } from 'react-hot-toast'
+
 export const queryClient = new QueryClient()
 
 // Create a new router instance
@@ -40,9 +43,8 @@ declare module '@tanstack/react-router' {
 
 function InnerApp() {
   const auth = useAuth()
-  return <RouterProvider router={router} context={{ auth, }} />
+  return <RouterProvider router={router} context={{ auth }} />
 }
-
 
 function App() {
   return (
@@ -51,10 +53,12 @@ function App() {
         <AuthProvider>
           <InnerApp />
           <TanStackRouterDevtools router={router} />
-        </AuthProvider>
-      </QueryClientProvider >
-    </LocalizationProvider>
 
+          {/* Toaster para los mensajes toast */}
+          <Toaster position="top-right" />
+        </AuthProvider>
+      </QueryClientProvider>
+    </LocalizationProvider>
   )
 }
 

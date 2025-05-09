@@ -7,8 +7,12 @@ import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions
 import { Link as RouterLink } from '@tanstack/react-router';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
+import { fetchReturnSuppliers, resolveReturn, deleteReturnSupplier } from "../../services/inventoryService";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Return {
   id?: string;
@@ -23,59 +27,75 @@ interface Filters {
   productType?: string;
 }
 
-const initialData: Return[] = [
-  {
-    id: "1",
-    provider: "Proveedor A",
-    product: "Producto X",
-    date: "2023-05-15",
-    status: "Pendiente"
-  },
-  {
-    id: "2",
-    provider: "Proveedor B",
-    product: "Producto Y",
-    date: "2023-05-16",
-    status: "Resuelto"
-  },
-  {
-    id: "3",
-    provider: "Proveedor C",
-    product: "Producto Z",
-    date: "2023-05-17",
-    status: "Resuelto"
-  },
-  {
-    id: "4",
-    provider: "Proveedor D",
-    product: "Producto W",
-    date: "2023-05-18",
-    status: "Pendiente"
-  },
-  {
-    id: "5",
-    provider: "Proveedor E",
-    product: "Producto V",
-    date: "2023-05-19",
-    status: "Pendiente"
-  },
-];
-
 export default function ReturnManagementPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, setFilters] = useState<Filters>({});
-  const [filteredData, setFilteredData] = useState<Return[]>(initialData);
-  const [data, setData] = useState<Return[]>(initialData);
+  const [filteredData, setFilteredData] = useState<Return[]>([]);
+  const [data, setData] = useState<Return[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [returnToDelete, setReturnToDelete] = useState<{ id: string; provider: string } | null>(null);
 
-  const handleCheckboxChange = (id: string) => {
-    setData(prevData => 
-      prevData.map(item => 
-        item.id === id && item.status === 'Pendiente'
-          ? { ...item, status: 'Resuelto' } 
-          : item
-      )
-    );
+  useEffect(() => {
+    fetchReturnSuppliers({ page: pagination.pageIndex + 1, page_size: pagination.pageSize, search: filters.search })
+      .then(apiData => {
+        // Mapear los datos para mostrar los nombres en vez de los IDs
+        const mappedResults = (apiData.results || []).map((item: any) => ({
+          ...item,
+          provider: item.supplier_name || item.provider,
+          product: item.product_name || item.product,
+          date: item.return_date || item.date,
+        }));
+        setData(mappedResults);
+      });
+  }, [pagination, filters]);
+
+  const handleCheckboxClick = (id: string) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmResolve = async () => {
+    if (!selectedId) return;
+    setResolving(true);
+    try {
+      await resolveReturn(selectedId);
+      setData(prevData =>
+        prevData.map(item =>
+          item.id === selectedId ? { ...item, status: 'Resuelto' } : item
+        )
+      );
+    } catch (e) {
+      alert("Error al actualizar el estado");
+    } finally {
+      setResolving(false);
+      setConfirmOpen(false);
+      setSelectedId(null);
+    }
+  };
+
+  const handleDeleteClick = (item: Return) => {
+    setReturnToDelete({ id: item.id!, provider: item.provider || "" });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (returnToDelete) {
+      await deleteReturnSupplier(returnToDelete.id);
+      setData(prev => prev.filter(r => r.id !== returnToDelete.id));
+      setFilteredData(prev => prev.filter(r => r.id !== returnToDelete.id));
+      setDeleteDialogOpen(false);
+      setReturnToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setReturnToDelete(null);
   };
 
   const columns: ColumnDef<Return>[] = [
@@ -92,13 +112,13 @@ export default function ReturnManagementPage() {
       accessorKey: "date", 
       header: "Fecha" 
     },
-    { 
+    {
       accessorKey: "status", 
       header: "Estado", 
       cell: info => {
         const status = info.getValue<string>();
-        let color: 'success' | 'warning' | 'neutral';
-        
+        let color: 'success' | 'warning' | 'danger' | 'neutral';
+
         switch(status) {
           case 'Pendiente':
             color = 'warning';
@@ -106,10 +126,13 @@ export default function ReturnManagementPage() {
           case 'Resuelto':
             color = 'success';
             break;
+          case 'Denegado':
+            color = 'danger';
+            break;
           default:
             color = 'neutral';
         }
-        
+
         return (
           <Typography color={color}>
             {status}
@@ -123,7 +146,8 @@ export default function ReturnManagementPage() {
       cell: ({ row }) => {
         const status = row.original.status;
         const isPending = status === 'Pendiente';
-        
+        const isLoading = resolving && selectedId === row.original.id;
+
         return (
           <Stack direction="row" spacing={1} alignItems="center">
             <IconButton
@@ -132,29 +156,42 @@ export default function ReturnManagementPage() {
               size="sm"
               aria-label="View"
               component={RouterLink}
-              to={`/proveedores/devoluciones/ver-devolucion`}
+              to={`/proveedores/devoluciones/ver-devolucion/${row.original.id}`}
             >
               <VisibilityIcon />
             </IconButton>
             <Checkbox 
               size="sm" 
-              color="primary" 
+              color={status === 'Denegado' ? 'danger' : 'primary'}
               checked={status === 'Resuelto'}
-              onChange={isPending ? () => handleCheckboxChange(row.original.id!) : undefined}
-              disabled={status === 'Resuelto'}
+              icon={status === 'Denegado' ? <CloseIcon /> : undefined}
+              onChange={isPending ? () => handleCheckboxClick(row.original.id!) : undefined}
+              disabled={status === 'Resuelto' || status === 'Denegado' || isLoading}
               sx={{ ml: 1 }} 
+              {...(isLoading && { loading: true })}
             />
-            {isPending && (
-              <IconButton
-                component={RouterLink}
-                to={`/proveedores/devoluciones/editar-devolucion`}
-                variant="plain"
-                color="neutral"
-                size="sm"
-                aria-label="Edit"
-              >
-                <EditIcon />
-              </IconButton>
+            {(status === 'Pendiente') && (
+              <>
+                <IconButton
+                  component={RouterLink}
+                  to={`/proveedores/devoluciones/editar-devolucion/${row.original.id}`}
+                  variant="plain"
+                  color="neutral"
+                  size="sm"
+                  aria-label="Edit"
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  variant="plain"
+                  color="danger"
+                  size="sm"
+                  aria-label="Delete"
+                  onClick={() => handleDeleteClick(row.original)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </>
             )}
           </Stack>
         );
@@ -179,22 +216,41 @@ export default function ReturnManagementPage() {
   // Efecto para aplicar los filtros
   useEffect(() => {
     let result = [...data];
-    
+  
     // Filtro por tipo de producto
     if (filters.productType) {
-      result = result.filter(item => item.product?.includes(filters.productType!));
+      result = result.filter(item => (item.product ?? '').includes(filters.productType!));
     }
-    
-    // Filtro por búsqueda
+  
+    // Filtro por búsqueda mejorado (insensible a mayúsculas/minúsculas)
     if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      result = result.filter(item => 
-        item.provider?.toLowerCase().includes(searchTerm) ||
-        item.product?.toLowerCase().includes(searchTerm) ||
-        item.date?.toLowerCase().includes(searchTerm)
-      );
+      const searchTerm = filters.search.trim().toLowerCase();
+      const searchWords = searchTerm.split(/\s+/).filter(Boolean);
+  
+      result = result.filter(item => {
+        const provider = (item.provider ?? '').toLowerCase();
+        const product = (item.product ?? '').toLowerCase();
+        const date = (item.date ?? '').toLowerCase();
+        const status = (item.status ?? '').toLowerCase();
+  
+        // Coincidencia por frase completa o por palabras individuales
+        const fullMatch =
+          provider.includes(searchTerm) ||
+          product.includes(searchTerm) ||
+          date.includes(searchTerm) ||
+          status.includes(searchTerm);
+  
+        const wordMatch = searchWords.every(word =>
+          provider.includes(word) ||
+          product.includes(word) ||
+          date.includes(word) ||
+          status.includes(word)
+        );
+  
+        return fullMatch || wordMatch;
+      });
     }
-    
+  
     setFilteredData(result);
   }, [filters, data]);
 
@@ -246,6 +302,22 @@ export default function ReturnManagementPage() {
           />
         </Stack>
       </Box>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmResolve}
+        userName={data.find(d => d.id === selectedId)?.provider || ""}
+        title="Confirmar resolución"
+        content="¿Estás seguro que quieres marcar esta devolución como resuelta? Esta acción no se puede deshacer."
+      />
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        userName={returnToDelete?.provider || ""}
+        title="Eliminar Devolución"
+        content={`¿Estás seguro que quieres eliminar la devolución de "${returnToDelete?.provider}"? Esta acción no se puede deshacer.`}
+      />
     </Box>
   );
 }

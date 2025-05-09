@@ -270,7 +270,7 @@ const SidebarSuppliersList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to="">
+                        <SidebarLink to="/proveedores/ordenesdecompra">
                             Gestión de Ordenes de compra
                         </SidebarLink>
                     </ListItem>

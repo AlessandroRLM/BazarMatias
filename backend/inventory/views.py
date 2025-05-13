@@ -1,6 +1,7 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
 from .models import Product, Supplier, Supply, Shrinkage, ReturnSupplier
+from django.db import models
 from .serializers import (
     ProductSerializer,
     SupplierSerializer,
@@ -12,6 +13,7 @@ from users.pagination import CustomPagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status as drf_status
+from rest_framework.views import APIView
 
 # -----------------------
 # Vistas tradicionales
@@ -37,6 +39,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'price_clp', 'stock']
     ordering = ['name']
 
+    @action(detail=False, methods=['get'], url_path='low-stock')
+    def low_stock_products(self, request):
+        low_stock = Product.objects.filter(stock__lt=models.F('min_stock'))
+        page = self.paginate_queryset(low_stock)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(low_stock, many=True)
+        return Response(serializer.data)
+
 class SupplyViewSet(viewsets.ModelViewSet):
     queryset = Supply.objects.all()
     serializer_class = SupplySerializer
@@ -46,6 +58,16 @@ class SupplyViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'category', 'stock']
     ordering = ['name']
+
+    @action(detail=False, methods=['get'], url_path='low-stock')
+    def low_stock_supplies(self, request):
+        low_stock = Supply.objects.filter(stock__lt=models.F('min_stock'))
+        page = self.paginate_queryset(low_stock)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(low_stock, many=True)
+        return Response(serializer.data)
 
 class ShrinkageViewSet(viewsets.ModelViewSet):
     queryset = Shrinkage.objects.all()
@@ -93,3 +115,43 @@ class ReturnSupplierViewSet(viewsets.ModelViewSet):
             {"message": "Devolución marcada como Resuelto."},
             status=drf_status.HTTP_200_OK
         )
+
+# -----------------------
+# Metricas para Dashboard inventario
+# -----------------------
+
+class InventoryMetricsAPIView(APIView):
+
+    def get(self, request):
+        amount_products = Product.objects.count()
+        amount_supplies = Supply.objects.count()
+        amount_shrinkages = Shrinkage.objects.count()
+        low_stock_products = Product.objects.filter(stock__lt=models.F('min_stock'))
+
+        # Mermas recientes (últimos 5 registros)
+        recent_shrinkages = Shrinkage.objects.order_by('-id')[:5]
+        recent_shrinkages_serialized = [
+            {
+                "product_name": s.product,
+                "quantity": s.quantity,
+                "reason": s.observation,
+                "created_at": s.created_at.isoformat() if s.created_at else None
+            } for s in recent_shrinkages
+        ]
+
+        # Datos para gráfico
+        low_stock_chart_data = [
+            {
+                "product": p.name,
+                "stock": p.stock
+            } for p in low_stock_products[:10]
+        ]
+
+        return Response({
+            "amount_products": amount_products,
+            "amount_supplies": amount_supplies,
+            "amount_shrinkages": amount_shrinkages,
+            "low_stock_products_count": low_stock_products.count(),
+            "recent_shrinkages": recent_shrinkages_serialized,
+            "low_stock_chart_data": low_stock_chart_data
+        })

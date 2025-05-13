@@ -66,10 +66,28 @@ export default function VerInsumo() {
               bgcolor: 'background.level1', 
               borderRadius: 'sm',
               border: '1px solid',
-              borderColor: 'neutral.outlinedBorder'
+              borderColor: 'neutral.outlinedBorder',
+              color: insumoData.stock <= insumoData.min_stock ? 'danger.500' : 'success.500'
             }}
           >
             {insumoData.stock} {insumoData.unit}
+          </Typography>
+        </FormControl>
+
+        {/* Stock Mínimo */}
+        <FormControl>
+          <FormLabel>Stock Mínimo</FormLabel>
+          <Typography 
+            level="body-md" 
+            sx={{ 
+              p: 1, 
+              bgcolor: 'background.level1', 
+              borderRadius: 'sm',
+              border: '1px solid',
+              borderColor: 'neutral.outlinedBorder'
+            }}
+          >
+            {insumoData.min_stock} {insumoData.unit}
           </Typography>
         </FormControl>
 

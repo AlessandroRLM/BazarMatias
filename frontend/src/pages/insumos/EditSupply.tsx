@@ -19,6 +19,7 @@ export default function EditarInsumo() {
   const [form, setForm] = useState<any>({
     name: "",
     stock: "",
+    min_stock: "",
     category: "",
   });
 
@@ -31,7 +32,11 @@ export default function EditarInsumo() {
   };
 
   const handleSubmit = async () => {
-    await updateSupply(id, form);
+    await updateSupply(id, {
+      ...form,
+      stock: Number(form.stock),
+      min_stock: Number(form.min_stock),
+    });
     navigate({ to: "/Inventario/insumos" });
   };
 
@@ -79,6 +84,18 @@ export default function EditarInsumo() {
             value={form.stock}
             onChange={e => handleChange("stock", e.target.value)}
             placeholder="Cantidad disponible" 
+            type="number"
+            fullWidth
+          />
+        </FormControl>
+
+        {/* Stock Min */}
+        <FormControl>
+          <FormLabel>Stock Mínimo</FormLabel>
+          <Input 
+            value={form.min_stock}
+            onChange={e => handleChange("min_stock", e.target.value)}
+            placeholder="Cantidad mínima antes de alerta" 
             type="number"
             fullWidth
           />

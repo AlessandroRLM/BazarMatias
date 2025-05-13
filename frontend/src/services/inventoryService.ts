@@ -85,6 +85,11 @@ export const deleteProduct = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/products/${id}/`);
 };
 
+export const fetchLowStockProducts = async () => {
+  const response = await AxiosInstance.get('/api/inventory/products/low-stock/');
+  return response.data;
+};
+
 // CRUD de Insumos (Supplies)
 export const fetchSupplies = async ({
   page = 1,
@@ -124,6 +129,11 @@ export const updateSupply = async (id: string, supply: any) => {
 
 export const deleteSupply = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/supplies/${id}/`);
+};
+
+export const fetchLowStockSupplies = async () => {
+  const response = await AxiosInstance.get('/api/inventory/supplies/low-stock/');
+  return response.data;
 };
 
 // CRUD de Mermas (Shrinkages) con paginación, búsqueda y filtros

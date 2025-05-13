@@ -33,6 +33,7 @@ class ProductSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     supplier = serializers.CharField(required=False, allow_null=True)
     supplier_name = serializers.SerializerMethodField()
+    is_below_min_stock = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -47,18 +48,26 @@ class ProductSerializer(serializers.ModelSerializer):
                 return None
         return None
 
+    def get_is_below_min_stock(self, obj):
+        return obj.stock < obj.min_stock
+
 class SupplySerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     stock = serializers.IntegerField()
+    min_stock = serializers.IntegerField()
 
     class Meta:
         model = Supply
         fields = '__all__'
 
+    def get_is_below_min_stock(self, obj):
+        return obj.stock < obj.min_stock
+
 class ShrinkageSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     quantity = serializers.IntegerField()
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Shrinkage

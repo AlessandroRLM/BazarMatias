@@ -17,19 +17,27 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price_clp = models.FloatField()
     stock = models.IntegerField()
+    min_stock = models.IntegerField(default=0)
     category = models.CharField(max_length=100)
     supplier = models.CharField(max_length=24, null=True, blank=True)
 
     def __str__(self):
         return self.name
+    
+    def is_below_min_stock(self):
+        return self.stock < self.min_stock
 
 class Supply(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
     stock = models.PositiveIntegerField(default=0)
+    min_stock = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
+
+    def is_below_min_stock(self):
+        return self.stock < self.min_stock
 
 class Shrinkage(models.Model):
     product = models.CharField(max_length=100)
@@ -37,6 +45,7 @@ class Shrinkage(models.Model):
     quantity = models.PositiveIntegerField()
     category = models.CharField(max_length=50)
     observation = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.product

@@ -15,6 +15,7 @@ import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
+import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventario/dashboard'
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthVentasOrdenesdetrabajoIndexImport } from './routes/_auth/ventas/ordenesdetrabajo/index'
 import { Route as AuthProveedoresProveedoresIndexImport } from './routes/_auth/proveedores/proveedores/index'
@@ -71,6 +72,12 @@ const IndexRoute = IndexImport.update({
 const AuthHomeIndexRoute = AuthHomeIndexImport.update({
   id: '/home/',
   path: '/home/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthInventarioDashboardRoute = AuthInventarioDashboardImport.update({
+  id: '/inventario/dashboard',
+  path: '/inventario/dashboard',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -337,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionDashboardImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/dashboard': {
+      id: '/_auth/inventario/dashboard'
+      path: '/inventario/dashboard'
+      fullPath: '/inventario/dashboard'
+      preLoaderRoute: typeof AuthInventarioDashboardImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/home/': {
       id: '/_auth/home/'
       path: '/home'
@@ -575,6 +589,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
+  AuthInventarioDashboardRoute: typeof AuthInventarioDashboardRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
@@ -612,6 +627,7 @@ interface AuthRouteChildren {
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAdministracionDashboardRoute: AuthAdministracionDashboardRoute,
+  AuthInventarioDashboardRoute: AuthInventarioDashboardRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuariosRoute:
     AuthAdministracionUsuariosActividadDeUsuariosRoute,
@@ -674,6 +690,7 @@ export interface FileRoutesByFullPath {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/home': typeof AuthHomeIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
@@ -714,6 +731,7 @@ export interface FileRoutesByTo {
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/home': typeof AuthHomeIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
@@ -755,6 +773,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
   '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
+  '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
@@ -797,6 +816,7 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
+    | '/inventario/dashboard'
     | '/home'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
@@ -836,6 +856,7 @@ export interface FileRouteTypes {
     | ''
     | '/login'
     | '/administracion/dashboard'
+    | '/inventario/dashboard'
     | '/home'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
@@ -875,6 +896,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/login'
     | '/_auth/administracion/dashboard'
+    | '/_auth/inventario/dashboard'
     | '/_auth/home/'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
@@ -945,6 +967,7 @@ export const routeTree = rootRoute
       "filePath": "_auth.tsx",
       "children": [
         "/_auth/administracion/dashboard",
+        "/_auth/inventario/dashboard",
         "/_auth/home/",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
         "/_auth/administracion/usuarios/crear-usuario",
@@ -985,6 +1008,10 @@ export const routeTree = rootRoute
     },
     "/_auth/administracion/dashboard": {
       "filePath": "_auth/administracion/dashboard.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/dashboard": {
+      "filePath": "_auth/inventario/dashboard.tsx",
       "parent": "/_auth"
     },
     "/_auth/home/": {

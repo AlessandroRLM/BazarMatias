@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   FormControl,
@@ -11,7 +11,7 @@ import {
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { useNavigate } from "@tanstack/react-router";
-import { createShrinkage } from "../../services/inventoryService";
+import { createShrinkage, fetchProducts } from "../../services/inventoryService";
 
 export default function RegistrarMerma() {
   const navigate = useNavigate();
@@ -22,6 +22,13 @@ export default function RegistrarMerma() {
     category: "",
     observation: "",
   });
+  const [productos, setProductos] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchProducts({ page_size: 100 }).then(res => {
+      setProductos(res.results || []);
+    });
+  }, []);
 
   const handleChange = (field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -60,12 +67,19 @@ export default function RegistrarMerma() {
       <Stack spacing={1}>
         <FormControl>
           <FormLabel>Nombre del Producto</FormLabel>
-          <Input 
+          <Select
             value={form.product}
-            onChange={e => handleChange("product", e.target.value)}
-            placeholder="Añadir Nombre del producto"
+            onChange={(_, value) => handleChange("product", value)}
+            placeholder="Selecciona un producto"
             fullWidth
-          />
+            required
+          >
+            {productos.map((p) => (
+              <Option key={p.id} value={p.name}>
+                {p.name}
+              </Option>
+            ))}
+          </Select>
         </FormControl>
 
         {/* Cantidad */}

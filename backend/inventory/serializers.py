@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product, Supply, Shrinkage, ReturnSupplier
+from suppliers.models import Supplier
 from bson import ObjectId
 import re
 
@@ -65,12 +66,24 @@ class ReturnSupplierSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    supplier_name = serializers.ReadOnlyField(source='supplier.name')
-    product_name = serializers.ReadOnlyField(source='product.name')
+    supplier_name = serializers.SerializerMethodField()
+    product_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ReturnSupplier
         fields = '__all__'
+
+    def get_supplier_name(self, obj):
+        try:
+            return obj.supplier.name
+        except Supplier.DoesNotExist:
+            return "Proveedor eliminado"
+
+    def get_product_name(self, obj):
+        try:
+            return obj.product.name
+        except Product.DoesNotExist:
+            return "Producto eliminado"
 
     def update(self, instance, validated_data):
         if "status" in validated_data:
@@ -86,7 +99,6 @@ class ReturnSupplierSerializer(serializers.ModelSerializer):
             if isinstance(value, ObjectId):
                 rep[key] = str(value)
 
-        # Asegurar también el ID del modelo si no se encuentra en el diccionario
         if hasattr(instance, 'id') and isinstance(instance.id, ObjectId):
             rep['id'] = str(instance.id)
 

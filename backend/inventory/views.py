@@ -4,7 +4,6 @@ from .models import Product, Supply, Shrinkage, ReturnSupplier
 from django.db import models
 from .serializers import (
     ProductSerializer,
-   
     SupplySerializer,
     ShrinkageSerializer,
     ReturnSupplierSerializer
@@ -18,16 +17,6 @@ from rest_framework.views import APIView
 # -----------------------
 # Vistas tradicionales
 # -----------------------
-
-class SupplierViewSet(viewsets.ModelViewSet):
-    queryset = Supplier.objects.all()
-    serializer_class = SupplierSerializer
-    pagination_class = CustomPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category']
-    search_fields = ['name', 'rut', 'email', 'address']
-    ordering_fields = ['name', 'rut']
-    ordering = ['name']
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()

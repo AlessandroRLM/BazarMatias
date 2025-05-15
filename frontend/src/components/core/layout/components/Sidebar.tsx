@@ -223,7 +223,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/ordenesdetrabajo">
                             Gestión de Ordenes de Trabajo
                         </SidebarLink>
                     </ListItem>
@@ -265,7 +265,7 @@ const SidebarSuppliersList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/proveedores/devoluciones">
                             Gestión de Devoluciones
                         </SidebarLink>
                     </ListItem>
@@ -275,7 +275,7 @@ const SidebarSuppliersList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/proveedores/dashboard">
                             Dashboard
                         </SidebarLink>
                     </ListItem>

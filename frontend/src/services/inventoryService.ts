@@ -60,7 +60,7 @@ export const fetchProducts = async ({
   let url = `/api/inventory/products/?page=${page}&page_size=${page_size}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
   if (category) url += `&category=${encodeURIComponent(category)}`;
-  if (supplier) url += `&supplier__id=${encodeURIComponent(supplier)}`;
+  if (supplier) url += `&supplier=${encodeURIComponent(supplier)}`;
   if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
   const response = await AxiosInstance.get(url);
   return response.data;
@@ -83,6 +83,11 @@ export const updateProduct = async (id: string, product: any) => {
 
 export const deleteProduct = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/products/${id}/`);
+};
+
+export const fetchLowStockProducts = async () => {
+  const response = await AxiosInstance.get('/api/inventory/products/low-stock/');
+  return response.data;
 };
 
 // CRUD de Insumos (Supplies)
@@ -126,6 +131,11 @@ export const deleteSupply = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/supplies/${id}/`);
 };
 
+export const fetchLowStockSupplies = async () => {
+  const response = await AxiosInstance.get('/api/inventory/supplies/low-stock/');
+  return response.data;
+};
+
 // CRUD de Mermas (Shrinkages) con paginación, búsqueda y filtros
 export const fetchShrinkages = async ({
   page = 1,
@@ -165,4 +175,47 @@ export const updateShrinkage = async (id: string, shrinkage: any) => {
 
 export const deleteShrinkage = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/shrinkages/${id}/`);
+};
+
+// CRUD de Devoluciones de Proveedores (ReturnSupplier)
+export const fetchReturnSuppliers = async ({
+  page = 1,
+  page_size = 10,
+  search = '',
+  ordering = '',
+}: {
+  page?: number;
+  page_size?: number;
+  search?: string;
+  ordering?: string;
+} = {}) => {
+  let url = `/api/inventory/return-suppliers/?page=${page}&page_size=${page_size}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  const response = await AxiosInstance.get(url);
+  return response.data;
+};
+
+export const fetchReturnSupplier = async (id: string) => {
+  const response = await AxiosInstance.get(`/api/inventory/return-suppliers/${id}/`);
+  return response.data;
+};
+
+export const createReturnSupplier = async (returnData: any) => {
+  const response = await AxiosInstance.post(`/api/inventory/return-suppliers/`, returnData);
+  return response.data;
+};
+
+export const updateReturnSupplier = async (id: string, returnData: any) => {
+  const response = await AxiosInstance.patch(`/api/inventory/return-suppliers/${id}/`, returnData);
+  return response.data;
+};
+
+export const deleteReturnSupplier = async (id: string) => {
+  await AxiosInstance.delete(`/api/inventory/return-suppliers/${id}/`);
+};
+
+export const resolveReturn = async (id: string) => {
+  const response = await AxiosInstance.patch(`/api/inventory/return-suppliers/${id}/resolve/`);
+  return response.data;
 };

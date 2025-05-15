@@ -17,6 +17,7 @@ export default function EditarProducto() {
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
+  const [minStock, setMinStock] = useState(""); // Nuevo estado
   const [categoria, setCategoria] = useState("");
   const [proveedor, setProveedor] = useState(""); // ID del proveedor actual
   const [proveedorNombre, setProveedorNombre] = useState(""); // Nombre del proveedor actual
@@ -32,6 +33,7 @@ export default function EditarProducto() {
       setNombre(producto.name ?? "");
       setPrecio(producto.price_clp ?? "");
       setStock(producto.stock ?? "");
+      setMinStock(producto.min_stock ?? ""); // Cargar min_stock
       setCategoria(producto.category ?? "");
       setProveedor(producto.supplier ?? ""); // Cargar el ID del proveedor actual
 
@@ -58,6 +60,7 @@ export default function EditarProducto() {
         name: nombre,
         price_clp: Number(precio),
         stock: Number(stock),
+        min_stock: Number(minStock), // Enviar min_stock
         category: categoria,
         supplier: proveedor || null,
       });
@@ -105,6 +108,10 @@ export default function EditarProducto() {
         <FormControl sx={{ flex: 1 }}>
           <FormLabel>Stock</FormLabel>
           <Input value={stock} onChange={e => setStock(e.target.value)} placeholder="Cantidad" type="number" />
+        </FormControl>
+        <FormControl sx={{ flex: 1 }}>
+          <FormLabel>Stock Mínimo</FormLabel>
+          <Input value={minStock} onChange={e => setMinStock(e.target.value)} placeholder="Stock mínimo" type="number" />
         </FormControl>
       </Stack>
       <FormControl>

@@ -16,6 +16,7 @@ export default function AñadirProducto() {
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
+  const [minStock, setMinStock] = useState("");
   const [categoria, setCategoria] = useState("");
   const [proveedor, setProveedor] = useState(""); // Nuevo estado para el proveedor
   const [proveedorNombre, setProveedorNombre] = useState(""); // Estado para el nombre del proveedor
@@ -38,6 +39,7 @@ export default function AñadirProducto() {
       setNombre(producto.name ?? "");
       setPrecio(producto.price_clp ?? "");
       setStock(producto.stock ?? "");
+      setMinStock(producto.min_stock ?? "");
       setCategoria(producto.category ?? "");
       setProveedor(producto.supplier ?? ""); // O supplier_id según tu backend
 
@@ -62,6 +64,7 @@ export default function AñadirProducto() {
         name: nombre,
         price_clp: Number(precio),
         stock: Number(stock),
+        min_stock: Number(minStock),
         category: categoria,
         supplier: proveedor || null, // Si no hay proveedor, se envía null
       });
@@ -114,14 +117,20 @@ export default function AñadirProducto() {
           <Input value={stock} onChange={e => setStock(e.target.value)} placeholder="Añadir Cantidad" type="number" />
         </FormControl>
       </Stack>
-      <FormControl>
-        <FormLabel>Categoría</FormLabel>
-        <Select value={categoria} onChange={(_, v) => setCategoria(v ?? "")} placeholder="Selecciona una categoría">
-          <Option value="utiles">Útiles escolares</Option>
-          <Option value="oficina">Oficina</Option>
-          <Option value="otros">Otros</Option>
-        </Select>
-      </FormControl>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+        <FormControl sx={{ flex: 1 }}>
+          <FormLabel>Categoría</FormLabel>
+          <Select value={categoria} onChange={(_, v) => setCategoria(v ?? "")} placeholder="Selecciona una categoría">
+            <Option value="utiles">Útiles escolares</Option>
+            <Option value="oficina">Oficina</Option>
+            <Option value="otros">Otros</Option>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ flex: 1 }}>
+          <FormLabel>Mínimo Stock</FormLabel>
+          <Input value={minStock} onChange={e => setMinStock(e.target.value)} placeholder="Añadir Mínimo Stock" type="number" />
+        </FormControl>
+      </Stack>
       <FormControl>
         <FormLabel>Proveedor</FormLabel>
         <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")}>

@@ -18,6 +18,7 @@ export default function CrearInsumo() {
   const [form, setForm] = useState({
     name: "",
     stock: "",
+    min_stock: "",
     category: "",
   });
 
@@ -26,7 +27,11 @@ export default function CrearInsumo() {
   };
 
   const handleSubmit = async () => {
-    await createSupply(form);
+    await createSupply({
+      ...form,
+      stock: Number(form.stock),
+      min_stock: Number(form.min_stock),
+    });
     navigate({ to: "/Inventario/insumos" });
   };
 
@@ -74,6 +79,18 @@ export default function CrearInsumo() {
             value={form.stock}
             onChange={e => handleChange("stock", e.target.value)}
             placeholder="Cantidad disponible" 
+            type="number"
+            fullWidth
+          />
+        </FormControl>
+
+        {/* Stock Min */}
+        <FormControl>
+          <FormLabel>Stock Mínimo</FormLabel>
+          <Input 
+            value={form.min_stock}
+            onChange={e => handleChange("min_stock", e.target.value)}
+            placeholder="Cantidad mínima antes de alerta" 
             type="number"
             fullWidth
           />

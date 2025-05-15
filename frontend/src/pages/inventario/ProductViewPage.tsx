@@ -76,10 +76,23 @@ export default function VerProducto() {
               p: 1, 
               bgcolor: 'background.level1', 
               borderRadius: 'sm',
-              color: producto.stock === 0 ? 'danger.500' : 'success.500'
+              color: producto.stock <= producto.min_stock ? 'danger.500' : 'success.500'
             }}
           >
             {producto.stock} unidades
+          </Typography>
+        </FormControl>
+        <FormControl sx={{ flex: 1 }}>
+          <FormLabel>Stock Mínimo</FormLabel>
+          <Typography
+            level="body-md"
+            sx={{
+              p: 1,
+              bgcolor: 'background.level1',
+              borderRadius: 'sm',
+            }}
+          >
+            {producto.min_stock} unidades
           </Typography>
         </FormControl>
       </Stack>

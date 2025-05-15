@@ -11,7 +11,11 @@ import {
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { useParams, useNavigate } from "@tanstack/react-router";
-import { fetchShrinkage, updateShrinkage } from "../../services/inventoryService";
+import {
+  fetchShrinkage,
+  updateShrinkage,
+  fetchProducts
+} from "../../services/inventoryService";
 
 export default function EditarMerma() {
   const { id } = useParams({ strict: false });
@@ -24,8 +28,18 @@ export default function EditarMerma() {
     observation: "",
   });
 
+  const [productos, setProductos] = useState<any[]>([]);
+
   useEffect(() => {
-    fetchShrinkage(id).then(data => setForm(data));
+    // Primero obtenemos la merma
+    fetchShrinkage(id).then(data => {
+      setForm(data);
+    });
+
+    // Luego los productos para el selector
+    fetchProducts({ page_size: 100 }).then(res => {
+      setProductos(res.results || []);
+    });
   }, [id]);
 
   const handleChange = (field: string, value: any) => {
@@ -65,12 +79,19 @@ export default function EditarMerma() {
       <Stack spacing={1}>
         <FormControl>
           <FormLabel>Nombre del Producto</FormLabel>
-          <Input 
+          <Select
             value={form.product}
-            onChange={e => handleChange("product", e.target.value)}
-            placeholder="Añadir Nombre del producto"
+            onChange={(_, value) => handleChange("product", value)}
+            placeholder="Selecciona un producto"
             fullWidth
-          />
+            required
+          >
+            {productos.map((p) => (
+              <Option key={p.id} value={p.name}>
+                {p.name}
+              </Option>
+            ))}
+          </Select>
         </FormControl>
 
         {/* Cantidad */}

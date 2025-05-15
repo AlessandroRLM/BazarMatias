@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Product(models.Model):
     name = models.CharField(max_length=255)
     price_clp = models.FloatField()
@@ -42,7 +41,7 @@ class Shrinkage(models.Model):
         return self.product
 
 class ReturnSupplier(models.Model):
-    supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
+    supplier = models.ForeignKey("suppliers.Supplier", on_delete=models.CASCADE)
     product = models.ForeignKey("Product", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     product_condition = models.CharField(max_length=100)

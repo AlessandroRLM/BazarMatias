@@ -5,7 +5,8 @@ import { fetchBuyOrderById } from '../../services/supplierService'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { BuyOrder } from '../../types/proveedores.types'
 import dayjs from 'dayjs'
-
+import { useEffect, useState } from 'react'
+import { fetchProduct } from '../../services/inventoryService'
 
 const BuyOrderDetail = () => {
   const { id } = useParams({ from: '/_auth/proveedores/ver-ordenes-de-compra/$id' })
@@ -15,6 +16,28 @@ const BuyOrderDetail = () => {
     queryKey: ['buyOrder', id],
     queryFn: () => fetchBuyOrderById(id)
   })
+
+  const [productNamesMap, setProductNamesMap] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!buyOrder) return
+
+    const fetchAllProductNames = async () => {
+      const entries = await Promise.all(
+        buyOrder.details.map(async (detail) => {
+          try {
+            const product = await fetchProduct(detail.product)
+            return [detail.product, product.name] // o product.nombre, según tu backend
+          } catch {
+            return [detail.product, 'Producto no encontrado']
+          }
+        })
+      )
+      setProductNamesMap(Object.fromEntries(entries))
+    }
+
+    fetchAllProductNames()
+  }, [buyOrder])
 
   if (isLoading) return <div>Cargando...</div>
   if (isError) return <div>Error al cargar la orden de compra</div>
@@ -93,9 +116,9 @@ const BuyOrderDetail = () => {
               </tr>
             </thead>
             <tbody>
-              {buyOrder.details.map((detail, index: number) => (
+              {buyOrder.details.map((detail, index) => (
                 <tr key={index}>
-                  <td>{detail.product}</td>
+                  <td>{productNamesMap[detail.product] || 'Cargando...'}</td>
                   <td>{detail.quantity}</td>
                   <td>${detail.unit_price.toLocaleString()}</td>
                   <td>${(detail.quantity * detail.unit_price).toLocaleString()}</td>

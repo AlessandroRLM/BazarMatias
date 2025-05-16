@@ -90,6 +90,20 @@ export const fetchLowStockProducts = async () => {
   return response.data;
 };
 
+export const uploadProductExcel = async (formData: FormData) => {
+  const response = await AxiosInstance.post('/api/inventory/products/bulk-upload-excel/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
+export const downloadProductTemplate = async () => {
+  const response = await AxiosInstance.get('/api/inventory/products/excel-template/', {
+    responseType: 'blob', // importante para recibir archivos
+  });
+  return response;
+};
+
 // CRUD de Insumos (Supplies)
 export const fetchSupplies = async ({
   page = 1,
@@ -136,6 +150,20 @@ export const fetchLowStockSupplies = async () => {
   return response.data;
 };
 
+export const uploadSupplyExcel = async (formData: FormData) => {
+  const response = await AxiosInstance.post('/api/inventory/supplies/bulk-upload-excel/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
+export const downloadSupplyTemplate = async () => {
+  const response = await AxiosInstance.get('/api/inventory/supplies/excel-template/', {
+    responseType: 'blob',
+  });
+  return response;
+};
+
 // CRUD de Mermas (Shrinkages) con paginación, búsqueda y filtros
 export const fetchShrinkages = async ({
   page = 1,
@@ -175,6 +203,20 @@ export const updateShrinkage = async (id: string, shrinkage: any) => {
 
 export const deleteShrinkage = async (id: string) => {
   await AxiosInstance.delete(`/api/inventory/shrinkages/${id}/`);
+};
+
+export const uploadShrinkageExcel = async (formData: FormData) => {
+  const response = await AxiosInstance.post('/api/inventory/shrinkages/bulk-upload-excel/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
+export const downloadShrinkageTemplate = async () => {
+  const response = await AxiosInstance.get('/api/inventory/shrinkages/excel-template/', {
+    responseType: 'blob',
+  });
+  return response;
 };
 
 // CRUD de Devoluciones de Proveedores (ReturnSupplier)

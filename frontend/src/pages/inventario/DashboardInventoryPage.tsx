@@ -10,6 +10,21 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { inventoryMetricsQueryOptions } from "../../utils/inventory/inventoryQueryOptions"
 import LowStockProductsChart from "../../components/inventory/LowStockProductsChart"
 import RecentShrinkagesTable from "../../components/inventory/RecentShrinkagesTable"
+import { downloadInventoryReportPDF } from "../../services/reportsService";
+
+const handleDownloadInventoryReport = async () => {
+  try {
+    const blob = await downloadInventoryReportPDF();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Reporte-Inventario.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al descargar el reporte de inventario:", error);
+  }
+};
 
 const DashboardInventoryPage = () => {
   const { data } = useSuspenseQuery(inventoryMetricsQueryOptions())
@@ -18,7 +33,7 @@ const DashboardInventoryPage = () => {
     <>
       <PageHeader
         title="Dashboard de Inventario"
-        buttons={[{ text: "Reporte" }]}
+        buttons={[{ text: "Reporte", onClick: handleDownloadInventoryReport }]}
       />
 
       <Stack

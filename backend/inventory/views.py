@@ -1,7 +1,19 @@
-from rest_framework import viewsets, filters
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
-from .models import Product, Supply, Shrinkage, ReturnSupplier
 from django.db import models
+from django.http import HttpResponse
+
+from rest_framework import viewsets, filters, status as drf_status
+from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
+
+import openpyxl
+from openpyxl import Workbook
+
+from .models import Product, Supply, Shrinkage, ReturnSupplier
+from suppliers.models import Supplier
 from .serializers import (
     ProductSerializer,
     SupplySerializer,
@@ -9,15 +21,11 @@ from .serializers import (
     ReturnSupplierSerializer
 )
 from users.pagination import CustomPagination
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status as drf_status
-from rest_framework.views import APIView
 
-# -----------------------
-# Vistas tradicionales
-# -----------------------
 
+# -------------------------------
+# PRODUCTOS
+# -------------------------------
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -27,6 +35,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'price_clp', 'stock']
     ordering = ['name']
+    parser_classes = [MultiPartParser]
 
     @action(detail=False, methods=['get'], url_path='low-stock')
     def low_stock_products(self, request):
@@ -38,6 +47,65 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(low_stock, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['post'], url_path='bulk-upload-excel')
+    def bulk_upload_excel(self, request):
+        excel_file = request.FILES.get('file')
+        if not excel_file:
+            return Response({"error": "Archivo no proporcionado."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+        except Exception:
+            return Response({"error": "Archivo inválido o corrupto."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        products_data = []
+        errores = []
+
+        for i, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            name, price_clp, iva, stock, min_stock, category, supplier_name = row
+
+            # Intentar obtener el proveedor por nombre
+            supplier_obj = Supplier.objects.filter(name__iexact=supplier_name).first()
+            if not supplier_obj:
+                errores.append(f"Fila {i}: Proveedor '{supplier_name}' no encontrado.")
+                continue
+
+            products_data.append({
+                "name": name,
+                "price_clp": price_clp,
+                "iva": iva,
+                "stock": stock,
+                "min_stock": min_stock,
+                "category": category,
+                "supplier": str(supplier_obj.id),
+            })
+
+        if errores:
+            return Response({"errores": errores}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        serializer = ProductSerializer(data=products_data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Productos cargados exitosamente."}, status=drf_status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='excel-template')
+    def download_template(self, request):
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Plantilla Productos"
+        ws.append(["name", "price_clp", "iva", "stock", "min_stock", "category", "supplier"])
+        ws.append(["Polera básica", 7990, True, 50, 10, "Ropa", "Proveedor A"])
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=plantilla_productos.xlsx'
+        wb.save(response)
+        return response
+
+# -------------------------------
+# INSUMOS
+# -------------------------------
 class SupplyViewSet(viewsets.ModelViewSet):
     queryset = Supply.objects.all()
     serializer_class = SupplySerializer
@@ -47,6 +115,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'category', 'stock']
     ordering = ['name']
+    parser_classes = [MultiPartParser]
 
     @action(detail=False, methods=['get'], url_path='low-stock')
     def low_stock_supplies(self, request):
@@ -58,6 +127,50 @@ class SupplyViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(low_stock, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['post'], url_path='bulk-upload-excel')
+    def bulk_upload_excel(self, request):
+        excel_file = request.FILES.get('file')
+        if not excel_file:
+            return Response({"error": "Archivo no proporcionado."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+        except Exception:
+            return Response({"error": "Archivo inválido o corrupto."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        supplies_data = []
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            name, category, stock, min_stock = row
+            supplies_data.append({
+                "name": name,
+                "category": category,
+                "stock": stock,
+                "min_stock": min_stock,
+            })
+
+        serializer = SupplySerializer(data=supplies_data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Insumos cargados exitosamente."}, status=drf_status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='excel-template')
+    def download_template(self, request):
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Plantilla Insumos"
+        ws.append(["name", "category", "stock", "min_stock"])
+        ws.append(["Tela algodón", "Textil", 100, 20])
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=plantilla_insumos.xlsx'
+        wb.save(response)
+        return response
+
+# -------------------------------
+# MERMAS
+# -------------------------------
 class ShrinkageViewSet(viewsets.ModelViewSet):
     queryset = Shrinkage.objects.all()
     serializer_class = ShrinkageSerializer
@@ -67,6 +180,49 @@ class ShrinkageViewSet(viewsets.ModelViewSet):
     search_fields = ['product', 'category', 'observation']
     ordering_fields = ['product', 'category', 'quantity', 'price']
     ordering = ['product']
+    parser_classes = [MultiPartParser]
+
+    @action(detail=False, methods=['post'], url_path='bulk-upload-excel')
+    def bulk_upload_excel(self, request):
+        excel_file = request.FILES.get('file')
+        if not excel_file:
+            return Response({"error": "Archivo no proporcionado."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+        except Exception:
+            return Response({"error": "Archivo inválido o corrupto."}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        shrinkages_data = []
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            product, price, quantity, category, observation = row
+            shrinkages_data.append({
+                "product": product,
+                "price": price,
+                "quantity": quantity,
+                "category": category,
+                "observation": observation,
+            })
+
+        serializer = ShrinkageSerializer(data=shrinkages_data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Mermas cargadas exitosamente."}, status=drf_status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='excel-template')
+    def download_template(self, request):
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Plantilla Mermas"
+        ws.append(["product", "price", "quantity", "category", "observation"])
+        ws.append(["Polera básica", 3990, 2, "Ropa", "Rota en costura"])
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=plantilla_mermas.xlsx'
+        wb.save(response)
+        return response
 
 # -----------------------
 # Devoluciones a proveedores

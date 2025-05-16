@@ -7,14 +7,14 @@ import PeopleOutlined from "../../assets/PeopleOutlined";
 import WorkOutlined from "../../assets/WorkOutlined";
 import CloseOutlined from "../../assets/CloseOutlined";
 import { fetchSuppliers, fetchReturnSuppliers } from "../../services/inventoryService";
-import { useNavigate } from "@tanstack/react-router";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from "recharts";
+import { downloadSupplierReportPDF } from "../../services/reportsService";
+import { toast } from 'react-hot-toast';
 
 const DashboardSupplierPage = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalSuppliers: 0,
@@ -57,8 +57,20 @@ const DashboardSupplierPage = () => {
     fetchData();
   }, []);
 
-  const handleGenerateReport = () => {
-    navigate({ to: "/proveedores/reportes" });
+  const handleGenerateReport = async () => {
+    try {
+      const blob = await downloadSupplierReportPDF();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Reporte-Proveedores.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Reporte descargado correctamente');
+    } catch (error) {
+      console.error('Error al descargar el reporte de proveedores:', error);
+      toast.error('Hubo un error al generar el reporte');
+    }
   };
 
   const pieData = [

@@ -1,0 +1,108 @@
+{% load dict_filters %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Proveedores</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'DejaVu Sans', sans-serif;
+            margin: 40px;
+            background-color: #FAFAFC;
+            color: #2E2E38;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #694ED6;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 6px 0;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            border: 1px solid #E0E0E0;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #F5F5FA;
+            color: #444;
+        }
+
+        .chart-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Proveedores</h1>
+
+    <div class="card">
+        <p><strong>Total de proveedores:</strong> {{ data.total_suppliers }}</p>
+        <p><strong>Devoluciones pendientes:</strong> {{ data.pending_returns }}</p>
+        <p><strong>Devoluciones completadas:</strong> {{ data.completed_returns }}</p>
+        <p><strong>Total de órdenes de compra:</strong> {{ data.total_orders }}</p>
+    </div>
+
+    <h2>Órdenes por estado</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for status, count in data.orders_by_status.items %}
+            <tr>
+                <td>{{ status }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="chart-container">
+        <svg width="500" height="220" role="img" aria-label="Gráfico de órdenes por estado">
+            {% for bar in data.bar_data %}
+                <rect
+                    x="{{ bar.x }}"
+                    y="{{ bar.y }}"
+                    width="40"
+                    height="{{ bar.height }}"
+                    fill="{{ bar.label|get_color }}"
+                    rx="4" ry="4"
+                />
+                <text x="{{ bar.x|add:"20" }}" y="195" font-size="11" text-anchor="middle" fill="#333">
+                    {{ bar.label }}
+                </text>
+            {% endfor %}
+        </svg>
+    </div>
+</body>
+</html>

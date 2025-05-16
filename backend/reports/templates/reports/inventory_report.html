@@ -1,0 +1,83 @@
+{% load dict_filters %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Inventario</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'DejaVu Sans', sans-serif;
+            margin: 40px;
+            background-color: #FAFAFC;
+            color: #2E2E38;
+        }
+
+        h1 {
+            text-align: center;
+            color: #694ED6;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 20px 30px;
+            max-width: 400px;
+            margin: 0 auto 40px auto;
+            color: #444;
+        }
+
+        .stats p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .chart-container {
+            text-align: center;
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        svg {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            overflow: visible;
+        }
+
+        text {
+            font-family: 'Segoe UI', 'DejaVu Sans', sans-serif;
+            fill: #333;
+            font-size: 12px;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Inventario</h1>
+    <div class="stats">
+        <p><strong>Total de productos:</strong> {{ data.total_products }}</p>
+        <p><strong>Total de insumos:</strong> {{ data.total_supplies }}</p>
+        <p><strong>Total de mermas:</strong> {{ data.total_shrinkages }}</p>
+        <p><strong>Productos con bajo stock:</strong> {{ data.low_stock_products }}</p>
+        <p><strong>Insumos con bajo stock:</strong> {{ data.low_stock_supplies }}</p>
+    </div>
+
+    <div class="chart-container">
+        <svg width="240" height="200" role="img" aria-label="Gráfico de inventario">
+            {% for bar in data.bar_data %}
+            <rect
+                x="{{ bar.x }}"
+                y="{{ bar.y }}"
+                width="40"
+                height="{{ bar.height }}"
+                fill="{{ bar.color }}"
+                rx="4" ry="4"
+            />
+            <text x="{{ bar.x|add:'20' }}" y="195" text-anchor="middle">{{ bar.label }}</text>
+            {% endfor %}
+        </svg>
+    </div>
+</body>
+</html>

@@ -167,6 +167,15 @@ export default function SupplyManagementPage() {
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h2">Gestión de Insumos</Typography>
+            <Stack direction="row" justifyContent="flex-end" spacing={2}>
+            <Button 
+                component={Link}
+                to="/inventario/insumos/carga-masiva-insumos"
+                variant="solid" 
+                color="primary"
+              >
+                Carga masiva
+              </Button>
             <Button 
               component={Link}
               to="/Inventario/insumos/crear-insumo"
@@ -175,8 +184,8 @@ export default function SupplyManagementPage() {
             >
               Añadir Insumo
             </Button>
+            </Stack>
           </Stack>
-          
           {/* Componente de filtros */}
           <FilterOptions<Filters>
             onChangeFilters={handleFilterChange}

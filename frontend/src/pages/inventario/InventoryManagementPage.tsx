@@ -220,6 +220,15 @@ export default function InventoryManagementPage() {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Typography level="h2">Gestión de Productos</Typography>
+              <Stack direction="row" justifyContent="flex-end" spacing={2}>
+              <Button 
+                component={Link}
+                to="/inventario/productos/carga-masiva-productos"
+                variant="solid" 
+                color="primary"
+              >
+                Carga masiva
+              </Button>
               <Button 
                 component={Link}
                 to="/inventario/productos/crear-producto"
@@ -228,6 +237,7 @@ export default function InventoryManagementPage() {
               >
                 Añadir Producto
               </Button>
+              </Stack>
             </Stack>
             <FilterOptions<Filters>
               onChangeFilters={handleFilterChange}

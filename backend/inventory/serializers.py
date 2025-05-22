@@ -21,23 +21,16 @@ class ObjectIdField(serializers.Field):
 class ProductSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     supplier = serializers.CharField(required=False, allow_null=True)
-    supplier_name = serializers.SerializerMethodField()
     is_below_min_stock = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = '__all__'
 
-    def get_supplier_name(self, obj):
-        if obj.supplier:
-            try:
-                supplier = Supplier.objects.get(id=obj.supplier)
-                return supplier.name
-            except Supplier.DoesNotExist:
-                return None
-        return None
 
     def get_is_below_min_stock(self, obj):
+        if obj.min_stock is None:
+            return False
         return obj.stock < obj.min_stock
 
 class SupplySerializer(serializers.ModelSerializer):
@@ -50,6 +43,8 @@ class SupplySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_is_below_min_stock(self, obj):
+        if obj.min_stock is None:
+            return False
         return obj.stock < obj.min_stock
 
 class ShrinkageSerializer(serializers.ModelSerializer):
@@ -74,10 +69,18 @@ class ReturnSupplierSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_supplier_name(self, obj):
-        try:
-            return obj.supplier.name
-        except Supplier.DoesNotExist:
-            return "Proveedor eliminado"
+        if obj.supplier:
+            # If obj.supplier is already a string (supplier name), return it directly
+            if isinstance(obj.supplier, str) and not ObjectId.is_valid(obj.supplier):
+                return obj.supplier
+            
+            # If it's an ObjectId or a valid ObjectId string, try to find the supplier
+            try:
+                supplier = Supplier.objects.get(id=obj.supplier)
+                return supplier.name
+            except (Supplier.DoesNotExist, Exception):
+                return None
+        return None
 
     def get_product_name(self, obj):
         try:

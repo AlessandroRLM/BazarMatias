@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'inventory',
     'suppliers',
     'sales',
-    'reports'
+    'reports',
 ]
 
 MIDDLEWARE = [
@@ -152,7 +152,10 @@ REST_FRAMEWORK = {
     },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-        'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]    
 }
 
 CORS_ALLOWED_ORIGINS = [

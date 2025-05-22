@@ -136,7 +136,7 @@ export default function AñadirProducto() {
         <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")}>
           <Option value="">Ninguno</Option>
           {proveedores.map(prov => (
-            <Option key={prov.id} value={prov.id}>
+            <Option key={prov.id} value={prov.name}>
               {prov.name}
             </Option>
           ))}

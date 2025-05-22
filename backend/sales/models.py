@@ -160,3 +160,17 @@ class DocumentCounter(models.Model):
             return_document=True
         )
         return result['next_folio']
+
+
+class QuoteDetail(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    unit_price = models.PositiveIntegerField()
+    discount = models.PositiveIntegerField(default=0)
+
+
+class Quote(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    created_at = models.DateField(auto_now_add=True)
+    details = models.ManyToManyField(QuoteDetail)
+    total = models.PositiveIntegerField()

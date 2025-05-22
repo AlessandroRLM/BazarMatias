@@ -4,7 +4,7 @@ import { FieldValues, Path, Control, FieldError, Controller } from 'react-hook-f
 interface FormFieldProps<T extends FieldValues> {
     name: Path<T>
     control: Control<T>
-    label: string
+    label?: string
     placeholder?: string
     type?: string
     size?: "md" | "sm" | "lg"

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Add, ArrowBack, Delete } from '@mui/icons-material'
-import { Button, Card, IconButton, Stack, Typography } from '@mui/joy'
+import { Button, Card, IconButton, Stack, Typography, Sheet, Table, Grid, Divider } from '@mui/joy' // Added Sheet, Table, Grid
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { BuyOrderCreationFormValues, buyOrderCreationSchema } from '../../schemas/proveedores/buyOrderSchema'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -35,7 +35,7 @@ const BuyOrderCreation = () => {
     defaultValues: {
       status: 'PE' as const,
       supplier: '',
-      details: [],
+      details: [{ product: '', quantity: 1, unit_price: 0 }], // Initialize with one detail item
     },
     mode: 'onBlur'
   })
@@ -65,7 +65,7 @@ const BuyOrderCreation = () => {
 
   // Observar cambios en los productos seleccionados
   const details = watch('details') || []
-  
+
   // Efecto para actualizar precios cuando cambian los productos seleccionados
   useEffect(() => {
     details.forEach((detail, index) => {
@@ -73,17 +73,23 @@ const BuyOrderCreation = () => {
         const selectedProduct = findProductById(detail.product)
         if (selectedProduct && selectedProduct.price_clp) {
           // Actualizar el precio unitario con el precio del producto
-          setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
+          // Check if the current unit_price is different before setting to avoid infinite loops if not careful
+          if (watch(`details.${index}.unit_price`) !== selectedProduct.price_clp) {
+            setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
+          }
         }
+      } else {
+        // Optionally, clear unit price if product is removed
+        // setValue(`details.${index}.unit_price`, 0)
       }
     })
-  }, [details.map(d => d.product).join(',')])  // Dependencia: solo los IDs de productos
+  }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
 
   const mutation = useMutation({
     mutationFn: createBuyOrder,
     onSuccess: () => {
       alert('Orden creada con éxito!')
-      navigate({to:'/proveedores/ordenes-de-compra'})
+      navigate({ to: '/proveedores/ordenes-de-compra' })
     },
     onError: (error) => {
       console.error(error)
@@ -106,17 +112,22 @@ const BuyOrderCreation = () => {
 
   // Eliminar detalle
   const removeDetail = (index: number) => {
-    const details = [...watch('details')]
-    details.splice(index, 1)
-    setValue('details', details)
+    const currentDetails = [...watch('details')]
+    currentDetails.splice(index, 1)
+    setValue('details', currentDetails)
   }
 
   // Manejar cambio de producto
-  const handleProductChange = (index: number, productId: string) => {
-    const selectedProduct = findProductById(productId)
-    if (selectedProduct && selectedProduct.price_clp) {
-      // Actualizar el precio unitario con el precio del producto
-      setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
+  const handleProductChange = (index: number, productId: string | null) => { // Allow null for type safety
+    if (productId) {
+      const selectedProduct = findProductById(productId)
+      if (selectedProduct && typeof selectedProduct.price_clp === 'number') {
+        setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
+      } else {
+        setValue(`details.${index}.unit_price`, 0) // Reset if product has no price
+      }
+    } else {
+      setValue(`details.${index}.unit_price`, 0) // Reset if product is deselected
     }
   }
 
@@ -130,138 +141,161 @@ const BuyOrderCreation = () => {
   return (
     <>
       <Stack spacing={1} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
-        <IconButton onClick={() => navigate({to:'/proveedores/ordenes-de-compra'})}>
-          <ArrowBack/>
+        <IconButton onClick={() => navigate({ to: '/proveedores/ordenes-de-compra' })}>
+          <ArrowBack />
         </IconButton>
         <Typography level="h4">Nueva Orden de Compra</Typography>
       </Stack>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3}>
+        <Stack spacing={2} direction={{ xs: 'column', md: 'row' }}>
+          <Sheet variant="outlined" sx={{ p: 2, borderRadius: 'md', flex: 2 }}>
+            <Stack spacing={3}>
+              {/* Proveedor y Estado */}
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <FormSelect
+                  name="supplier"
+                  control={control}
+                  label="Proveedor"
+                  options={supplierOptions}
+                  error={errors.supplier}
+                  fullWidth
+                  placeholder="Seleccionar proveedor"
+                />
+                <FormSelect
+                  name="status"
+                  control={control}
+                  label="Estado"
+                  options={[
+                    { value: 'PE', label: 'Pendiente' },
+                    { value: 'AP', label: 'Aprobado' },
+                    { value: 'RE', label: 'Rechazado' }
+                  ]}
+                  error={errors.status}
+                  fullWidth
+                />
+              </Stack>
 
-          <Card variant="outlined">
-            <Stack spacing={2}>
-              {/* Campo Proveedor */}
-              <FormSelect
-                name="supplier"
-                control={control}
-                label="Proveedor"
-                options={supplierOptions}
-                error={errors.supplier}
-                fullWidht
-              />
-
-              {/* Campo Estado */}
-              <FormSelect
-                name="status"
-                control={control}
-                label="Estado"
-                options={[
-                  { value: 'PE', label: 'Pendiente' },
-                  { value: 'AP', label: 'Aprobado' },
-                  { value: 'RE', label: 'Rechazado' }
-                ]}
-                fullWidht
-              />
-
-              {/* Detalles de la orden */}
-              <Typography level="title-sm">Detalles</Typography>
-
-              {details.map((_, index) => (
-                <Card key={index} variant="soft" sx={{ p: 2 }}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography level="body-sm">Item #{index + 1}</Typography>
-                    <Button
-                      variant="plain"
-                      color="danger"
-                      size="sm"
-                      onClick={() => removeDetail(index)}
-                      startDecorator={<Delete />}
-                    >
-                      Eliminar
-                    </Button>
-                  </Stack>
-
+              {/* Grid para Detalles y Resumen */}
+              <Grid container spacing={3} sx={{ flexGrow: 1 }}>
+                {/* Columna Izquierda: Detalles de la orden (Tabla) */}
+                <Grid xs={12}>
                   <Stack spacing={2}>
-                    <FormSelect
-                      name={`details.${index}.product`}
-                      control={control}
-                      label="Producto"
-                      options={productsOptions}
-                      error={errors.details?.[index]?.product}
-                      fullWidht
-                      onChange={(value) => handleProductChange(index, value)}
-                    />
+                    <Typography level="title-md">Detalles de la Orden</Typography>
+                    <Table
+                      stickyHeader // Makes header sticky if table scrolls
+                      sx={{
+                        '& thead th': { fontWeight: 'lg' },
+                        '& tr > *:not(:first-child)': { textAlign: 'right' },
+                        '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' } // Adjust padding for FormControls
+                      }}
+                    >
+                      <thead>
+                        <tr>
+                          <th style={{ width: '40%', textAlign: 'left' }}>Producto</th>
+                          <th style={{ width: '20%' }}>Cantidad</th>
+                          <th style={{ width: '25%' }}>Precio Unitario</th>
+                          <th style={{ width: '15%', textAlign: 'center' }}>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {details.map((item, index) => (
+                          <tr key={index}>
+                            <td>
+                              <FormSelect
+                                name={`details.${index}.product`}
+                                control={control}
+                                options={productsOptions}
+                                error={errors.details?.[index]?.product}
+                                onChange={(value) => handleProductChange(index, value as string)}
+                                placeholder="Seleccionar producto"
+                                size="sm"
+                              />
+                            </td>
+                            <td>
+                              <FormField
+                                name={`details.${index}.quantity`}
+                                control={control}
+                                type="number"
+                                error={errors.details?.[index]?.quantity}
+                                transform={Number}
+                                size="sm"
+                              />
+                            </td>
+                            <td>
+                              <FormField
+                                name={`details.${index}.unit_price`}
+                                control={control}
+                                type="number"
+                                error={errors.details?.[index]?.unit_price}
+                                transform={Number}
+                                disabled={!!watch(`details.${index}.product`)} // Disable if product is selected
+                                size="sm"
+                              />
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              <IconButton
+                                variant="plain"
+                                color="danger"
+                                size="sm"
+                                onClick={() => removeDetail(index)}
+                                disabled={details.length <= 1} // Disable if only one item
+                              >
+                                <Delete />
+                              </IconButton>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
 
-                    <Stack direction="row" spacing={2}>
-                      <FormField
-                        name={`details.${index}.quantity`}
-                        control={control}
-                        label="Cantidad"
-                        type="number"
-                        error={errors.details?.[index]?.quantity}
-                        transform={Number}
-                        fullWidht
-                      />
+                    <Button
+                      variant="soft"
+                      color="primary"
+                      onClick={addDetail}
+                      startDecorator={<Add />}
+                      sx={{ alignSelf: 'flex-start', mt: 1 }}
+                    >
+                      Agregar Item
+                    </Button>
 
-                      <FormField
-                        name={`details.${index}.unit_price`}
-                        control={control}
-                        label="Precio Unitario"
-                        type="number"
-                        error={errors.details?.[index]?.unit_price}
-                        transform={Number}
-                        fullWidht
-                        disabled={!!watch(`details.${index}.product`)}
-                      />
-                    </Stack>
+                    {errors.details?.root && (
+                      <Typography color="danger" level="body-sm" sx={{ mt: 1 }}>
+                        {errors.details.root.message}
+                      </Typography>
+                    )}
                   </Stack>
-                </Card>
-              ))}
-
-              <Button
-                variant="outlined"
-                onClick={addDetail}
-                startDecorator={<Add />}
-                fullWidth
-              >
-                Agregar Detalle
-              </Button>
-
-              {errors.details?.root && (
-                <Typography color="danger" level="body-sm">
-                  {errors.details.root.message}
-                </Typography>
-              )}
+                </Grid>
+              </Grid>
             </Stack>
-          </Card>
-
-          {/* Resumen de montos */}
-          <Card variant="soft">
-            <Typography level="title-sm" mb={1}>Resumen</Typography>
-            <Stack direction="row" spacing={3}>
-              <Stack>
-                <Typography level="body-sm">Neto:</Typography>
-                <Typography level="title-lg">${netAmount.toLocaleString()}</Typography>
+          </Sheet>
+          <Sheet variant='outlined' sx={{ p: 2, borderRadius: 'md', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Stack spacing={2} sx={{ flexGrow: 1 }}>
+              <Typography level="title-md">Resumen</Typography>
+              <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                <Typography>Total:</Typography>
+                <Typography>{totalAmount.toLocaleString('es-CL')}</Typography>
               </Stack>
-              <Stack>
-                <Typography level="body-sm">IVA (19%):</Typography>
-                <Typography level="title-lg">${iva.toLocaleString()}</Typography>
+              <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                <Typography>IVA (19%):</Typography>
+                <Typography>{iva.toLocaleString('es-CL')}</Typography>
               </Stack>
-              <Stack>
-                <Typography level="body-sm">Total:</Typography>
-                <Typography level="title-lg">${totalAmount.toLocaleString()}</Typography>
+              <Divider />
+              <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                <Typography>Total Neto:</Typography>
+                <Typography>{netAmount.toLocaleString('es-CL')}</Typography>
               </Stack>
             </Stack>
-          </Card>
-
-          {/* Botón de enviar */}
-          <Button
-            type="submit"
-            fullWidth
-            size="lg"
-          >
-            Crear Orden
-          </Button>
+            <Button
+              type="submit"
+              fullWidth
+              size="md"
+              sx={{ mt: 'auto', pt: 2 }}
+              loading={mutation.isPending}
+              disabled={mutation.isPending}
+            >
+              Crear Orden
+            </Button>
+          </Sheet>
         </Stack>
       </form>
     </>

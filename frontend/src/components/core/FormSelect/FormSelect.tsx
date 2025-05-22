@@ -11,12 +11,12 @@ export interface SelectOption {
 interface FormSelectProps<T extends FieldValues> {
   name: Path<T>;
   control: Control<T>;
-  label: string;
+  label?: string;
   placeholder?: string;
   options: SelectOption[];
   size?: "md" | "sm" | "lg";
   disabled?: boolean;
-  fullWidht?: boolean;
+  fullWidth?: boolean;
   error?: FieldError;
   onChange?: (value: any) => void
 }
@@ -29,7 +29,7 @@ const FormSelect = <T extends FieldValues>({
   options,
   size = "md",
   disabled = false,
-  fullWidht = false,
+  fullWidth = false,
   error,
   onChange
 }: FormSelectProps<T>) => {
@@ -40,7 +40,7 @@ const FormSelect = <T extends FieldValues>({
       render={({ field: { onChange: fieldOnChange, value, ...field } }) => (
         <FormControl
           error={!!error}
-          sx={{ mb: 2, width: fullWidht ? "100%" : "auto" }}
+          sx={{ mb: 2, width: fullWidth ? "100%" : "auto" }}
         >
           <FormLabel>{label}</FormLabel>
           <Select

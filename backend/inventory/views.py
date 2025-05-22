@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from rest_framework import viewsets, filters, status as drf_status
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -35,7 +35,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'price_clp', 'stock']
     ordering = ['name']
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, JSONParser]
 
     @action(detail=False, methods=['get'], url_path='low-stock')
     def low_stock_products(self, request):

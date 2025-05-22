@@ -2,9 +2,9 @@ from django.db import models
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    price_clp = models.FloatField()
+    price_clp = models.PositiveIntegerField()
     iva = models.BooleanField(default=True)
-    stock = models.IntegerField()
+    stock = models.PositiveIntegerField()
     min_stock = models.IntegerField(default=0)
     category = models.CharField(max_length=100)
     supplier = models.CharField(max_length=100)

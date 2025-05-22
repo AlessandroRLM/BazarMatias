@@ -54,6 +54,16 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/inventory/metrics/:
+    get:
+      operationId: inventory_metrics_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
   /api/inventory/products/:
     get:
       operationId: inventory_products_list
@@ -94,7 +104,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -108,19 +117,15 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Product'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Product'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/json:
             schema:
               $ref: '#/components/schemas/Product'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -142,7 +147,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -163,19 +167,15 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Product'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Product'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/json:
             schema:
               $ref: '#/components/schemas/Product'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -196,18 +196,14 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedProduct'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedProduct'
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          application/json:
             schema:
               $ref: '#/components/schemas/PatchedProduct'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -228,10 +224,278 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
           description: No response body
+  /api/inventory/products/bulk-upload-excel/:
+    post:
+      operationId: inventory_products_bulk_upload_excel_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/inventory/products/excel-template/:
+    get:
+      operationId: inventory_products_excel_template_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/inventory/products/low-stock/:
+    get:
+      operationId: inventory_products_low_stock_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+  /api/inventory/return-suppliers/:
+    get:
+      operationId: inventory_return_suppliers_list
+      parameters:
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: product
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: query
+        name: supplier
+        schema:
+          type: integer
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReturnSupplierList'
+          description: ''
+    post:
+      operationId: inventory_return_suppliers_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+  /api/inventory/return-suppliers/{id}/:
+    get:
+      operationId: inventory_return_suppliers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    put:
+      operationId: inventory_return_suppliers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    patch:
+      operationId: inventory_return_suppliers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    delete:
+      operationId: inventory_return_suppliers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
+  /api/inventory/return-suppliers/{id}/resolve/:
+    patch:
+      operationId: inventory_return_suppliers_resolve_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
   /api/inventory/shrinkages/:
     get:
       operationId: inventory_shrinkages_list
@@ -268,7 +532,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -282,19 +545,12 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Shrinkage'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Shrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Shrinkage'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -316,7 +572,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -337,19 +592,12 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Shrinkage'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Shrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Shrinkage'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -370,18 +618,11 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedShrinkage'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedShrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedShrinkage'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -402,10 +643,43 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
           description: No response body
+  /api/inventory/shrinkages/bulk-upload-excel/:
+    post:
+      operationId: inventory_shrinkages_bulk_upload_excel_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
+  /api/inventory/shrinkages/excel-template/:
+    get:
+      operationId: inventory_shrinkages_excel_template_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shrinkage'
+          description: ''
   /api/inventory/supplies/:
     get:
       operationId: inventory_supplies_list
@@ -442,7 +716,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -456,19 +729,12 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Supply'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Supply'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Supply'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -490,7 +756,6 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -511,19 +776,12 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Supply'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Supply'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Supply'
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -544,18 +802,11 @@ paths:
       - inventory
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedSupply'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedSupply'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedSupply'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -576,9 +827,86 @@ paths:
       - inventory
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
+          description: No response body
+  /api/inventory/supplies/bulk-upload-excel/:
+    post:
+      operationId: inventory_supplies_bulk_upload_excel_create
+      tags:
+      - inventory
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supply'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+  /api/inventory/supplies/excel-template/:
+    get:
+      operationId: inventory_supplies_excel_template_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+  /api/inventory/supplies/low-stock/:
+    get:
+      operationId: inventory_supplies_low_stock_retrieve
+      tags:
+      - inventory
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+          description: ''
+  /api/reports/inventory/:
+    get:
+      operationId: reports_inventory_retrieve
+      tags:
+      - reports
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
+  /api/reports/suppliers/:
+    get:
+      operationId: reports_suppliers_retrieve
+      tags:
+      - reports
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
+  /api/reports/users/:
+    get:
+      operationId: reports_users_retrieve
+      tags:
+      - reports
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
           description: No response body
   /api/sales/clients/:
     get:
@@ -600,7 +928,6 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -626,7 +953,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -648,7 +974,6 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -681,7 +1006,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -713,7 +1037,6 @@ paths:
               $ref: '#/components/schemas/PatchedClient'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -734,7 +1057,158 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/sales/quotes/:
+    get:
+      operationId: sales_quotes_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuoteList'
+          description: ''
+    post:
+      operationId: sales_quotes_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Quote'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
+  /api/sales/quotes/{id}/:
+    get:
+      operationId: sales_quotes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
+    put:
+      operationId: sales_quotes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Quote'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
+    patch:
+      operationId: sales_quotes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQuote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQuote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQuote'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
+    delete:
+      operationId: sales_quotes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
       responses:
         '204':
           description: No response body
@@ -758,7 +1232,6 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -784,7 +1257,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -806,7 +1278,6 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -839,7 +1310,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -871,7 +1341,6 @@ paths:
               $ref: '#/components/schemas/PatchedSale'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -892,7 +1361,6 @@ paths:
       - sales
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
           description: No response body
@@ -928,7 +1396,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -954,7 +1421,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -976,7 +1442,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1009,7 +1474,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1041,7 +1505,6 @@ paths:
               $ref: '#/components/schemas/PatchedBuyOrder'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1062,7 +1525,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
           description: No response body
@@ -1102,7 +1564,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1128,7 +1589,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '201':
           content:
@@ -1150,7 +1610,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1183,7 +1642,6 @@ paths:
         required: true
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1215,7 +1673,6 @@ paths:
               $ref: '#/components/schemas/PatchedSupplier'
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '200':
           content:
@@ -1236,7 +1693,6 @@ paths:
       - suppliers
       security:
       - knoxApiToken: []
-      - {}
       responses:
         '204':
           description: No response body
@@ -1755,6 +2211,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Product'
+    PaginatedQuoteList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quote'
+    PaginatedReturnSupplierList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReturnSupplier'
     PaginatedSaleList:
       type: object
       required:
@@ -1927,15 +2429,28 @@ components:
         id:
           type: string
           readOnly: true
+        supplier:
+          type: string
+          nullable: true
+        is_below_min_stock:
+          type: string
+          readOnly: true
         name:
           type: string
           maxLength: 255
         price_clp:
-          type: number
-          format: double
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         iva:
           type: boolean
         stock:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        min_stock:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808
@@ -1943,11 +2458,65 @@ components:
         category:
           type: string
           maxLength: 100
-        supplier:
-          type: string
-          maxLength: 100
         data:
           nullable: true
+    PatchedQuote:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteDetail'
+        created_at:
+          type: string
+          format: date
+          readOnly: true
+        total:
+          type: integer
+          readOnly: true
+    PatchedReturnSupplier:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        supplier:
+          type: integer
+        product:
+          type: integer
+        supplier_name:
+          type: string
+          readOnly: true
+        product_name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        product_condition:
+          type: string
+          maxLength: 100
+        reason:
+          type: string
+        purchase_number:
+          type: string
+          maxLength: 50
+        purchase_date:
+          type: string
+          format: date
+        return_date:
+          type: string
+          format: date
+        status:
+          type: string
+          maxLength: 50
     PatchedSale:
       type: object
       properties:
@@ -1998,6 +2567,10 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         quantity:
           type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
         product:
           type: string
           maxLength: 100
@@ -2039,6 +2612,8 @@ components:
           type: string
           readOnly: true
         stock:
+          type: integer
+        min_stock:
           type: integer
         name:
           type: string
@@ -2106,15 +2681,28 @@ components:
         id:
           type: string
           readOnly: true
+        supplier:
+          type: string
+          nullable: true
+        is_below_min_stock:
+          type: string
+          readOnly: true
         name:
           type: string
           maxLength: 255
         price_clp:
-          type: number
-          format: double
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         iva:
           type: boolean
         stock:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        min_stock:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808
@@ -2122,18 +2710,113 @@ components:
         category:
           type: string
           maxLength: 100
-        supplier:
-          type: string
-          maxLength: 100
         data:
           nullable: true
       required:
       - category
       - id
+      - is_below_min_stock
       - name
       - price_clp
       - stock
+    Quote:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteDetail'
+        created_at:
+          type: string
+          format: date
+          readOnly: true
+        total:
+          type: integer
+          readOnly: true
+      required:
+      - client
+      - created_at
+      - details
+      - id
+      - total
+    QuoteDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        product:
+          type: string
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        unit_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - product
+      - quantity
+      - unit_price
+    ReturnSupplier:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        supplier:
+          type: integer
+        product:
+          type: integer
+        supplier_name:
+          type: string
+          readOnly: true
+        product_name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        product_condition:
+          type: string
+          maxLength: 100
+        reason:
+          type: string
+        purchase_number:
+          type: string
+          maxLength: 50
+        purchase_date:
+          type: string
+          format: date
+        return_date:
+          type: string
+          format: date
+        status:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - product
+      - product_condition
+      - product_name
+      - purchase_date
+      - purchase_number
+      - quantity
+      - reason
+      - return_date
       - supplier
+      - supplier_name
     Sale:
       type: object
       properties:
@@ -2219,6 +2902,10 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         quantity:
           type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
         product:
           type: string
           maxLength: 100
@@ -2230,6 +2917,7 @@ components:
           nullable: true
       required:
       - category
+      - created_at
       - id
       - price
       - product
@@ -2285,6 +2973,8 @@ components:
           readOnly: true
         stock:
           type: integer
+        min_stock:
+          type: integer
         name:
           type: string
           maxLength: 100
@@ -2294,6 +2984,7 @@ components:
       required:
       - category
       - id
+      - min_stock
       - name
       - stock
     User:

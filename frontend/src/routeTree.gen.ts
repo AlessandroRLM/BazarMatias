@@ -39,8 +39,11 @@ import { Route as AuthProveedoresEditarProveedorIdImport } from './routes/_auth/
 import { Route as AuthProveedoresEditarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/editar-ordenes-de-compra.$id'
 import { Route as AuthProveedoresDevolucionesCrearDevolucionImport } from './routes/_auth/proveedores/devoluciones/crear-devolucion'
 import { Route as AuthInventarioProductosCrearProductoImport } from './routes/_auth/inventario/productos/crear-producto'
+import { Route as AuthInventarioProductosCargaMasivaProductosImport } from './routes/_auth/inventario/productos/carga-masiva-productos'
 import { Route as AuthInventarioMermasCrearMermaImport } from './routes/_auth/inventario/mermas/crear-merma'
+import { Route as AuthInventarioMermasCargaMasivaMermasImport } from './routes/_auth/inventario/mermas/carga-masiva-mermas'
 import { Route as AuthInventarioInsumosCrearInsumoImport } from './routes/_auth/inventario/insumos/crear-insumo'
+import { Route as AuthInventarioInsumosCargaMasivaInsumosImport } from './routes/_auth/inventario/insumos/carga-masiva-insumos'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
 import { Route as AuthProveedoresDevolucionesVerDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/ver-devolucion.$id'
@@ -245,6 +248,13 @@ const AuthInventarioProductosCrearProductoRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthInventarioProductosCargaMasivaProductosRoute =
+  AuthInventarioProductosCargaMasivaProductosImport.update({
+    id: '/inventario/productos/carga-masiva-productos',
+    path: '/inventario/productos/carga-masiva-productos',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthInventarioMermasCrearMermaRoute =
   AuthInventarioMermasCrearMermaImport.update({
     id: '/inventario/mermas/crear-merma',
@@ -252,10 +262,24 @@ const AuthInventarioMermasCrearMermaRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthInventarioMermasCargaMasivaMermasRoute =
+  AuthInventarioMermasCargaMasivaMermasImport.update({
+    id: '/inventario/mermas/carga-masiva-mermas',
+    path: '/inventario/mermas/carga-masiva-mermas',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthInventarioInsumosCrearInsumoRoute =
   AuthInventarioInsumosCrearInsumoImport.update({
     id: '/inventario/insumos/crear-insumo',
     path: '/inventario/insumos/crear-insumo',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthInventarioInsumosCargaMasivaInsumosRoute =
+  AuthInventarioInsumosCargaMasivaInsumosImport.update({
+    id: '/inventario/insumos/carga-masiva-insumos',
+    path: '/inventario/insumos/carga-masiva-insumos',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -445,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAdministracionUsuariosCrearUsuarioImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/insumos/carga-masiva-insumos': {
+      id: '/_auth/inventario/insumos/carga-masiva-insumos'
+      path: '/inventario/insumos/carga-masiva-insumos'
+      fullPath: '/inventario/insumos/carga-masiva-insumos'
+      preLoaderRoute: typeof AuthInventarioInsumosCargaMasivaInsumosImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/inventario/insumos/crear-insumo': {
       id: '/_auth/inventario/insumos/crear-insumo'
       path: '/inventario/insumos/crear-insumo'
@@ -452,11 +483,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInventarioInsumosCrearInsumoImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/inventario/mermas/carga-masiva-mermas': {
+      id: '/_auth/inventario/mermas/carga-masiva-mermas'
+      path: '/inventario/mermas/carga-masiva-mermas'
+      fullPath: '/inventario/mermas/carga-masiva-mermas'
+      preLoaderRoute: typeof AuthInventarioMermasCargaMasivaMermasImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/inventario/mermas/crear-merma': {
       id: '/_auth/inventario/mermas/crear-merma'
       path: '/inventario/mermas/crear-merma'
       fullPath: '/inventario/mermas/crear-merma'
       preLoaderRoute: typeof AuthInventarioMermasCrearMermaImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/inventario/productos/carga-masiva-productos': {
+      id: '/_auth/inventario/productos/carga-masiva-productos'
+      path: '/inventario/productos/carga-masiva-productos'
+      fullPath: '/inventario/productos/carga-masiva-productos'
+      preLoaderRoute: typeof AuthInventarioProductosCargaMasivaProductosImport
       parentRoute: typeof AuthImport
     }
     '/_auth/inventario/productos/crear-producto': {
@@ -671,8 +716,11 @@ interface AuthRouteChildren {
   AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   AuthAdministracionUsuariosCrearUsuarioRoute: typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  AuthInventarioInsumosCargaMasivaInsumosRoute: typeof AuthInventarioInsumosCargaMasivaInsumosRoute
   AuthInventarioInsumosCrearInsumoRoute: typeof AuthInventarioInsumosCrearInsumoRoute
+  AuthInventarioMermasCargaMasivaMermasRoute: typeof AuthInventarioMermasCargaMasivaMermasRoute
   AuthInventarioMermasCrearMermaRoute: typeof AuthInventarioMermasCrearMermaRoute
+  AuthInventarioProductosCargaMasivaProductosRoute: typeof AuthInventarioProductosCargaMasivaProductosRoute
   AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
   AuthProveedoresDevolucionesCrearDevolucionRoute: typeof AuthProveedoresDevolucionesCrearDevolucionRoute
   AuthProveedoresEditarOrdenesDeCompraIdRoute: typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
@@ -717,8 +765,14 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthAdministracionUsuariosActividadDeUsuariosRoute,
   AuthAdministracionUsuariosCrearUsuarioRoute:
     AuthAdministracionUsuariosCrearUsuarioRoute,
+  AuthInventarioInsumosCargaMasivaInsumosRoute:
+    AuthInventarioInsumosCargaMasivaInsumosRoute,
   AuthInventarioInsumosCrearInsumoRoute: AuthInventarioInsumosCrearInsumoRoute,
+  AuthInventarioMermasCargaMasivaMermasRoute:
+    AuthInventarioMermasCargaMasivaMermasRoute,
   AuthInventarioMermasCrearMermaRoute: AuthInventarioMermasCrearMermaRoute,
+  AuthInventarioProductosCargaMasivaProductosRoute:
+    AuthInventarioProductosCargaMasivaProductosRoute,
   AuthInventarioProductosCrearProductoRoute:
     AuthInventarioProductosCrearProductoRoute,
   AuthProveedoresDevolucionesCrearDevolucionRoute:
@@ -782,8 +836,11 @@ export interface FileRoutesByFullPath {
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
+  '/inventario/mermas/carga-masiva-mermas': typeof AuthInventarioMermasCargaMasivaMermasRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
+  '/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
   '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
@@ -828,8 +885,11 @@ export interface FileRoutesByTo {
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
   '/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
+  '/inventario/mermas/carga-masiva-mermas': typeof AuthInventarioMermasCargaMasivaMermasRoute
   '/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
+  '/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
   '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
@@ -875,8 +935,11 @@ export interface FileRoutesById {
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
+  '/_auth/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
   '/_auth/inventario/insumos/crear-insumo': typeof AuthInventarioInsumosCrearInsumoRoute
+  '/_auth/inventario/mermas/carga-masiva-mermas': typeof AuthInventarioMermasCargaMasivaMermasRoute
   '/_auth/inventario/mermas/crear-merma': typeof AuthInventarioMermasCrearMermaRoute
+  '/_auth/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/_auth/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
   '/_auth/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
@@ -923,8 +986,11 @@ export interface FileRouteTypes {
     | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
+    | '/inventario/insumos/carga-masiva-insumos'
     | '/inventario/insumos/crear-insumo'
+    | '/inventario/mermas/carga-masiva-mermas'
     | '/inventario/mermas/crear-merma'
+    | '/inventario/productos/carga-masiva-productos'
     | '/inventario/productos/crear-producto'
     | '/proveedores/devoluciones/crear-devolucion'
     | '/proveedores/editar-ordenes-de-compra/$id'
@@ -968,8 +1034,11 @@ export interface FileRouteTypes {
     | '/proveedores'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
+    | '/inventario/insumos/carga-masiva-insumos'
     | '/inventario/insumos/crear-insumo'
+    | '/inventario/mermas/carga-masiva-mermas'
     | '/inventario/mermas/crear-merma'
+    | '/inventario/productos/carga-masiva-productos'
     | '/inventario/productos/crear-producto'
     | '/proveedores/devoluciones/crear-devolucion'
     | '/proveedores/editar-ordenes-de-compra/$id'
@@ -1013,8 +1082,11 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
+    | '/_auth/inventario/insumos/carga-masiva-insumos'
     | '/_auth/inventario/insumos/crear-insumo'
+    | '/_auth/inventario/mermas/carga-masiva-mermas'
     | '/_auth/inventario/mermas/crear-merma'
+    | '/_auth/inventario/productos/carga-masiva-productos'
     | '/_auth/inventario/productos/crear-producto'
     | '/_auth/proveedores/devoluciones/crear-devolucion'
     | '/_auth/proveedores/editar-ordenes-de-compra/$id'
@@ -1089,8 +1161,11 @@ export const routeTree = rootRoute
         "/_auth/proveedores/",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
         "/_auth/administracion/usuarios/crear-usuario",
+        "/_auth/inventario/insumos/carga-masiva-insumos",
         "/_auth/inventario/insumos/crear-insumo",
+        "/_auth/inventario/mermas/carga-masiva-mermas",
         "/_auth/inventario/mermas/crear-merma",
+        "/_auth/inventario/productos/carga-masiva-productos",
         "/_auth/inventario/productos/crear-producto",
         "/_auth/proveedores/devoluciones/crear-devolucion",
         "/_auth/proveedores/editar-ordenes-de-compra/$id",
@@ -1164,12 +1239,24 @@ export const routeTree = rootRoute
       "filePath": "_auth/administracion/usuarios/crear-usuario.tsx",
       "parent": "/_auth"
     },
+    "/_auth/inventario/insumos/carga-masiva-insumos": {
+      "filePath": "_auth/inventario/insumos/carga-masiva-insumos.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/inventario/insumos/crear-insumo": {
       "filePath": "_auth/inventario/insumos/crear-insumo.tsx",
       "parent": "/_auth"
     },
+    "/_auth/inventario/mermas/carga-masiva-mermas": {
+      "filePath": "_auth/inventario/mermas/carga-masiva-mermas.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/inventario/mermas/crear-merma": {
       "filePath": "_auth/inventario/mermas/crear-merma.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/inventario/productos/carga-masiva-productos": {
+      "filePath": "_auth/inventario/productos/carga-masiva-productos.tsx",
       "parent": "/_auth"
     },
     "/_auth/inventario/productos/crear-producto": {

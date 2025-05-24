@@ -63,13 +63,31 @@ class ProductViewSet(viewsets.ModelViewSet):
         errores = []
 
         for i, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            # Verifica si la fila está completamente vacía
+            if not row or all(cell is None or str(cell).strip() == '' for cell in row):
+                continue  # Ignora filas completamente vacías
+
+            if not row or len(row) < 7:
+                errores.append(f"Fila {i}: Datos incompletos.")
+                continue
+
             name, price_clp, iva, stock, min_stock, category, supplier_name = row
 
-            # Intentar obtener el proveedor por nombre
-            supplier_obj = Supplier.objects.filter(name__iexact=supplier_name).first()
-            if not supplier_obj:
-                errores.append(f"Fila {i}: Proveedor '{supplier_name}' no encontrado.")
+            if not all([name, price_clp, iva, stock, min_stock, category]):
+                errores.append(f"Fila {i}: Uno o más campos requeridos están vacíos.")
                 continue
+
+            # Convertir IVA
+            iva = True if str(iva).strip().upper() in ["VERDADERO", "TRUE", "1"] else False
+
+            # Usar "Sin proveedor" si está vacío
+            if not supplier_name:
+                supplier_name = "Sin proveedor"
+
+            supplier_obj = Supplier.objects.filter(name__iexact=supplier_name.strip()).first()
+
+            if not supplier_obj:
+                supplier_obj = Supplier.objects.create(name=supplier_name.strip())
 
             products_data.append({
                 "name": name,
@@ -78,7 +96,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "stock": stock,
                 "min_stock": min_stock,
                 "category": category,
-                "supplier": str(supplier_obj.id),
+                "supplier": str(supplier_obj.id)
             })
 
         if errores:
@@ -88,6 +106,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Productos cargados exitosamente."}, status=drf_status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'], url_path='excel-template')
@@ -140,8 +159,22 @@ class SupplyViewSet(viewsets.ModelViewSet):
             return Response({"error": "Archivo inválido o corrupto."}, status=drf_status.HTTP_400_BAD_REQUEST)
 
         supplies_data = []
-        for row in sheet.iter_rows(min_row=2, values_only=True):
+        errores = []
+
+        for i, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            if not row or all(cell is None or str(cell).strip() == '' for cell in row):
+                continue
+
+            if len(row) < 4:
+                errores.append(f"Fila {i}: Datos incompletos.")
+                continue
+
             name, category, stock, min_stock = row
+
+            if not all([name, category, stock, min_stock]):
+                errores.append(f"Fila {i}: Uno o más campos requeridos están vacíos.")
+                continue
+
             supplies_data.append({
                 "name": name,
                 "category": category,
@@ -149,10 +182,14 @@ class SupplyViewSet(viewsets.ModelViewSet):
                 "min_stock": min_stock,
             })
 
+        if errores:
+            return Response({"errores": errores}, status=drf_status.HTTP_400_BAD_REQUEST)
+
         serializer = SupplySerializer(data=supplies_data, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Insumos cargados exitosamente."}, status=drf_status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'], url_path='excel-template')
@@ -180,7 +217,7 @@ class ShrinkageViewSet(viewsets.ModelViewSet):
     search_fields = ['product', 'category', 'observation']
     ordering_fields = ['product', 'category', 'quantity', 'price']
     ordering = ['product']
-    parser_classes = [MultiPartParser]
+    parser_classes = [JSONParser, MultiPartParser]
 
     @action(detail=False, methods=['post'], url_path='bulk-upload-excel')
     def bulk_upload_excel(self, request):
@@ -195,20 +232,46 @@ class ShrinkageViewSet(viewsets.ModelViewSet):
             return Response({"error": "Archivo inválido o corrupto."}, status=drf_status.HTTP_400_BAD_REQUEST)
 
         shrinkages_data = []
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            product, price, quantity, category, observation = row
+        errores = []
+
+        for i, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            if not row or all(cell is None or str(cell).strip() == '' for cell in row):
+                continue
+
+            if len(row) < 4:
+                errores.append(f"Fila {i}: Datos incompletos. Se requieren al menos 4 columnas.")
+                continue
+
+            product, price, quantity, category = row[:4]
+            observation = row[4] if len(row) > 4 else ""
+
+            if not all([product, price, quantity, category]):
+                errores.append(f"Fila {i}: Uno o más campos requeridos están vacíos.")
+                continue
+
+            try:
+                price = float(price)
+                quantity = int(quantity)
+            except ValueError:
+                errores.append(f"Fila {i}: Precio o cantidad con formato incorrecto.")
+                continue
+
             shrinkages_data.append({
-                "product": product,
+                "product": str(product),
                 "price": price,
                 "quantity": quantity,
-                "category": category,
-                "observation": observation,
+                "category": str(category),
+                "observation": observation or "",
             })
+
+        if errores:
+            return Response({"errores": errores}, status=drf_status.HTTP_400_BAD_REQUEST)
 
         serializer = ShrinkageSerializer(data=shrinkages_data, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Mermas cargadas exitosamente."}, status=drf_status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=drf_status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'], url_path='excel-template')

@@ -9,7 +9,7 @@ import {
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { useEffect, useState } from "react";
-import { fetchProduct, updateProduct, fetchSuppliers, fetchSupplier } from "../../services/inventoryService"; // Asegúrate de importar fetchSupplier
+import { fetchProduct, updateProduct, fetchSuppliers, fetchSupplier } from "../../services/inventoryService";
 import { useNavigate, useParams } from "@tanstack/react-router";
 
 export default function EditarProducto() {

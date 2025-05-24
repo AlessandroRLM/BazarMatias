@@ -21,12 +21,21 @@ class ObjectIdField(serializers.Field):
 class ProductSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     supplier = serializers.CharField(required=False, allow_null=True)
+    supplier_name = serializers.SerializerMethodField()
     is_below_min_stock = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = '__all__'
 
+    def get_supplier_name(self, obj):
+        if obj.supplier:
+            try:
+                supplier = Supplier.objects.get(id=obj.supplier)
+                return supplier.name
+            except Supplier.DoesNotExist:
+                return None
+        return None
 
     def get_is_below_min_stock(self, obj):
         if obj.min_stock is None:

@@ -4,7 +4,7 @@ import { buyOrderSearchSchema } from '../../../schemas/proveedores/buyOrderSearc
 import { buyOrderQueryOptions } from '../../../utils/proveedores/suppliersQueryOptions'
 
 import { queryClient } from '../../../App'
-import buyOrderManagementPage from '../../../pages/ordenesCompra/buyOrderManagementPage'
+import buyOrderManagementPage from '../../../pages/ordenesCompra/BuyOrderManagementPage'
 
 export const Route = createFileRoute('/_auth/proveedores/ordenes-de-compra')({
     validateSearch: zodValidator(buyOrderSearchSchema),

@@ -6,13 +6,18 @@ import { BuyOrder, Supplier } from "../types/proveedores.types";
 import { BuyOrderCreationFormValues } from "../schemas/proveedores/buyOrderSchema";
 
 //para formulario de ordenes de compra
-export const fetchProducts = async () => {
-    const response: AxiosResponse<CustomPagination<Product>> = await AxiosInstance.get(`/api/inventory/products/?page_size=100`);
+export const fetchProducts = async (search: String) => {
+    if (!search){
+        const response: AxiosResponse<CustomPagination<Product>> = await AxiosInstance.get(`/api/inventory/products/?page_size=20`);
+        return response.data;
+    }
+    const response: AxiosResponse<CustomPagination<Product>> = await AxiosInstance.get(`/api/inventory/products/?page_size=20&${search}`);
     return response.data;
 };
 
 export const fetchSuppliers = async () => {
-    const response: AxiosResponse<CustomPagination<Supplier>> = await AxiosInstance.get(`/api/suppliers/suppliers/?page_size=100`);
+    
+    const response: AxiosResponse<CustomPagination<Supplier>> = await AxiosInstance.get(`/api/suppliers/suppliers/?page_size=20`);
     return response.data;
 };
 

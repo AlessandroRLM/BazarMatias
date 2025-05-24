@@ -5,7 +5,7 @@ import { buyOrderQueryOptions } from "../../utils/proveedores/suppliersQueryOpti
 import PageHeader from "../../components/core/PageHeader/PageHeader"
 import FilterOptions from "../../components/core/FilterOptions/FilterOptions"
 import CustomTable from "../../components/core/CustomTable/CustomTable"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { BUY_ORDER_COLUMNS } from "../../utils/proveedores/buyOrderColumns"
 import { ColumnDef } from "@tanstack/react-table"
 import { BuyOrder } from "../../types/proveedores.types"
@@ -15,7 +15,7 @@ import { queryClient } from "../../App"
 import { deleteBuyOrder } from "../../services/supplierService"
 import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog"
 
-const buyOrderManagementPage = () => {
+const BuyOrderManagementPage = () => {
     const navigate = useNavigate()
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
     const [orderToDelete, setOrderToDelete] = useState<string | null>(null)
@@ -100,5 +100,5 @@ const buyOrderManagementPage = () => {
     )
 }
 
-export default buyOrderManagementPage
+export default BuyOrderManagementPage
 

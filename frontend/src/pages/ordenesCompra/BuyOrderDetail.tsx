@@ -1,45 +1,61 @@
 import { ArrowBack } from '@mui/icons-material'
-import { Button, Card, Chip, IconButton, Stack, Typography, Table } from '@mui/joy'
-import { useQuery } from '@tanstack/react-query'
+import { Chip, IconButton, Stack, Typography, Table, CircularProgress, Sheet, Divider, Box } from '@mui/joy'
+import { useQuery, useQueries } from '@tanstack/react-query'
 import { fetchBuyOrderById } from '../../services/supplierService'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { BuyOrder } from '../../types/proveedores.types'
 import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
 import { fetchProduct } from '../../services/inventoryService'
+import { Product } from '../../types/inventory.types'
 
 const BuyOrderDetail = () => {
   const { id } = useParams({ from: '/_auth/proveedores/ver-ordenes-de-compra/$id' })
   const navigate = useNavigate()
 
-  const { data: buyOrder, isLoading, isError } = useQuery<BuyOrder>({
+  const { data: buyOrder, isError } = useQuery<BuyOrder>({
     queryKey: ['buyOrder', id],
     queryFn: () => fetchBuyOrderById(id)
   })
 
-  const [productNamesMap, setProductNamesMap] = useState<Record<string, string>>({})
+  // Usar useQueries para crear una consulta independiente para cada detalle de producto
+  const productQueries = useQueries({
+    queries: buyOrder?.details.map((detail) => ({
+      queryKey: ['product', detail.product],
+      queryFn: () => fetchProduct(detail.product),
+      enabled: !!buyOrder,
+    })) || [],
+  })
 
-  useEffect(() => {
-    if (!buyOrder) return
+  // Función para encontrar un producto por su ID usando los resultados de las consultas
+  const findProductById = (productId: string): Product | undefined => {
 
-    const fetchAllProductNames = async () => {
-      const entries = await Promise.all(
-        buyOrder.details.map(async (detail) => {
-          try {
-            const product = await fetchProduct(detail.product)
-            return [detail.product, product.name] // o product.nombre, según tu backend
-          } catch {
-            return [detail.product, 'Producto no encontrado']
-          }
-        })
-      )
-      setProductNamesMap(Object.fromEntries(entries))
+    let foundIndex = -1;
+    buyOrder?.details.forEach((detail, idx) => {
+      if (detail.product === productId) {
+        foundIndex = idx;
+      }
+    });
+
+    if (foundIndex !== -1 && productQueries[foundIndex]?.data) {
+      console.log(`productQueries[${foundIndex}].data`, productQueries[foundIndex].data)
+      return productQueries[foundIndex].data
     }
 
-    fetchAllProductNames()
-  }, [buyOrder])
+    if (foundIndex === -1) {
+      buyOrder?.details.forEach((detail, idx) => {
+        if (detail.product.trim() === productId.trim()) {
+          foundIndex = idx;
+        }
+      });
 
-  if (isLoading) return <div>Cargando...</div>
+      if (foundIndex !== -1 && productQueries[foundIndex]?.data) {
+        return productQueries[foundIndex].data
+      }
+    }
+
+    return undefined
+  }
+
   if (isError) return <div>Error al cargar la orden de compra</div>
   if (!buyOrder) return <div>Orden no encontrada</div>
 
@@ -70,98 +86,101 @@ const BuyOrderDetail = () => {
           <ArrowBack />
         </IconButton>
         <Typography level="h4">Detalle de Orden de Compra</Typography>
-        <Chip 
-          color={getStatusColor(buyOrder.status)} 
-          size="sm" 
+        <Chip
+          color={getStatusColor(buyOrder.status)}
+          size="sm"
           sx={{ ml: 'auto' }}
         >
           {getStatusText(buyOrder.status)}
         </Chip>
       </Stack>
 
-      <Stack spacing={3} mt={3}>
-        {/* Información general de la orden */}
-        <Card variant="outlined">
-          <Stack spacing={2}>
-            <Stack direction="row" justifyContent="space-between">
-              <Typography level="body-sm">Proveedor:</Typography>
-              <Typography level="body-sm" fontWeight="lg">{buyOrder.supplier}</Typography>
-            </Stack>
+      <Stack spacing={2} direction={{ xs: "column", md: "row" }}>
+        <Sheet variant="outlined" sx={{ p: 2, borderRadius: "md", flex: 2 }}>
+          <Box sx={{p: 2}}>
+            <Stack spacing={2}>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography level="body-md">Proveedor:</Typography>
+                <Typography level="body-md" fontWeight="lg">{buyOrder.supplier}</Typography>
+              </Stack>
 
-            <Stack direction="row" justifyContent="space-between">
-              <Typography level="body-sm">Fecha de creación:</Typography>
-              <Typography level="body-sm" fontWeight="lg">
-                {dayjs(buyOrder.created_at).format('DD/MM/YYYY - HH:mm:ss')}
-              </Typography>
-            </Stack>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography level="body-md">Fecha de creación:</Typography>
+                <Typography level="body-md" fontWeight="lg">
+                  {dayjs(buyOrder.created_at).format('DD/MM/YYYY - HH:mm:ss')}
+                </Typography>
+              </Stack>
 
-            <Stack direction="row" justifyContent="space-between">
-              <Typography level="body-sm">Número de orden:</Typography>
-              <Typography level="body-sm" fontWeight="lg">{id}</Typography>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography level="body-md">Número de orden:</Typography>
+                <Typography level="body-md" fontWeight="lg">{id}</Typography>
+              </Stack>
             </Stack>
-          </Stack>
-        </Card>
+          </Box>
 
-        {/* Detalles de los productos */}
-        <Card variant="outlined">
-          <Typography level="title-sm" mb={2}>Productos</Typography>
-          
-          <Table hoverRow>
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {buyOrder.details.map((detail, index) => (
-                <tr key={index}>
-                  <td>{productNamesMap[detail.product] || 'Cargando...'}</td>
-                  <td>{detail.quantity}</td>
-                  <td>${detail.unit_price.toLocaleString()}</td>
-                  <td>${(detail.quantity * detail.unit_price).toLocaleString()}</td>
+          {/* Detalles de los productos */}
+          <Sheet variant="outlined" sx={{ borderRadius: 'var(--joy-radius-md)', height: '23.77rem', overflow: 'auto', p: 2, mt: 2 }}>
+            <Typography level="title-md" mb={2}>Detalles de la Orden</Typography>
+            <Table stickyHeader sx={{
+              "& thead th": { fontWeight: "lg" },
+              "& tr > *:not(:first-child)": { textAlign: "right" },
+              "& td": { verticalAlign: "top", paddingTop: "12px", paddingBottom: "12px" },
+            }}>
+              <thead>
+                <tr>
+                  <th style={{ width: "40%", textAlign: "left" }}>Producto</th>
+                  <th style={{ width: "20%" }}>Cantidad</th>
+                  <th style={{ width: "25%" }}>Precio Unitario</th>
+                  <th style={{ width: "15%", textAlign: "center" }}>Subtotal</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card>
-
-        {/* Resumen de montos */}
-        <Card variant="soft">
-          <Typography level="title-sm" mb={1}>Resumen</Typography>
-          <Stack direction="row" spacing={3}>
-            <Stack>
-              <Typography level="body-sm">Neto:</Typography>
-              <Typography level="title-lg">${buyOrder.net_amount.toLocaleString()}</Typography>
-            </Stack>
-            <Stack>
-              <Typography level="body-sm">IVA (19%):</Typography>
-              <Typography level="title-lg">${buyOrder.iva.toLocaleString()}</Typography>
-            </Stack>
-            <Stack>
-              <Typography level="body-sm">Total:</Typography>
-              <Typography level="title-lg">${buyOrder.total_amount.toLocaleString()}</Typography>
-            </Stack>
-          </Stack>
-        </Card>
-
-        {/* Acciones */}
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button
+              </thead>
+              <tbody>
+                {buyOrder.details.map((detail, index) => {
+                  const product = findProductById(detail.product)
+                  const isLoading = productQueries[index]?.isLoading
+                  return (
+                    <tr key={index}>
+                      <td>
+                        {isLoading ? (
+                          <CircularProgress size="sm" />
+                        ) : product ? (
+                          product.name
+                        ) : (
+                          'Producto no encontrado'
+                        )}
+                      </td>
+                      <td>{detail.quantity}</td>
+                      <td>${detail.unit_price.toLocaleString()}</td>
+                      <td style={{ textAlign: "center" }}>${(detail.quantity * detail.unit_price).toLocaleString()}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </Table>
+          </Sheet>
+        </Sheet>
+          {/* Resumen de montos */}
+          <Sheet
             variant="outlined"
-            onClick={() => navigate({ to: '/proveedores/ordenes-de-compra' })}
+            sx={{ p: 2, borderRadius: "md", flex: 1, display: "flex", flexDirection: "column" }}
           >
-            Volver
-          </Button>
-          {buyOrder.status === 'PE' && (
-            <>
-              <Button color="success">Aprobar</Button>
-              <Button color="danger">Rechazar</Button>
-            </>
-          )}
-        </Stack>
+            <Stack spacing={2} sx={{ flexGrow: 1 }}>
+              <Typography level="title-md">Resumen</Typography>
+              <Stack justifyContent={"space-between"} flexDirection={"row"}>
+                <Typography>Total Neto:</Typography>
+                <Typography level='title-md'>${buyOrder.net_amount.toLocaleString()}</Typography>
+              </Stack>
+              <Stack justifyContent={"space-between"} flexDirection={"row"}>
+                <Typography>IVA (19%):</Typography>
+                <Typography level='title-md'>${buyOrder.iva.toLocaleString()}</Typography>
+              </Stack>
+              <Divider />
+              <Stack justifyContent={"space-between"} flexDirection={"row"}>
+                <Typography>Total:</Typography>
+                <Typography level='title-md'>${buyOrder.total_amount.toLocaleString()}</Typography>
+              </Stack>
+            </Stack>
+          </Sheet>
       </Stack>
     </>
   )

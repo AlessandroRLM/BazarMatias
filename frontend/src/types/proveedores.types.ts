@@ -21,7 +21,7 @@ export interface BuyOrder {
 
 export interface BuyOrderDetail {
     id:         string;
-    product:    number;
+    product:    string;
     quantity:   number;
     unit_price: number;
 }

@@ -6,6 +6,7 @@ import Header from "../../components/core/layout/components/Header";
 import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions/FilterOptions";
 import { Link } from "@tanstack/react-router";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
 import dayjs from "dayjs";
 
 interface Sale {
@@ -37,7 +38,6 @@ export default function SalesManagement() {
     { id: '5', date: '2023-05-19', client: 'Luis Rodríguez', status: 'Debe', amount: 350 },
   ]);
 
-  // Configuración de los filtros
   const selectConfigs: SelectConfig[] = [
     {
       id: "status",
@@ -61,40 +61,19 @@ export default function SalesManagement() {
     }
   ];
 
-  // Aplicar filtros
   const filteredData = data.filter(item => {
     const saleDate = dayjs(item.date);
-    
-    // Filtro por estado
-    if (filters.status && item.status !== filters.status) {
-      return false;
-    }
-    
-    // Filtro por cliente
-    if (filters.client && item.client !== filters.client) {
-      return false;
-    }
-    
-    // Filtro por fecha exacta
-    if (filters.date && !saleDate.isSame(filters.date, 'day')) {
-      return false;
-    }
-    
-    // Filtro por rango de fechas
+    if (filters.status && item.status !== filters.status) return false;
+    if (filters.client && item.client !== filters.client) return false;
+    if (filters.date && !saleDate.isSame(filters.date, 'day')) return false;
+
     if (filters.date__range_after || filters.date__range_before) {
       const startDate = filters.date__range_after ? dayjs(filters.date__range_after) : null;
       const endDate = filters.date__range_before ? dayjs(filters.date__range_before) : null;
-      
-      if (startDate && saleDate.isBefore(startDate, 'day')) {
-        return false;
-      }
-      
-      if (endDate && saleDate.isAfter(endDate, 'day')) {
-        return false;
-      }
+      if (startDate && saleDate.isBefore(startDate, 'day')) return false;
+      if (endDate && saleDate.isAfter(endDate, 'day')) return false;
     }
-    
-    // Filtro por búsqueda general
+
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       return (
@@ -104,7 +83,7 @@ export default function SalesManagement() {
         item.status.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     return true;
   });
 
@@ -115,31 +94,31 @@ export default function SalesManagement() {
   const handleStatusChange = (id: string) => {
     setData(prevData =>
       prevData.map(item =>
-        item.id === id 
-          ? { ...item, status: item.status === 'Debe' ? 'Pagado' : 'Debe' } 
+        item.id === id
+          ? { ...item, status: item.status === 'Debe' ? 'Pagado' : 'Debe' }
           : item
       )
     );
   };
 
   const columns: ColumnDef<Sale>[] = [
-    { 
-      accessorKey: "date", 
+    {
+      accessorKey: "date",
       header: "Fecha",
       cell: info => dayjs(info.getValue<string>()).format('DD/MM/YYYY')
     },
-    { 
-      accessorKey: "client", 
+    {
+      accessorKey: "client",
       header: "Cliente",
       cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography>
     },
-    { 
-      accessorKey: "amount", 
+    {
+      accessorKey: "amount",
       header: "Monto",
       cell: info => `$${info.getValue<number>().toLocaleString('es-ES')}`
     },
-    { 
-      accessorKey: "status", 
+    {
+      accessorKey: "status",
       header: "Estado",
       cell: info => {
         const status = info.getValue<'Debe' | 'Pagado'>();
@@ -158,11 +137,22 @@ export default function SalesManagement() {
             size="sm"
             aria-label="View"
             component={Link}
-            to={`/ventas/detalle/${row.original.id}`}
+            to={`/ventas/gestiondeventas/ver-venta`}
           >
             <VisibilityIcon />
           </IconButton>
-          
+
+          <IconButton
+            component={Link}
+            to={`/ventas/gestiondeventas/editar-venta`}
+            variant="plain"
+            color="neutral"
+            size="sm"
+            aria-label="Edit"
+          >
+            <EditIcon />
+          </IconButton>
+
           <Checkbox
             checked={row.original.status === 'Pagado'}
             onChange={() => handleStatusChange(row.original.id)}
@@ -178,27 +168,30 @@ export default function SalesManagement() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <Box component="main" sx={{ 
-        flex: 1, 
-        p: 3, 
-        pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, 
-        maxWidth: '1600px', 
-        mx: 'auto', 
-        width: '100%' 
-      }}>
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          p: 3,
+          pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 },
+          maxWidth: '1600px',
+          mx: 'auto',
+          width: '100%'
+        }}
+      >
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h2">Gestión de Ventas</Typography>
-            <Button 
+            <Button
               component={Link}
               to="/ventas/gestiondeventas/añadir-venta"
-              variant="solid" 
+              variant="solid"
               color="primary"
             >
               Nueva Venta
             </Button>
           </Stack>
-          
+
           <FilterOptions<Filters>
             onChangeFilters={handleFilterChange}
             selects={selectConfigs}
@@ -208,7 +201,7 @@ export default function SalesManagement() {
               end: filters.date__range_before ? new Date(filters.date__range_before) : null
             }}
           />
-          
+
           <CustomTable<Sale>
             data={filteredData}
             columns={columns}

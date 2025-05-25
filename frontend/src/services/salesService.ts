@@ -1,6 +1,6 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder } from '../types/sales.types';
+import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -204,9 +204,12 @@ export const createWorkOrder = async (workOrder: Omit<WorkOrder, 'id' | 'created
   return response.data;
 };
 
-export const updateWorkOrder = async (id: string, workOrder: Partial<WorkOrder>): Promise<WorkOrder> => {
-  const response = await AxiosInstance.put(`/api/sales/work-orders/${id}/`, workOrder);
-  return response.data;
+export const updateWorkOrder = async (
+    id: string, 
+    workOrder: WorkOrderUpdatePayload
+): Promise<WorkOrder> => {
+    const response = await AxiosInstance.put(`/api/sales/work-orders/${id}/`, workOrder);
+    return response.data;
 };
 
 export const deleteWorkOrder = async (id: string): Promise<void> => {

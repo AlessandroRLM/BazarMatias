@@ -1,8 +1,9 @@
 import AxiosInstance from '../helpers/AxiosInstance';
+import { User } from '../types/auth.types';
 
-export const getUsers = async () => {
+export const getUsers = async (): Promise<User[]> => {
   const response = await AxiosInstance.get('/api/users/users/');
-  return response.data;
+  return response.data.results;
 };
 
 export const deleteUser = async (id: string) => {

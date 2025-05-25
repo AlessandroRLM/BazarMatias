@@ -88,6 +88,11 @@ export interface WorkOrder {
   trabajador_cargo?: string;
 }
 
+// Nuevo tipo para el payload de actualización
+export type WorkOrderUpdatePayload = Omit<Partial<WorkOrder>, 'trabajador'> & {
+  trabajador: string;  // Solo el ID (string)
+};
+
 // Tipos para filtros
 export interface SaleFilters {
   document_type?: DocumentType;

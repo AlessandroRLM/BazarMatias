@@ -251,3 +251,15 @@ class WorkOrderSerializer(serializers.ModelSerializer):
             'status',
             'created_at'
         ]
+        extra_kwargs = {
+            'numero_orden': {'read_only': True}
+        }
+    
+    def create(self, validated_data):
+        # Generate order number (example format: WO-YYYYMMDD-XXXX)
+        from datetime import datetime
+        last_order = WorkOrder.objects.order_by('-created_at').first()
+        sequence_num = 1 if last_order is None else int(last_order.numero_orden.split('-')[-1]) + 1
+        validated_data['numero_orden'] = f"WO-{datetime.now().strftime('%Y%m%d')}-{sequence_num:04d}"
+        
+        return super().create(validated_data)

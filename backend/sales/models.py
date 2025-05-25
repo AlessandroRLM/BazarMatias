@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 from django.forms import ValidationError
 from pymongo import MongoClient  # type: ignore
 import re
-
+from users.models import User
 from inventory.models import Product
 
 
@@ -67,7 +67,6 @@ class Client(models.Model):
             return 'K'
         else:
             return str(remainder)
-
 
 class SaleDetail(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
@@ -174,3 +173,39 @@ class Quote(models.Model):
     created_at = models.DateField(auto_now_add=True)
     details = models.ManyToManyField(QuoteDetail)
     total = models.PositiveIntegerField()
+
+class Return(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    sale = models.ForeignKey(Sale, on_delete=models.PROTECT, verbose_name='Venta Asociada')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField()
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Devolución'
+        verbose_name_plural = 'Devoluciones'
+
+
+class WorkOrder(models.Model):
+    numero_orden = models.CharField(max_length=20, unique=True)
+    trabajador = models.ForeignKey(User, on_delete=models.PROTECT, related_name='ordenes_trabajo')
+    tipo_tarea = models.CharField(max_length=100)
+    descripcion = models.TextField(verbose_name='Detalle del trabajo')
+    prioridad = models.CharField(max_length=20, choices=[
+        ('baja', 'Baja'),
+        ('media', 'Media'),
+        ('alta', 'Alta')
+    ], default='media')
+    plazo = models.DateField()
+    status = models.CharField(max_length=20, choices=[
+        ('pendiente', 'Pendiente'),
+        ('en_proceso', 'En proceso'),
+        ('completada', 'Completada'),
+        ('cancelada', 'Cancelada')
+    ], default='pendiente')
+    created_at = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Orden de Trabajo'
+        verbose_name_plural = 'Órdenes de Trabajo'

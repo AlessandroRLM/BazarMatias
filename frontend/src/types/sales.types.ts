@@ -8,7 +8,7 @@ export interface Client {
   last_name: string;
   email?: string;
   phone_number?: string;
-  formatted_rut: string;
+  formatted_rut?: string;
 }
 
 export interface SaleDetail {
@@ -114,4 +114,15 @@ export interface WorkOrderFilters {
   status?: WorkOrderStatus;
   search?: string;
   ordering?: string;
+}
+
+export interface CustomPagination<T> {
+  info: {
+    count: number;
+    pages: number;
+    current_page: number;
+    next: number | null;
+    previous: number | null;
+  };
+  results: T[];
 }

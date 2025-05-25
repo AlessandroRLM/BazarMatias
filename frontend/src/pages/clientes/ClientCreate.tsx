@@ -3,19 +3,37 @@ import HeaderUserCreation from "../../components/administracion/ProfileHeader/Pr
 import CommonPageLayout from "../../components/core/layout/components/CommonPageLayout";
 import FormUserCreation from "../../components/clientes/FormClientCreation";
 import { useNavigate } from "@tanstack/react-router";
+import { createClient } from "../../services/salesService";
+import { Client } from "../../types/sales.types";
+
+interface FormClientData {
+  rut: string;
+  name: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+}
 
 const ClientCreatePage = () => {
   const navigate = useNavigate();
 
-  const handleSubmitForm = async (data: any) => {
-    // Simulación de envío de datos
-    console.log("Datos del cliente a crear:", data);
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.log("Cliente creado exitosamente (simulado)");
-        resolve();
-      }, 1500);
-    });
+  const handleSubmitForm = async (formData: FormClientData) => {
+    try {
+      // Creamos el objeto cliente con todos los campos requeridos
+      const clientData: Omit<Client, 'id'> = {
+        national_id: formData.rut,
+        first_name: formData.name,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone_number: formData.phone,
+      };
+
+      await createClient(clientData);
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Error creating client:", error);
+      return Promise.reject(error);
+    }
   };
 
   const handleSuccess = () => {

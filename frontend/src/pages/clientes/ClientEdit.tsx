@@ -1,22 +1,12 @@
 import { Route } from '../../routes/_auth/ventas/gestiondeclientes/editar-cliente.$id';
 import { useEffect, useState } from 'react';
-import AxiosInstance from '../../helpers/AxiosInstance';
 import CommonPageLayout from '../../components/core/layout/components/CommonPageLayout';
 import HeaderUserCreation from '../../components/administracion/ProfileHeader/ProfileHeader';
 import { Typography, Avatar, Box, CircularProgress } from "@mui/joy";
 import { useNavigate } from '@tanstack/react-router';
 import FormClientCreation from '../../components/clientes/FormClientCreation';
-
-interface Client {
-  id: string;
-  name: string;
-  lastName: string;
-  rut: string;
-  email: string;
-  phone: string;
-  address: string;
-  createdAt: string;
-}
+import { fetchClient, updateClient } from '../../services/salesService';
+import { Client } from '../../types/sales.types';
 
 const ClientEdit = () => {
   const params = Route.useParams();
@@ -27,39 +17,35 @@ const ClientEdit = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    AxiosInstance.get(`/api/clients/clients/${id}/`)
-      .then(res => {
-        const data = res.data;
-        setClient({
-          id: data.id,
-          name: data.name,
-          lastName: data.last_name,
-          rut: data.rut,
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
-          createdAt: data.created_at
-        });
-      })
-      .catch(() => setClient(null))
-      .finally(() => setLoading(false));
+    const loadClient = async () => {
+      try {
+        const clientData = await fetchClient(id);
+        setClient(clientData);
+      } catch (error) {
+        console.error("Error loading client:", error);
+        setClient(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClient();
   }, [id]);
 
   const handleSubmit = async (formData: any) => {
     try {
-      await AxiosInstance.put(`/api/clients/clients/${id}/`, {
-        name: formData.name,
+      await updateClient(id, {
+        first_name: formData.name,
         last_name: formData.lastName,
-        rut: formData.rut,
+        national_id: formData.rut,
         email: formData.email,
-        phone: formData.phone,
-        address: formData.address
+        phone_number: formData.phone
       });
       
       setSubmitSuccess(true);
       
       setTimeout(() => {
-        navigate({ to: `/ventas/gestiondeclientes/${id}` });
+        navigate({ to: `/ventas/gestiondeclientes` });
       }, 1500);
       
     } catch (error) {
@@ -97,23 +83,23 @@ const ClientEdit = () => {
         }}
       >
         <Avatar variant="soft" color="primary" size="lg" sx={{ '--Avatar-size': '100px' }}>
-          {client.name.charAt(0)}
+          {client.first_name.charAt(0)}
         </Avatar>
       </Box>
       
       <FormClientCreation 
         mode="edit"
         initialValues={{
-          name: client.name,
-          lastName: client.lastName,
-          rut: client.rut,
-          email: client.email,
-          phone: client.phone,
+          name: client.first_name,
+          lastName: client.last_name,
+          rut: client.national_id,
+          email: client.email || '',
+          phone: client.phone_number || '',
         }}
         onSubmitForm={handleSubmit}
         submitSuccessExternal={submitSuccess}
         onSuccessReset={() => setSubmitSuccess(false)}
-        onCancel={() => navigate({ to: `/ventas/gestiondeclientes/${id}` })}
+        onCancel={() => navigate({ to: `/ventas/gestiondeclientes` })}
         successMessage="Cliente actualizado con éxito"
       />
     </CommonPageLayout>

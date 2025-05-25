@@ -24,17 +24,38 @@ export interface SaleDetail {
 export type DocumentType = 'FAC' | 'BOL'; // Factura o Boleta
 export type PaymentMethod = 'EF' | 'TC' | 'TD' | 'TR' | 'OT'; // Efectivo, Tarjeta Crédito, Tarjeta Débito, Transferencia, Otro
 
-export interface Sale {
-  id: string;
+export type CreateSaleData = {
   document_type: DocumentType;
-  folio: number;
-  created_at: string;
-  client: Client | null;
-  details: SaleDetail[];
+  client: string; // Solo el ID del cliente
+  payment_method: PaymentMethod;
+  details: Array<{
+    product: string; // Solo el ID del producto
+    quantity: number;
+    unit_price: number;
+    discount: number;
+  }>;
   net_amount: number;
   iva: number;
   total_amount: number;
-  payment_method: PaymentMethod;
+};
+
+// Sale original para las respuestas
+export interface Sale {
+  id: string;
+  folio: string;
+  created_at: string;
+  client: Client | null;
+  payment_method: string;
+  details: {
+    id: string;
+    product: Product;
+    quantity: number;
+    unit_price: number;
+    discount: number;
+  }[];
+  net_amount: number;
+  iva: number;
+  total_amount: number;
 }
 
 export interface QuoteDetail {

@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.pagination import CustomPagination
 from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer, ReturnSerializer, WorkOrderSerializer
@@ -47,7 +48,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         )
     
 class SaleViewSet(viewsets.ModelViewSet):
-    queryset = Sale.objects.all()
+    queryset = Sale.objects.all().select_related('client')
     serializer_class = SaleSerializer
     pagination_class = CustomPagination    
 
@@ -65,6 +66,24 @@ class SaleViewSet(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+    @action(detail=False, methods=['GET'])
+    def document_counter(self, request):
+        document_type = request.query_params.get('document_type')
+        if document_type not in ['FAC', 'BOL']:
+            return Response(
+                {"error": "Tipo de documento inválido. Use 'FAC' o 'BOL'"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            next_folio = DocumentCounter.get_next(document_type)
+            return Response({"next_folio": next_folio})
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )  
 
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()

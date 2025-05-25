@@ -33,8 +33,6 @@ import { Route as AuthInventarioInsumosIndexImport } from './routes/_auth/invent
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
 import { Route as AuthVentasOrdenesdetrabajoCrearOrdenTrabajoImport } from './routes/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
-import { Route as AuthVentasGestiondeventasVerVentaImport } from './routes/_auth/ventas/gestiondeventas/ver-venta'
-import { Route as AuthVentasGestiondeventasEditarVentaImport } from './routes/_auth/ventas/gestiondeventas/editar-venta'
 import { Route as AuthVentasGestiondeventasAadirVentaImport } from './routes/_auth/ventas/gestiondeventas/añadir-venta'
 import { Route as AuthVentasGestiondeclientesAadirClienteImport } from './routes/_auth/ventas/gestiondeclientes/añadir-cliente'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
@@ -53,6 +51,8 @@ import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
 import { Route as AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo.$id'
 import { Route as AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo.$id'
+import { Route as AuthVentasGestiondeventasVerVentaIdImport } from './routes/_auth/ventas/gestiondeventas/ver-venta.$id'
+import { Route as AuthVentasGestiondeventasEditarVentaIdImport } from './routes/_auth/ventas/gestiondeventas/editar-venta.$id'
 import { Route as AuthVentasGestiondeclientesVerClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/ver-cliente.$id'
 import { Route as AuthVentasGestiondeclientesEditarClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/editar-cliente.$id'
 import { Route as AuthProveedoresDevolucionesVerDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/ver-devolucion.$id'
@@ -214,20 +214,6 @@ const AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthVentasGestiondeventasVerVentaRoute =
-  AuthVentasGestiondeventasVerVentaImport.update({
-    id: '/ventas/gestiondeventas/ver-venta',
-    path: '/ventas/gestiondeventas/ver-venta',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthVentasGestiondeventasEditarVentaRoute =
-  AuthVentasGestiondeventasEditarVentaImport.update({
-    id: '/ventas/gestiondeventas/editar-venta',
-    path: '/ventas/gestiondeventas/editar-venta',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
 const AuthVentasGestiondeventasAadirVentaRoute =
   AuthVentasGestiondeventasAadirVentaImport.update({
     id: '/ventas/gestiondeventas/añadir-venta',
@@ -351,6 +337,20 @@ const AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute =
   AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdImport.update({
     id: '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id',
     path: '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasGestiondeventasVerVentaIdRoute =
+  AuthVentasGestiondeventasVerVentaIdImport.update({
+    id: '/ventas/gestiondeventas/ver-venta/$id',
+    path: '/ventas/gestiondeventas/ver-venta/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasGestiondeventasEditarVentaIdRoute =
+  AuthVentasGestiondeventasEditarVentaIdImport.update({
+    id: '/ventas/gestiondeventas/editar-venta/$id',
+    path: '/ventas/gestiondeventas/editar-venta/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -638,20 +638,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVentasGestiondeventasAadirVentaImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/ventas/gestiondeventas/editar-venta': {
-      id: '/_auth/ventas/gestiondeventas/editar-venta'
-      path: '/ventas/gestiondeventas/editar-venta'
-      fullPath: '/ventas/gestiondeventas/editar-venta'
-      preLoaderRoute: typeof AuthVentasGestiondeventasEditarVentaImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/ventas/gestiondeventas/ver-venta': {
-      id: '/_auth/ventas/gestiondeventas/ver-venta'
-      path: '/ventas/gestiondeventas/ver-venta'
-      fullPath: '/ventas/gestiondeventas/ver-venta'
-      preLoaderRoute: typeof AuthVentasGestiondeventasVerVentaImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo': {
       id: '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
       path: '/ventas/ordenesdetrabajo/crear-orden-trabajo'
@@ -820,6 +806,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVentasGestiondeclientesVerClienteIdImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/ventas/gestiondeventas/editar-venta/$id': {
+      id: '/_auth/ventas/gestiondeventas/editar-venta/$id'
+      path: '/ventas/gestiondeventas/editar-venta/$id'
+      fullPath: '/ventas/gestiondeventas/editar-venta/$id'
+      preLoaderRoute: typeof AuthVentasGestiondeventasEditarVentaIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/ventas/gestiondeventas/ver-venta/$id': {
+      id: '/_auth/ventas/gestiondeventas/ver-venta/$id'
+      path: '/ventas/gestiondeventas/ver-venta/$id'
+      fullPath: '/ventas/gestiondeventas/ver-venta/$id'
+      preLoaderRoute: typeof AuthVentasGestiondeventasVerVentaIdImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': {
       id: '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
       path: '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
@@ -864,8 +864,6 @@ interface AuthRouteChildren {
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthVentasGestiondeclientesAadirClienteRoute: typeof AuthVentasGestiondeclientesAadirClienteRoute
   AuthVentasGestiondeventasAadirVentaRoute: typeof AuthVentasGestiondeventasAadirVentaRoute
-  AuthVentasGestiondeventasEditarVentaRoute: typeof AuthVentasGestiondeventasEditarVentaRoute
-  AuthVentasGestiondeventasVerVentaRoute: typeof AuthVentasGestiondeventasVerVentaRoute
   AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute: typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
   AuthAdministracionUsuariosIndexRoute: typeof AuthAdministracionUsuariosIndexRoute
@@ -890,6 +888,8 @@ interface AuthRouteChildren {
   AuthProveedoresDevolucionesVerDevolucionIdRoute: typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
   AuthVentasGestiondeclientesEditarClienteIdRoute: typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   AuthVentasGestiondeclientesVerClienteIdRoute: typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  AuthVentasGestiondeventasEditarVentaIdRoute: typeof AuthVentasGestiondeventasEditarVentaIdRoute
+  AuthVentasGestiondeventasVerVentaIdRoute: typeof AuthVentasGestiondeventasVerVentaIdRoute
   AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute: typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
   AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute: typeof AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute
 }
@@ -932,10 +932,6 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthVentasGestiondeclientesAadirClienteRoute,
   AuthVentasGestiondeventasAadirVentaRoute:
     AuthVentasGestiondeventasAadirVentaRoute,
-  AuthVentasGestiondeventasEditarVentaRoute:
-    AuthVentasGestiondeventasEditarVentaRoute,
-  AuthVentasGestiondeventasVerVentaRoute:
-    AuthVentasGestiondeventasVerVentaRoute,
   AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute:
     AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute,
   AuthAdministracionPerfilIndexRoute: AuthAdministracionPerfilIndexRoute,
@@ -972,6 +968,10 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthVentasGestiondeclientesEditarClienteIdRoute,
   AuthVentasGestiondeclientesVerClienteIdRoute:
     AuthVentasGestiondeclientesVerClienteIdRoute,
+  AuthVentasGestiondeventasEditarVentaIdRoute:
+    AuthVentasGestiondeventasEditarVentaIdRoute,
+  AuthVentasGestiondeventasVerVentaIdRoute:
+    AuthVentasGestiondeventasVerVentaIdRoute,
   AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute:
     AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute,
   AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute:
@@ -1008,8 +1008,6 @@ export interface FileRoutesByFullPath {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
   '/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
-  '/ventas/gestiondeventas/editar-venta': typeof AuthVentasGestiondeventasEditarVentaRoute
-  '/ventas/gestiondeventas/ver-venta': typeof AuthVentasGestiondeventasVerVentaRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
@@ -1034,6 +1032,8 @@ export interface FileRoutesByFullPath {
   '/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
+  '/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
   '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute
 }
@@ -1066,8 +1066,6 @@ export interface FileRoutesByTo {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
   '/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
-  '/ventas/gestiondeventas/editar-venta': typeof AuthVentasGestiondeventasEditarVentaRoute
-  '/ventas/gestiondeventas/ver-venta': typeof AuthVentasGestiondeventasVerVentaRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
   '/administracion/usuarios': typeof AuthAdministracionUsuariosIndexRoute
@@ -1092,6 +1090,8 @@ export interface FileRoutesByTo {
   '/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
+  '/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
   '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute
 }
@@ -1125,8 +1125,6 @@ export interface FileRoutesById {
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
   '/_auth/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
-  '/_auth/ventas/gestiondeventas/editar-venta': typeof AuthVentasGestiondeventasEditarVentaRoute
-  '/_auth/ventas/gestiondeventas/ver-venta': typeof AuthVentasGestiondeventasVerVentaRoute
   '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
   '/_auth/administracion/usuarios/': typeof AuthAdministracionUsuariosIndexRoute
@@ -1151,6 +1149,8 @@ export interface FileRoutesById {
   '/_auth/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
   '/_auth/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/_auth/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/_auth/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
+  '/_auth/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
   '/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute
 }
@@ -1185,8 +1185,6 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/gestiondeclientes/añadir-cliente'
     | '/ventas/gestiondeventas/añadir-venta'
-    | '/ventas/gestiondeventas/editar-venta'
-    | '/ventas/gestiondeventas/ver-venta'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/administracion/perfil'
     | '/administracion/usuarios'
@@ -1211,6 +1209,8 @@ export interface FileRouteTypes {
     | '/proveedores/devoluciones/ver-devolucion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
     | '/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/ventas/gestiondeventas/editar-venta/$id'
+    | '/ventas/gestiondeventas/ver-venta/$id'
     | '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
     | '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -1242,8 +1242,6 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/gestiondeclientes/añadir-cliente'
     | '/ventas/gestiondeventas/añadir-venta'
-    | '/ventas/gestiondeventas/editar-venta'
-    | '/ventas/gestiondeventas/ver-venta'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/administracion/perfil'
     | '/administracion/usuarios'
@@ -1268,6 +1266,8 @@ export interface FileRouteTypes {
     | '/proveedores/devoluciones/ver-devolucion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
     | '/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/ventas/gestiondeventas/editar-venta/$id'
+    | '/ventas/gestiondeventas/ver-venta/$id'
     | '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
     | '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id'
   id:
@@ -1299,8 +1299,6 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/ventas/gestiondeclientes/añadir-cliente'
     | '/_auth/ventas/gestiondeventas/añadir-venta'
-    | '/_auth/ventas/gestiondeventas/editar-venta'
-    | '/_auth/ventas/gestiondeventas/ver-venta'
     | '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/_auth/administracion/perfil/'
     | '/_auth/administracion/usuarios/'
@@ -1325,6 +1323,8 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/devoluciones/ver-devolucion/$id'
     | '/_auth/ventas/gestiondeclientes/editar-cliente/$id'
     | '/_auth/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/_auth/ventas/gestiondeventas/editar-venta/$id'
+    | '/_auth/ventas/gestiondeventas/ver-venta/$id'
     | '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
     | '/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo/$id'
   fileRoutesById: FileRoutesById
@@ -1387,8 +1387,6 @@ export const routeTree = rootRoute
         "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/ventas/gestiondeclientes/añadir-cliente",
         "/_auth/ventas/gestiondeventas/añadir-venta",
-        "/_auth/ventas/gestiondeventas/editar-venta",
-        "/_auth/ventas/gestiondeventas/ver-venta",
         "/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo",
         "/_auth/administracion/perfil/",
         "/_auth/administracion/usuarios/",
@@ -1413,6 +1411,8 @@ export const routeTree = rootRoute
         "/_auth/proveedores/devoluciones/ver-devolucion/$id",
         "/_auth/ventas/gestiondeclientes/editar-cliente/$id",
         "/_auth/ventas/gestiondeclientes/ver-cliente/$id",
+        "/_auth/ventas/gestiondeventas/editar-venta/$id",
+        "/_auth/ventas/gestiondeventas/ver-venta/$id",
         "/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id",
         "/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo/$id"
       ]
@@ -1516,14 +1516,6 @@ export const routeTree = rootRoute
       "filePath": "_auth/ventas/gestiondeventas/añadir-venta.tsx",
       "parent": "/_auth"
     },
-    "/_auth/ventas/gestiondeventas/editar-venta": {
-      "filePath": "_auth/ventas/gestiondeventas/editar-venta.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/ventas/gestiondeventas/ver-venta": {
-      "filePath": "_auth/ventas/gestiondeventas/ver-venta.tsx",
-      "parent": "/_auth"
-    },
     "/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo": {
       "filePath": "_auth/ventas/ordenesdetrabajo/crear-orden-trabajo.tsx",
       "parent": "/_auth"
@@ -1618,6 +1610,14 @@ export const routeTree = rootRoute
     },
     "/_auth/ventas/gestiondeclientes/ver-cliente/$id": {
       "filePath": "_auth/ventas/gestiondeclientes/ver-cliente.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/gestiondeventas/editar-venta/$id": {
+      "filePath": "_auth/ventas/gestiondeventas/editar-venta.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/gestiondeventas/ver-venta/$id": {
+      "filePath": "_auth/ventas/gestiondeventas/ver-venta.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id": {

@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { useParams } from '@tanstack/react-router';
 import {
   Box,
   Typography,
@@ -8,13 +10,45 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Button
+  Button,
+  CircularProgress
 } from '@mui/material';
+import { fetchSaleById } from '../../services/salesService';
+import { Sale } from '../../types/sales.types';
 
-const SalesView = ({ venta }: { venta: any }) => {
-  const { cliente, metodoPago, productosAgregados, fecha, numeroVenta } = venta;
+const SalesView = () => {
+  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/ver-venta/$id' });
+  const [venta, setVenta] = useState<Sale | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const subtotal = productosAgregados.reduce((sum: number, p: any) => sum + (p.precio * p.cantidad), 0);
+  useEffect(() => {
+    const loadVenta = async () => {
+      try {
+        const data = await fetchSaleById(id);
+        setVenta(data);
+      } catch (error) {
+        console.error('Error al cargar la venta:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVenta();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!venta) {
+    return <Typography>No se encontró la venta</Typography>;
+  }
+
+  const subtotal = venta.details.reduce((sum, detail) => sum + (detail.unit_price * detail.quantity), 0);
   const iva = subtotal * 0.19;
   const total = subtotal + iva;
 
@@ -26,15 +60,14 @@ const SalesView = ({ venta }: { venta: any }) => {
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>Información de venta</Typography>
-        <Typography><strong>Número de Venta:</strong> {numeroVenta}</Typography>
-        <Typography><strong>Fecha de Venta:</strong> {fecha}</Typography>
-        <Typography><strong>Cliente:</strong> {cliente?.nombre}</Typography>
-        <Typography><strong>Método de Pago:</strong> {metodoPago}</Typography>
+        <Typography><strong>Número de Venta:</strong> {venta.folio}</Typography>
+        <Typography><strong>Fecha de Venta:</strong> {new Date(venta.created_at).toLocaleDateString()}</Typography>
+        <Typography><strong>Cliente:</strong> {venta.client ? `${venta.client.first_name} ${venta.client.last_name}` : 'Sin cliente'}</Typography>
+        <Typography><strong>Método de Pago:</strong> {venta.payment_method}</Typography>
       </Paper>
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>Productos</Typography>
-
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -45,12 +78,12 @@ const SalesView = ({ venta }: { venta: any }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {productosAgregados.map((p: any, idx: number) => (
-              <TableRow key={idx}>
-                <TableCell>{p.nombre}</TableCell>
-                <TableCell align="center">{p.cantidad}</TableCell>
-                <TableCell align="right">${p.precio.toLocaleString()}</TableCell>
-                <TableCell align="right">${(p.precio * p.cantidad).toLocaleString()}</TableCell>
+            {venta.details.map((detail) => (
+              <TableRow key={detail.id}>
+                <TableCell>{detail.product.name}</TableCell>
+                <TableCell align="center">{detail.quantity}</TableCell>
+                <TableCell align="right">${detail.unit_price.toLocaleString()}</TableCell>
+                <TableCell align="right">${(detail.unit_price * detail.quantity).toLocaleString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -1,6 +1,6 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload } from '../types/sales.types';
+import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, CreateSaleData } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -65,12 +65,17 @@ export const fetchSales = async ({
   return response.data;
 };
 
-export const fetchSale = async (id: string): Promise<Sale> => {
+export const updateSaleStatus = async (id: string, status: string): Promise<Sale> => {
+  const response = await AxiosInstance.patch(`/api/sales/sales/${id}/`, { status });
+  return response.data;
+};
+
+export const fetchSaleById = async (id: string): Promise<Sale> => {
   const response = await AxiosInstance.get(`/api/sales/sales/${id}/`);
   return response.data;
 };
 
-export const createSale = async (sale: Omit<Sale, 'id' | 'folio' | 'created_at'>): Promise<Sale> => {
+export const createSale = async (sale: CreateSaleData): Promise<Sale> => {
   const response = await AxiosInstance.post('/api/sales/sales/', sale);
   return response.data;
 };
@@ -222,14 +227,32 @@ export const getNextSaleFolio = async (documentType: 'FAC' | 'BOL'): Promise<num
   return response.data.next_folio;
 };
 
-// Métodos para reportes
-export const downloadSalesReportPDF = async (startDate?: string, endDate?: string): Promise<Blob> => {
-  let url = '/api/sales/reports/sales/';
-  if (startDate && endDate) {
-    url += `?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
-  }
-  const response = await AxiosInstance.get(url, {
-    responseType: 'blob',
-  });
+// Métodos para el dashboard
+export const fetchDashboardStats = async (): Promise<{
+  monthlyProfit: number;
+  previousMonthProfit: number;
+  totalSales: number;
+  paidSales: number;
+  dueSales: number;
+  approvedQuotes: number;
+  pendingQuotes: number;
+  rejectedQuotes: number;
+  topClients: { name: string; value: number }[];
+}> => {
+  const response = await AxiosInstance.get('/api/sales/dashboard/stats/');
+  return response.data;
+};
+
+export const fetchMonthlyProfitData = async (): Promise<
+  { name: string; value: number; previousValue?: number }[]
+> => {
+  const response = await AxiosInstance.get('/api/sales/dashboard/monthly_profit/');
+  return response.data;
+};
+
+export const fetchTopProductsData = async (): Promise<
+  { name: string; value: number; percentage?: number }[]
+> => {
+  const response = await AxiosInstance.get('/api/sales/dashboard/top_products/');
   return response.data;
 };

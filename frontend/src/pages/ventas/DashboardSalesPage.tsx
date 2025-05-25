@@ -1,5 +1,5 @@
-import { Stack, Card, CardContent, Typography, Divider } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { Stack, Card, CardContent, Typography, Divider, Skeleton } from "@mui/joy";
+import { useEffect } from "react";
 import PageHeader from "../../components/core/PageHeader/PageHeader";
 import DashboardCard from "../../components/core/DashboardCard/DashboardCard";
 import {
@@ -14,85 +14,107 @@ import {
   Bar,
   Cell
 } from "recharts";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { 
+  fetchDashboardStats,
+  fetchMonthlyProfitData,
+  fetchTopProductsData, 
+} from "../../services/salesService";
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { es } from "date-fns/locale";
 
+// Tipos de datos
+interface DashboardStats {
+  monthlyProfit: number;
+  previousMonthProfit: number;
+  totalSales: number;
+  paidSales: number;
+  dueSales: number;
+  approvedQuotes: number;
+  pendingQuotes: number;
+  rejectedQuotes: number;
+  topClients: { name: string; value: number }[];
+}
+
+// Constantes
+const CURRENT_MONTH = format(new Date(), "MMMM", { locale: es });
+const PREVIOUS_MONTH = format(subMonths(new Date(), 1), "MMMM", { locale: es });
+
+// Función para formatear dinero
+const formatMoney = (amount: number) => {
+  return new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+    minimumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Componente principal
 const DashboardSalesPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    monthlyProfit: 0,
-    totalSales: 0,
-    paidSales: 0,
-    dueSales: 0,
-    approvedQuotes: 0,
-    pendingQuotes: 0,
-    rejectedQuotes: 0,
+  const queryClient = useQueryClient();
+  const currentDate = new Date();
+  const currentMonthStart = startOfMonth(currentDate).toISOString().split("T")[0];
+  const currentMonthEnd = endOfMonth(currentDate).toISOString().split("T")[0];
+
+  // Queries para obtener datos reales del backend
+  const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
+    queryKey: ["dashboard-stats"],
+    queryFn: fetchDashboardStats,
   });
 
+  const { data: monthlyData, isLoading: monthlyDataLoading } = useQuery({
+    queryKey: ["monthly-profit-data"],
+    queryFn: fetchMonthlyProfitData,
+  });
+
+  const { data: productsData, isLoading: productsDataLoading } = useQuery({
+    queryKey: ["top-products-data"],
+    queryFn: fetchTopProductsData,
+  });
+
+  // Prefetch de datos para mejor experiencia de usuario
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setTimeout(() => {
-          setStats({
-            monthlyProfit: 36400,
-            totalSales: 14,
-            paidSales: 12,
-            dueSales: 2,
-            approvedQuotes: 2,
-            pendingQuotes: 1,
-            rejectedQuotes: 1,
-          });
-          setLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        setLoading(false);
-      }
-    };
+    queryClient.prefetchQuery({
+      queryKey: ["sales-data", currentMonthStart, currentMonthEnd],
+      queryFn: () => fetchSales({
+        created_at_after: currentMonthStart,
+        created_at_before: currentMonthEnd,
+        page_size: 100,
+      }),
+    });
 
-    fetchData();
-  }, []);
+    queryClient.prefetchQuery({
+      queryKey: ["quotes-data", currentMonthStart, currentMonthEnd],
+      queryFn: () => fetchQuotes({
+        created_at_after: currentMonthStart,
+        created_at_before: currentMonthEnd,
+        page_size: 100,
+      }),
+    });
+  }, [queryClient, currentMonthStart, currentMonthEnd]);
 
-  const monthlyData = [
-    { name: "Enero", value: 32000 },
-    { name: "Febrero", value: 48000 },
-    { name: "Marzo", value: 40000 },
-    { name: "Abril", value: 56000 },
-    { name: "Mayo", value: 64000 },
-    { name: "Junio", value: 80000 },
-  ];
+  const handleGenerateReport = () => {
+    console.log("Función de generación de reporte clickeada, pero aún no implementada");
+  };
 
-  const productsData = [
-    { name: "Cuaderno-Cuaderno", value: 35 },
-    { name: "Post y Auditorios", value: 28 },
-    { name: "Trasa", value: 22 },
-    { name: "Para Zudito", value: 18 },
-    { name: "Puede mejorar", value: 15 },
-    { name: "Señora en Bena", value: 12 },
-    { name: "Cuaderno Universitario", value: 10 },
-    { name: "Auditorios General", value: 8 },
-    { name: "SUSY TV", value: 5 },
-    { name: "Salzado", value: 3 },
-  ];
+  const isLoading = statsLoading || monthlyDataLoading || productsDataLoading;
 
-  if (loading) {
+  // Componente de carga esqueleto
+  const renderSkeletonCards = (count: number) => (
+    <Stack direction="row" spacing={2} flexWrap="wrap">
+      {Array.from({ length: count }).map((_, i) => (
+        <Skeleton key={i} variant="rectangular" width={200} height={120} />
+      ))}
+    </Stack>
+  );
+
+  if (isLoading) {
     return (
       <Stack spacing={2}>
         <PageHeader title="Dashboard de Ventas" />
-        <Stack direction="row" spacing={2} flexWrap="wrap">
-          {[...Array(7)].map((_, i) => (
-            <Card key={i} sx={{ width: 200, height: 120 }}>
-              <CardContent>
-                <Typography level="body-sm">Cargando...</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Stack>
+        {renderSkeletonCards(7)}
       </Stack>
     );
-  }
-
-  function handleGenerateReport(): void {
-    throw new Error("Function not implemented.");
   }
 
   return (
@@ -101,62 +123,71 @@ const DashboardSalesPage = () => {
         title="Dashboard de Ventas"
         buttons={[{ text: "Reporte", onClick: handleGenerateReport }]}
       />
+
+      {/* Sección de métricas principales */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Ganancia Mensual"
-          amount={stats.monthlyProfit}
-          helperText={"Mes actual"}
-          icon={undefined}
+          amount={stats?.monthlyProfit || 0}
+          helperText={`${CURRENT_MONTH} vs ${PREVIOUS_MONTH}: ${stats ? (stats.monthlyProfit - stats.previousMonthProfit > 0 ? "+" : "") + 
+            formatMoney(stats.monthlyProfit - stats.previousMonthProfit) : ""}`}
+          trend={stats && stats.monthlyProfit > stats.previousMonthProfit ? "up" : "down"}
         />
         <DashboardCard
           title="Total Ventas"
-          amount={stats.totalSales}
+          amount={stats?.totalSales || 0}
           helperText="Mes actual"
-          icon={undefined}
         />
         <DashboardCard
           title="Ventas Pagadas"
-          amount={stats.paidSales}
-          helperText="Mes actual"
-          icon={undefined}
+          amount={stats?.paidSales || 0}
+          helperText={`${stats ? Math.round((stats.paidSales / stats.totalSales) * 100) : 0}% del total`}
         />
         <DashboardCard
           title="Ventas Debidas"
-          amount={stats.dueSales}
-          helperText="Mes actual"
-          icon={undefined}
+          amount={stats?.dueSales || 0}
+          helperText={`${stats ? Math.round((stats.dueSales / stats.totalSales) * 100) : 0}% del total`}
+          trend="warning"
         />
       </Stack>
 
+      {/* Sección de gráficos */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <Card sx={{ flex: 1, minWidth: 300 }}>
           <CardContent>
             <Typography level="title-md" sx={{ mb: 1 }}>
-              Ganancia Mensual
+              Tendencia de Ganancias (últimos 6 meses)
             </Typography>
             <Divider sx={{ mb: 2 }} />
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <AreaChart
                 data={monthlyData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`SCLP${value}`, "Ganancia"]} />
+                <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
+                <Tooltip 
+                  formatter={(value: number, name: string) => [
+                    formatMoney(value), 
+                    name === "value" ? "Este año" : "Año anterior"
+                  ]}
+                />
                 <Area
+                  name="Este año"
                   type="monotone"
                   dataKey="value"
                   stroke="#1976d2"
                   fill="#1976d2"
                   fillOpacity={0.2}
-                  dot={{ r: 4, fill: "#1976d2", strokeWidth: 2 }}
-                  activeDot={{
-                    r: 6,
-                    fill: "#1976d2",
-                    stroke: "#fff",
-                    strokeWidth: 2,
-                  }}
+                />
+                <Area
+                  name="Año anterior"
+                  type="monotone"
+                  dataKey="previousValue"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.2}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -164,46 +195,63 @@ const DashboardSalesPage = () => {
         </Card>
 
         <Card sx={{ flex: 1, minWidth: 300 }}>
-        <CardContent>
+          <CardContent>
             <Typography level="title-md" sx={{ mb: 1 }}>
-            Productos Más Vendidos
+              Productos Más Vendidos
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <ResponsiveContainer width="100%" height={300}>
-            <BarChart
+              <BarChart
                 data={productsData}
-                margin={{ top: 20, right: 30, left: 0, bottom: 50 }}
-            >
+                layout="vertical"
+                margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" type="category" angle={-45} textAnchor="end" interval={0} height={60} />
-                <YAxis type="number" />
-                <Tooltip />
-                <Bar dataKey="value" fill="#1976d2">
-                {productsData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} />
-                ))}
+                <XAxis type="number" />
+                <YAxis 
+                  dataKey="name" 
+                  type="category" 
+                  width={120} 
+                  tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
+                />
+                <Tooltip 
+                  formatter={(value: number, name: string, props: any) => [
+                    `${value} unidades (${props.payload.percentage}%)`,
+                    "Ventas"
+                  ]}
+                />
+                <Bar dataKey="value" fill="#1976d2" radius={[0, 4, 4, 0]}>
+                  {productsData?.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={`hsl(210, 70%, ${70 - index * 10}%)`} />
+                  ))}
                 </Bar>
-            </BarChart>
+              </BarChart>
             </ResponsiveContainer>
-        </CardContent>
+          </CardContent>
         </Card>
       </Stack>
 
+      {/* Sección de métricas secundarias */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Cotizaciones Aprobadas"
-          amount={stats.approvedQuotes}
-          icon={undefined}
+          amount={stats?.approvedQuotes || 0}
+          trend="up"
         />
         <DashboardCard
           title="Cotizaciones Pendientes"
-          amount={stats.pendingQuotes}
-          icon={undefined}
+          amount={stats?.pendingQuotes || 0}
+          trend="warning"
         />
         <DashboardCard
           title="Cotizaciones Rechazadas"
-          amount={stats.rejectedQuotes}
-          icon={undefined}
+          amount={stats?.rejectedQuotes || 0}
+          trend="down"
+        />
+        <DashboardCard
+          title="Clientes Destacados"
+          amount={stats?.topClients?.length || 0}
+          helperText={stats?.topClients?.map(c => c.name).join(", ") || ""}
         />
       </Stack>
     </Stack>

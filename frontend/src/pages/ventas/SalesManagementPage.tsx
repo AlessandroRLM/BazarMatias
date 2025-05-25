@@ -1,21 +1,30 @@
 import { useState } from "react";
 import { ColumnDef, PaginationState, SortingState } from "@tanstack/react-table";
-import { Button, Stack, Typography, Box, Checkbox, IconButton } from "@mui/joy";
+import { 
+  Button, 
+  Stack, 
+  Typography, 
+  Box, 
+  Checkbox, 
+  IconButton,
+  Snackbar,
+  Alert,
+  ColorPaletteProp
+} from "@mui/joy";
 import CustomTable from "../../components/core/CustomTable/CustomTable";
 import Header from "../../components/core/layout/components/Header";
-import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions/FilterOptions";
+import FilterOptions, { SelectConfig, SelectOption } from "../../components/core/FilterOptions/FilterOptions";
 import { Link } from "@tanstack/react-router";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
-
-interface Sale {
-  id: string;
-  date: string;
-  client: string;
-  status: 'Debe' | 'Pagado';
-  amount: number;
-}
+import { fetchSales, updateSaleStatus, deleteSale } from "../../services/salesService";
+import { Sale, Client } from "../../types/sales.types";
+import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 interface Filters {
   search?: string;
@@ -26,17 +35,112 @@ interface Filters {
   date__range_before?: string;
 }
 
+interface SnackbarState {
+  open: boolean;
+  message: string;
+  color: ColorPaletteProp;
+}
+
+interface SalesResponse {
+  results: Sale[];
+  info: {
+    count: number;
+  };
+}
+
 export default function SalesManagement() {
   const [filters, setFilters] = useState<Filters>({});
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [data, setData] = useState<Sale[]>([
-    { id: '1', date: '2023-05-15', client: 'Juan Pérez', status: 'Debe', amount: 1200 },
-    { id: '2', date: '2023-05-16', client: 'María García', status: 'Pagado', amount: 850 },
-    { id: '3', date: '2023-05-17', client: 'Carlos López', status: 'Debe', amount: 450 },
-    { id: '4', date: '2023-05-18', client: 'Ana Martínez', status: 'Pagado', amount: 620 },
-    { id: '5', date: '2023-05-19', client: 'Luis Rodríguez', status: 'Debe', amount: 350 },
-  ]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<Sale | null>(null);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    color: 'neutral'
+  });
+  const queryClient = useQueryClient();
+
+  // Consulta para obtener las ventas
+  const { data: salesData = { results: [], info: { count: 0 } }, isLoading, isError } = useQuery<SalesResponse>({
+    queryKey: ['sales', pagination, filters, sorting],
+    queryFn: () => fetchSales({
+      page: pagination.pageIndex + 1,
+      page_size: pagination.pageSize,
+      search: filters.search,
+      payment_method: filters.status === 'Pagado' ? 'EF' : undefined,
+      ordering: sorting.length > 0 
+        ? `${sorting[0].desc ? '-' : ''}${sorting[0].id}`
+        : '-created_at'
+    })
+  });
+
+  // Mutación para eliminar venta
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteSale(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      setSnackbar({
+        open: true,
+        message: 'Venta eliminada correctamente',
+        color: 'success'
+      });
+    },
+    onError: () => {
+      setSnackbar({
+        open: true,
+        message: 'Error al eliminar la venta',
+        color: 'danger'
+      });
+    }
+  });
+
+  // Mutación para actualizar estado
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) => 
+      updateSaleStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      setSnackbar({
+        open: true,
+        message: 'Estado de venta actualizado',
+        color: 'success'
+      });
+    },
+    onError: () => {
+      setSnackbar({
+        open: true,
+        message: 'Error al actualizar el estado',
+        color: 'danger'
+      });
+    }
+  });
+
+  const handleDeleteClick = (sale: Sale) => {
+    setSaleToDelete(sale);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (saleToDelete) {
+      deleteMutation.mutate(saleToDelete.id);
+    }
+    setDeleteDialogOpen(false);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setSaleToDelete(null);
+  };
+
+  const handleStatusChange = (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'Debe' ? 'Pagado' : 'Debe';
+    statusMutation.mutate({ id, status: newStatus });
+  };
+
+  const closeSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   const selectConfigs: SelectConfig[] = [
     {
@@ -46,82 +150,63 @@ export default function SalesManagement() {
         { value: "", label: "Todos" },
         { value: "Debe", label: "Debe" },
         { value: "Pagado", label: "Pagado" },
-      ],
+      ] as SelectOption[],
     },
     {
       id: "client",
       placeholder: "Cliente",
       options: [
         { value: "", label: "Todos" },
-        ...Array.from(new Set(data.map(item => item.client))).map(client => ({
-          value: client,
-          label: client
-        }))
-      ],
+        ...Array.from(
+          new Set(
+            salesData.results.map(item => 
+              item.client ? `${item.client.first_name} ${item.client.last_name}` : null
+            )
+          )
+        )
+          .filter((client): client is string => client !== null)
+          .map(client => ({
+            value: client,
+            label: client
+          }))
+      ] as SelectOption[],
     }
   ];
 
-  const filteredData = data.filter(item => {
-    const saleDate = dayjs(item.date);
-    if (filters.status && item.status !== filters.status) return false;
-    if (filters.client && item.client !== filters.client) return false;
-    if (filters.date && !saleDate.isSame(filters.date, 'day')) return false;
-
-    if (filters.date__range_after || filters.date__range_before) {
-      const startDate = filters.date__range_after ? dayjs(filters.date__range_after) : null;
-      const endDate = filters.date__range_before ? dayjs(filters.date__range_before) : null;
-      if (startDate && saleDate.isBefore(startDate, 'day')) return false;
-      if (endDate && saleDate.isAfter(endDate, 'day')) return false;
-    }
-
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      return (
-        item.client.toLowerCase().includes(searchTerm) ||
-        item.date.toLowerCase().includes(searchTerm) ||
-        item.amount.toString().includes(searchTerm) ||
-        item.status.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    return true;
-  });
-
   const handleFilterChange = (newFilters: Partial<Filters>) => {
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
     setFilters(prev => ({ ...prev, ...newFilters }));
-  };
-
-  const handleStatusChange = (id: string) => {
-    setData(prevData =>
-      prevData.map(item =>
-        item.id === id
-          ? { ...item, status: item.status === 'Debe' ? 'Pagado' : 'Debe' }
-          : item
-      )
-    );
   };
 
   const columns: ColumnDef<Sale>[] = [
     {
-      accessorKey: "date",
+      accessorKey: "created_at",
       header: "Fecha",
       cell: info => dayjs(info.getValue<string>()).format('DD/MM/YYYY')
     },
     {
       accessorKey: "client",
       header: "Cliente",
-      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography>
+      cell: info => {
+        const client = info.getValue<Client | null>();
+        return (
+          <Typography fontWeight="md">
+            {client ? `${client.first_name} ${client.last_name}` : 'Sin cliente'}
+          </Typography>
+        );
+      }
     },
     {
-      accessorKey: "amount",
+      accessorKey: "total_amount",
       header: "Monto",
       cell: info => `$${info.getValue<number>().toLocaleString('es-ES')}`
     },
     {
-      accessorKey: "status",
+      accessorKey: "payment_method",
       header: "Estado",
       cell: info => {
-        const status = info.getValue<'Debe' | 'Pagado'>();
+        const paymentMethod = info.getValue<string>();
+        const status = paymentMethod === 'EF' ? 'Pagado' : 'Debe';
         const color = status === 'Pagado' ? 'success' : 'danger';
         return <Typography color={color}>{status}</Typography>;
       }
@@ -129,41 +214,66 @@ export default function SalesManagement() {
     {
       id: "actions",
       header: "Acciones",
-      cell: ({ row }) => (
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton
-            variant="plain"
-            color="neutral"
-            size="sm"
-            aria-label="View"
-            component={Link}
-            to={`/ventas/gestiondeventas/ver-venta`}
-          >
-            <VisibilityIcon />
-          </IconButton>
+      cell: ({ row }) => {
+        const paymentMethod = row.original.payment_method;
+        const status = paymentMethod === 'EF' ? 'Pagado' : 'Debe';
+        
+        return (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <IconButton
+              variant="plain"
+              color="neutral"
+              size="sm"
+              aria-label="View"
+              component={Link}
+              to={`/ventas/gestiondeventas/ver-venta/${row.original.id}`}
+            >
+              <VisibilityIcon />
+            </IconButton>
 
-          <IconButton
-            component={Link}
-            to={`/ventas/gestiondeventas/editar-venta`}
-            variant="plain"
-            color="neutral"
-            size="sm"
-            aria-label="Edit"
-          >
-            <EditIcon />
-          </IconButton>
+            <IconButton
+              component={Link}
+              to={`/ventas/gestiondeventas/editar-venta/${row.original.id}`}
+              variant="plain"
+              color="neutral"
+              size="sm"
+              aria-label="Edit"
+            >
+              <EditIcon />
+            </IconButton>
 
-          <Checkbox
-            checked={row.original.status === 'Pagado'}
-            onChange={() => handleStatusChange(row.original.id)}
-            color={row.original.status === 'Pagado' ? 'success' : 'neutral'}
-            variant={row.original.status === 'Pagado' ? 'solid' : 'outlined'}
-            sx={{ ml: 1 }}
-          />
-        </Stack>
-      ),
+            <IconButton
+              variant="plain"
+              color="danger"
+              size="sm"
+              aria-label="Delete"
+              onClick={() => handleDeleteClick(row.original)}
+              disabled={deleteMutation.isPending}
+            >
+              <DeleteIcon />
+            </IconButton>
+
+            <Checkbox
+              checked={status === 'Pagado'}
+              onChange={() => handleStatusChange(row.original.id, status)}
+              color={status === 'Pagado' ? 'success' : 'neutral'}
+              variant={status === 'Pagado' ? 'solid' : 'outlined'}
+              disabled={statusMutation.isPending}
+              sx={{ ml: 1 }}
+            />
+          </Stack>
+        );
+      },
     },
   ];
+
+  if (isError) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <Typography color="danger">Error al cargar las ventas</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -203,16 +313,49 @@ export default function SalesManagement() {
           />
 
           <CustomTable<Sale>
-            data={filteredData}
+            data={salesData.results}
             columns={columns}
             pagination={pagination}
-            onPaginationChange={setPagination}
+            paginationOptions={{
+              onPaginationChange: setPagination,
+              rowCount: salesData.info.count
+            }}
             sorting={sorting}
             onSortingChange={setSorting}
-            rowCount={filteredData.length}
+            isLoading={isLoading}
           />
         </Stack>
       </Box>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="Confirmar eliminación"
+        content={`¿Estás seguro que deseas eliminar la venta #${saleToDelete?.folio}?`}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteMutation.isPending}
+      />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={5000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          color={snackbar.color}
+          variant="soft"
+          startDecorator={
+            snackbar.color === 'success' ? (
+              <CheckCircleOutlineIcon />
+            ) : (
+              <ErrorOutlineIcon />
+            )
+          }
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

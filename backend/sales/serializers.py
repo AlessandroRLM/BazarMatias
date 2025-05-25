@@ -36,11 +36,14 @@ class SaleDetailSerializer(serializers.ModelSerializer):
 class SaleSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     details = SaleDetailSerializer(many=True)
-    client = serializers.PrimaryKeyRelatedField(
+    client = ClientSerializer(read_only=True)
+    client_id = serializers.PrimaryKeyRelatedField(
         queryset=Client.objects.all(),
+        source='client',
         pk_field=ObjectIdField(),
         required=False,
-        allow_null=True
+        allow_null=True,
+        write_only=True
     )
 
     class Meta:
@@ -263,3 +266,18 @@ class WorkOrderSerializer(serializers.ModelSerializer):
         validated_data['numero_orden'] = f"WO-{datetime.now().strftime('%Y%m%d')}-{sequence_num:04d}"
         
         return super().create(validated_data)
+
+class DashboardStatsSerializer(serializers.Serializer):
+    monthly_profit = serializers.IntegerField()
+    previous_month_profit = serializers.IntegerField()
+    total_sales = serializers.IntegerField()
+    paid_sales = serializers.IntegerField()
+    due_sales = serializers.IntegerField()
+    approved_quotes = serializers.IntegerField()
+    pending_quotes = serializers.IntegerField()
+    rejected_quotes = serializers.IntegerField()
+    top_clients = serializers.ListField(
+        child=serializers.DictField(
+            child=serializers.CharField()
+        )
+    )

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import {
   Box,
   Typography,
@@ -14,7 +15,8 @@ import {
   IconButton,
   Paper,
   Divider,
-  InputAdornment
+  InputAdornment,
+  CircularProgress
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -24,31 +26,97 @@ import {
   CreditCard as CreditCardIcon,
   LocalOffer as LocalOfferIcon,
   Close as CloseIcon,
-  Check as CheckIcon
+  Check as CheckIcon,
+  Receipt as ReceiptIcon
 } from '@mui/icons-material';
+import { fetchClients, createSale, getNextSaleFolio } from '../../services/salesService';
+import { fetchProducts } from '../../services/inventoryService';
+import { Client, DocumentType, PaymentMethod, CreateSaleData } from '../../types/sales.types';
+import { Product } from '../../types/inventory.types';
 
-const AgregarVenta = () => {
+const SalesCreate = () => {
+  const navigate = useNavigate({ from: '/ventas/gestiondeventas/añadir-venta' });
+  const [cliente, setCliente] = useState<string>('');
+  const [metodoPago, setMetodoPago] = useState<PaymentMethod>('EF');
+  const [producto, setProducto] = useState<string>('');
+  const [cantidad, setCantidad] = useState<number>(0);
+  const [productosAgregados, setProductosAgregados] = useState<{
+    id: string;
+    nombre: string;
+    precio: number;
+    cantidad: number;
+    subtotal: number;
+  }[]>([]);
+  const [clientes, setClientes] = useState<Client[]>([]);
+  const [productos, setProductos] = useState<Product[]>([]);
+  const [loading, setLoading] = useState({
+    clients: false,
+    products: false,
+    folio: false
+  });
+  const [folio, setFolio] = useState<string>('Generando...');
+  const [tipoDocumento, setTipoDocumento] = useState<DocumentType>('FAC');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [cliente, setCliente] = useState('');
-  const [metodoPago, setMetodoPago] = useState('');
-  const [producto, setProducto] = useState('');
-  const [cantidad, setCantidad] = useState(0);
-  const [productosAgregados, setProductosAgregados] = useState<any[]>([]);
+  const metodosPago: PaymentMethod[] = ['EF', 'TC', 'TD', 'TR', 'OT'];
+  const metodosPagoLabels = {
+    'EF': 'Efectivo',
+    'TC': 'Tarjeta de Crédito',
+    'TD': 'Tarjeta de Débito',
+    'TR': 'Transferencia',
+    'OT': 'Otro'
+  };
 
+  // Obtener datos iniciales
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        // Obtener folio inicial
+        setLoading(prev => ({ ...prev, folio: true }));
+        const nextFolio = await getNextSaleFolio(tipoDocumento);
+        setFolio(`#${nextFolio}`);
 
-  const clientes = [
-    { id: '1', nombre: 'Cliente Corporativo S.A.', rut: '12345678-9' },
-    { id: '2', nombre: 'Empresa Ejemplo Ltda.', rut: '98765432-1' }
-  ];
+        // Obtener clientes
+        setLoading(prev => ({ ...prev, clients: true }));
+        const clientsData = await fetchClients({ page_size: 100 });
+        setClientes(clientsData.results);
 
-  const metodos = ['Efectivo', 'Tarjeta de Crédito', 'Transferencia Bancaria'];
-  
-  const productos = [
-    { id: '1', nombre: 'Producto Premium', precio: 19990 },
-    { id: '2', nombre: 'Producto Estándar', precio: 12990 },
-    { id: '3', nombre: 'Producto Básico', precio: 7990 }
-  ];
+        // Obtener productos
+        setLoading(prev => ({ ...prev, products: true }));
+        const productsData = await fetchProducts({ page_size: 100 });
+        setProductos(productsData.results);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        setFolio('Error al generar');
+      } finally {
+        setLoading(prev => ({ ...prev, clients: false, products: false, folio: false }));
+      }
+    };
 
+    fetchInitialData();
+  }, []);
+
+  // Actualizar folio cuando cambia el tipo de documento
+  useEffect(() => {
+    const updateFolio = async () => {
+      try {
+        setLoading(prev => ({ ...prev, folio: true }));
+        const nextFolio = await getNextSaleFolio(tipoDocumento);
+        setFolio(`#${nextFolio}`);
+      } catch (error) {
+        console.error('Error al actualizar folio:', error);
+        setFolio('Error al generar');
+      } finally {
+        setLoading(prev => ({ ...prev, folio: false }));
+      }
+    };
+
+    if (tipoDocumento) {
+      updateFolio();
+    }
+  }, [tipoDocumento]);
+
+  // Calcular totales
   const subtotal = productosAgregados.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
   const iva = subtotal * 0.19;
   const total = subtotal + iva;
@@ -58,9 +126,11 @@ const AgregarVenta = () => {
       const prodSeleccionado = productos.find(p => p.id === producto);
       if (prodSeleccionado) {
         setProductosAgregados([...productosAgregados, {
-          ...prodSeleccionado,
+          id: prodSeleccionado.id,
+          nombre: prodSeleccionado.name,
+          precio: prodSeleccionado.price_clp,
           cantidad: cantidad,
-          subtotal: prodSeleccionado.precio * cantidad
+          subtotal: prodSeleccionado.price_clp * cantidad
         }]);
         setProducto('');
         setCantidad(0);
@@ -68,9 +138,48 @@ const AgregarVenta = () => {
     }
   };
 
-
   const handleEliminarProducto = (id: string) => {
     setProductosAgregados(productosAgregados.filter(p => p.id !== id));
+  };
+
+  const handleFinalizarVenta = async () => {
+    if (isSubmitting || productosAgregados.length === 0 || !cliente) return;
+
+    try {
+      setIsSubmitting(true);
+      
+      const saleData: CreateSaleData = {
+        document_type: tipoDocumento,
+        client: cliente, // Solo el ID
+        payment_method: metodoPago,
+        details: productosAgregados.map(p => ({
+          product: p.id, // Solo el ID
+          quantity: p.cantidad,
+          unit_price: p.precio,
+          discount: 0
+        })),
+        net_amount: subtotal,
+        iva: iva,
+        total_amount: total
+      };
+
+      const newSale = await createSale(saleData);
+      console.log('Venta creada:', newSale);
+      
+      // Resetear el formulario y redirigir
+      setProductosAgregados([]);
+      setCliente('');
+      navigate({ to: '/ventas/gestiondeventas' });
+    } catch (error) {
+      console.error('Error al crear la venta:', error);
+      alert('Error al crear la venta');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelar = () => {
+    navigate({ to: '/ventas/gestiondeventas' });
   };
 
   return (
@@ -80,7 +189,6 @@ const AgregarVenta = () => {
       minHeight: '100vh',
       p: 3,
     }}>
-
       <Typography variant="h4" sx={{ 
         fontWeight: 'bold',
         mb: 3,
@@ -89,9 +197,7 @@ const AgregarVenta = () => {
         Añadir Venta
       </Typography>
 
-
       <Box sx={{ display: 'flex', gap: 3 }}>
-
         <Box sx={{ flex: 2 }}>
           <Paper sx={{ p: 3, mb: 3, bgcolor: 'background.paper' }}>
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 'medium' }}>
@@ -112,13 +218,31 @@ const AgregarVenta = () => {
               <Box sx={{ flex: 1 }}>
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>Número de Venta</Typography>
                 <TextField
-                  value="def59070-d416-4c39-a2b2-e86d020..."
+                  value={loading.folio ? 'Cargando...' : folio}
                   fullWidth
                   size="small"
-                  InputProps={{ 
+                  InputProps={{
                     readOnly: true,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ReceiptIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
                   }}
                 />
+              </Box>
+
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>Tipo de Documento</Typography>
+                <Select
+                  value={tipoDocumento}
+                  onChange={(e) => setTipoDocumento(e.target.value as DocumentType)}
+                  fullWidth
+                  size="small"
+                >
+                  <MenuItem value="FAC">Factura</MenuItem>
+                  <MenuItem value="BOL">Boleta</MenuItem>
+                </Select>
               </Box>
 
               <Box sx={{ flex: 1 }}>
@@ -139,10 +263,11 @@ const AgregarVenta = () => {
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>Cliente</Typography>
                 <Select
                   value={cliente}
-                  onChange={(e) => setCliente(e.target.value)}
+                  onChange={(e) => setCliente(e.target.value as string)}
                   fullWidth
                   size="small"
                   displayEmpty
+                  disabled={loading.clients}
                   startAdornment={
                     <InputAdornment position="start">
                       <PersonIcon fontSize="small" />
@@ -151,7 +276,9 @@ const AgregarVenta = () => {
                 >
                   <MenuItem value="">Seleccionar cliente...</MenuItem>
                   {clientes.map((c) => (
-                    <MenuItem key={c.id} value={c.id}>{c.nombre}</MenuItem>
+                    <MenuItem key={c.id} value={c.id}>
+                      {c.first_name} {c.last_name} - {c.formatted_rut || c.national_id}
+                    </MenuItem>
                   ))}
                 </Select>
               </Box>
@@ -160,7 +287,7 @@ const AgregarVenta = () => {
                 <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>Método de Pago</Typography>
                 <Select
                   value={metodoPago}
-                  onChange={(e) => setMetodoPago(e.target.value)}
+                  onChange={(e) => setMetodoPago(e.target.value as PaymentMethod)}
                   fullWidth
                   size="small"
                   displayEmpty
@@ -170,9 +297,10 @@ const AgregarVenta = () => {
                     </InputAdornment>
                   }
                 >
-                  <MenuItem value="">Seleccionar método de pago...</MenuItem>
-                  {metodos.map((m, i) => (
-                    <MenuItem key={i} value={m}>{m}</MenuItem>
+                  {metodosPago.map((m) => (
+                    <MenuItem key={m} value={m}>
+                      {metodosPagoLabels[m]}
+                    </MenuItem>
                   ))}
                 </Select>
               </Box>
@@ -187,10 +315,11 @@ const AgregarVenta = () => {
                 <Box sx={{ flex: 1 }}>
                   <Select
                     value={producto}
-                    onChange={(e) => setProducto(e.target.value)}
+                    onChange={(e) => setProducto(e.target.value as string)}
                     fullWidth
                     size="small"
                     displayEmpty
+                    disabled={loading.products}
                     startAdornment={
                       <InputAdornment position="start">
                         <LocalOfferIcon fontSize="small" />
@@ -199,7 +328,9 @@ const AgregarVenta = () => {
                   >
                     <MenuItem value="">Selecciona un producto</MenuItem>
                     {productos.map((p) => (
-                      <MenuItem key={p.id} value={p.id}>{p.nombre} - ${p.precio.toLocaleString()}</MenuItem>
+                      <MenuItem key={p.id} value={p.id}>
+                        {p.name} - ${p.price_clp.toLocaleString()}
+                      </MenuItem>
                     ))}
                   </Select>
                 </Box>
@@ -316,40 +447,43 @@ const AgregarVenta = () => {
             </Box>
 
             <Box sx={{ 
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            mt: 2
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              mt: 2
             }}>
-            <Button 
+              <Button 
                 variant="contained" 
                 color="primary" 
-                startIcon={<CheckIcon />}
+                startIcon={isSubmitting ? <CircularProgress size={20} /> : <CheckIcon />}
                 fullWidth
-                disabled={productosAgregados.length === 0 || !cliente || !metodoPago}
+                disabled={productosAgregados.length === 0 || !cliente || isSubmitting}
+                onClick={handleFinalizarVenta}
                 sx={{
-                py: 1.5,
-                fontSize: '1rem'
+                  py: 1.5,
+                  fontSize: '1rem'
                 }}
-            >
-                Finalizar Venta
-            </Button>
-            
-            <Button 
+              >
+                {isSubmitting ? 'Procesando...' : 'Finalizar Venta'}
+              </Button>
+              
+              <Button 
                 variant="outlined" 
                 color="inherit"
                 startIcon={<CloseIcon />}
                 fullWidth
+                onClick={handleCancelar}
+                disabled={isSubmitting}
                 sx={{
-                py: 1.5,
-                bgcolor: 'white',
-                '&:hover': {
+                  py: 1.5,
+                  bgcolor: 'white',
+                  '&:hover': {
                     bgcolor: '#f5f5f5'
-                }
+                  }
                 }}
-            >
+              >
                 Cancelar
-            </Button>
+              </Button>
             </Box>
           </Paper>
 
@@ -361,10 +495,16 @@ const AgregarVenta = () => {
             {cliente ? (
               <Box>
                 <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                  {clientes.find(c => c.id === cliente)?.nombre}
+                  {clientes.find(c => c.id === cliente)?.first_name} {clientes.find(c => c.id === cliente)?.last_name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  RUT: {clientes.find(c => c.id === cliente)?.rut}
+                  RUT: {clientes.find(c => c.id === cliente)?.formatted_rut || clientes.find(c => c.id === cliente)?.national_id}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Email: {clientes.find(c => c.id === cliente)?.email || 'No registrado'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Teléfono: {clientes.find(c => c.id === cliente)?.phone_number || 'No registrado'}
                 </Typography>
               </Box>
             ) : (
@@ -372,9 +512,6 @@ const AgregarVenta = () => {
                 <PersonIcon fontSize="large" color="disabled" sx={{ mb: 1 }} />
                 <Typography variant="body2" color="text.secondary">
                   No hay cliente seleccionado
-                </Typography>
-                <Typography variant="caption" color="text.disabled">
-                  12345678-9
                 </Typography>
               </Box>
             )}
@@ -385,4 +522,4 @@ const AgregarVenta = () => {
   );
 };
 
-export default AgregarVenta;
+export default SalesCreate;

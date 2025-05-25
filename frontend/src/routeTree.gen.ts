@@ -25,6 +25,7 @@ import { Route as AuthAdministracionDashboardImport } from './routes/_auth/admin
 import { Route as AuthVentasOrdenesdetrabajoIndexImport } from './routes/_auth/ventas/ordenesdetrabajo/index'
 import { Route as AuthVentasGestiondeventasIndexImport } from './routes/_auth/ventas/gestiondeventas/index'
 import { Route as AuthVentasGestiondeclientesIndexImport } from './routes/_auth/ventas/gestiondeclientes/index'
+import { Route as AuthVentasDashboardIndexImport } from './routes/_auth/ventas/dashboard/index'
 import { Route as AuthProveedoresDevolucionesIndexImport } from './routes/_auth/proveedores/devoluciones/index'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthInventarioMermasIndexImport } from './routes/_auth/inventario/mermas/index'
@@ -155,6 +156,12 @@ const AuthVentasGestiondeclientesIndexRoute =
     path: '/ventas/gestiondeclientes/',
     getParentRoute: () => AuthRoute,
   } as any)
+
+const AuthVentasDashboardIndexRoute = AuthVentasDashboardIndexImport.update({
+  id: '/ventas/dashboard/',
+  path: '/ventas/dashboard/',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 const AuthProveedoresDevolucionesIndexRoute =
   AuthProveedoresDevolucionesIndexImport.update({
@@ -664,6 +671,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProveedoresDevolucionesIndexImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/ventas/dashboard/': {
+      id: '/_auth/ventas/dashboard/'
+      path: '/ventas/dashboard'
+      fullPath: '/ventas/dashboard'
+      preLoaderRoute: typeof AuthVentasDashboardIndexImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/ventas/gestiondeclientes/': {
       id: '/_auth/ventas/gestiondeclientes/'
       path: '/ventas/gestiondeclientes'
@@ -827,6 +841,7 @@ interface AuthRouteChildren {
   AuthInventarioMermasIndexRoute: typeof AuthInventarioMermasIndexRoute
   AuthInventarioProductosIndexRoute: typeof AuthInventarioProductosIndexRoute
   AuthProveedoresDevolucionesIndexRoute: typeof AuthProveedoresDevolucionesIndexRoute
+  AuthVentasDashboardIndexRoute: typeof AuthVentasDashboardIndexRoute
   AuthVentasGestiondeclientesIndexRoute: typeof AuthVentasGestiondeclientesIndexRoute
   AuthVentasGestiondeventasIndexRoute: typeof AuthVentasGestiondeventasIndexRoute
   AuthVentasOrdenesdetrabajoIndexRoute: typeof AuthVentasOrdenesdetrabajoIndexRoute
@@ -893,6 +908,7 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInventarioMermasIndexRoute: AuthInventarioMermasIndexRoute,
   AuthInventarioProductosIndexRoute: AuthInventarioProductosIndexRoute,
   AuthProveedoresDevolucionesIndexRoute: AuthProveedoresDevolucionesIndexRoute,
+  AuthVentasDashboardIndexRoute: AuthVentasDashboardIndexRoute,
   AuthVentasGestiondeclientesIndexRoute: AuthVentasGestiondeclientesIndexRoute,
   AuthVentasGestiondeventasIndexRoute: AuthVentasGestiondeventasIndexRoute,
   AuthVentasOrdenesdetrabajoIndexRoute: AuthVentasOrdenesdetrabajoIndexRoute,
@@ -963,6 +979,7 @@ export interface FileRoutesByFullPath {
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
+  '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
   '/ventas/gestiondeventas': typeof AuthVentasGestiondeventasIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
@@ -1018,6 +1035,7 @@ export interface FileRoutesByTo {
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
+  '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
   '/ventas/gestiondeventas': typeof AuthVentasGestiondeventasIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
@@ -1074,6 +1092,7 @@ export interface FileRoutesById {
   '/_auth/inventario/mermas/': typeof AuthInventarioMermasIndexRoute
   '/_auth/inventario/productos/': typeof AuthInventarioProductosIndexRoute
   '/_auth/proveedores/devoluciones/': typeof AuthProveedoresDevolucionesIndexRoute
+  '/_auth/ventas/dashboard/': typeof AuthVentasDashboardIndexRoute
   '/_auth/ventas/gestiondeclientes/': typeof AuthVentasGestiondeclientesIndexRoute
   '/_auth/ventas/gestiondeventas/': typeof AuthVentasGestiondeventasIndexRoute
   '/_auth/ventas/ordenesdetrabajo/': typeof AuthVentasOrdenesdetrabajoIndexRoute
@@ -1131,6 +1150,7 @@ export interface FileRouteTypes {
     | '/inventario/mermas'
     | '/inventario/productos'
     | '/proveedores/devoluciones'
+    | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
     | '/ventas/gestiondeventas'
     | '/ventas/ordenesdetrabajo'
@@ -1185,6 +1205,7 @@ export interface FileRouteTypes {
     | '/inventario/mermas'
     | '/inventario/productos'
     | '/proveedores/devoluciones'
+    | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
     | '/ventas/gestiondeventas'
     | '/ventas/ordenesdetrabajo'
@@ -1239,6 +1260,7 @@ export interface FileRouteTypes {
     | '/_auth/inventario/mermas/'
     | '/_auth/inventario/productos/'
     | '/_auth/proveedores/devoluciones/'
+    | '/_auth/ventas/dashboard/'
     | '/_auth/ventas/gestiondeclientes/'
     | '/_auth/ventas/gestiondeventas/'
     | '/_auth/ventas/ordenesdetrabajo/'
@@ -1324,6 +1346,7 @@ export const routeTree = rootRoute
         "/_auth/inventario/mermas/",
         "/_auth/inventario/productos/",
         "/_auth/proveedores/devoluciones/",
+        "/_auth/ventas/dashboard/",
         "/_auth/ventas/gestiondeclientes/",
         "/_auth/ventas/gestiondeventas/",
         "/_auth/ventas/ordenesdetrabajo/",
@@ -1469,6 +1492,10 @@ export const routeTree = rootRoute
     },
     "/_auth/proveedores/devoluciones/": {
       "filePath": "_auth/proveedores/devoluciones/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/dashboard/": {
+      "filePath": "_auth/ventas/dashboard/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/gestiondeclientes/": {

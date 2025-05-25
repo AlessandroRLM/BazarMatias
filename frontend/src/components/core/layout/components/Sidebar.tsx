@@ -228,7 +228,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/dashboard">
                             Dashboard
                         </SidebarLink>
                     </ListItem>

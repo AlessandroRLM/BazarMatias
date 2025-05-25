@@ -1,14 +1,15 @@
-# views.py
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from users.pagination import CustomPagination
-from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer
-from .models import Client, Sale, DocumentCounter, Quote
+from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer, ReturnSerializer, WorkOrderSerializer
+from .models import Client, Sale, DocumentCounter, Quote, Return, WorkOrder
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     pagination_class = CustomPagination
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -25,6 +26,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             self.get_serializer(client).data,
             status=status.HTTP_201_CREATED
         )
+    
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -42,7 +44,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         return Response(
             serializer.data,
             status=status.HTTP_200_OK
-            )
+        )
     
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
@@ -51,33 +53,18 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
         try:
-            next_folio = DocumentCounter.get_next(
-                document_type=serializer.validated_data['document_type']
+            serializer.is_valid(raise_exception=True)
+            sale = serializer.save()
+            return Response(
+                self.get_serializer(sale).data,
+                status=status.HTTP_201_CREATED
             )
         except Exception as e:
             return Response(
-                {"error": f"Error en secuencia: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        try:
-            sale = Sale.objects.create(
-                **serializer.validated_data,
-                folio=next_folio
-            )
-        except Exception as e:
-            return Response(
-                {"error": f"Error creando venta: {str(e)}"},
+                {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        return Response(
-            self.get_serializer(sale).data,
-            status=status.HTTP_201_CREATED
-        )
 
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()
@@ -89,14 +76,36 @@ class QuoteViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         try:
-            serializer.save()
+            quote = serializer.save()
         except Exception as e:
             return Response(
-                f"Error creando cotización: {str(e)}",
+                {"error": f"Error creando cotización: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         return Response(
-            "Cotización creada correctamente",
+            self.get_serializer(quote).data,
             status=status.HTTP_201_CREATED
         )
+
+class ReturnViewSet(viewsets.ModelViewSet):
+    queryset = Return.objects.all()
+    serializer_class = ReturnSerializer
+    pagination_class = CustomPagination
+
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['sale__folio', 'product__name']
+    search_fields = ['reason', 'product__name']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+class WorkOrderViewSet(viewsets.ModelViewSet):
+    queryset = WorkOrder.objects.all()
+    serializer_class = WorkOrderSerializer
+    pagination_class = CustomPagination
+
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['trabajador__national_id', 'status']
+    search_fields = ['descripcion', 'trabajador__first_name', 'trabajador__last_name']
+    ordering_fields = ['created_at', 'plazo']
+    ordering = ['-created_at']

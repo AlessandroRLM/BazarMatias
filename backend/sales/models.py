@@ -88,6 +88,10 @@ class SaleDetail(models.Model):
 
 
 class Sale(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pendiente'
+        PAID = 'paid', 'Pagada'
+        CANCELLED = 'cancelled', 'Cancelada'
     class DocType(models.TextChoices):
         INVOICE = 'FAC', 'Factura'        # requiere de un cliente con rut
         RECEIPT = 'BOL', 'Boleta'
@@ -131,6 +135,13 @@ class Sale(models.Model):
         choices=PaymentMethods.choices,
         default=PaymentMethods.CASH,
         verbose_name='Payment Method'
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name='Estado'
     )
 
     def clean(self):

@@ -48,6 +48,8 @@ export const fetchSales = async ({
   document_type = '',
   payment_method = '',
   ordering = '-created_at',
+  created_at_after = '',
+  created_at_before = ''
 }: {
   page?: number;
   page_size?: number;
@@ -55,12 +57,17 @@ export const fetchSales = async ({
   document_type?: string;
   payment_method?: string;
   ordering?: string;
+  created_at_after?: string;
+  created_at_before?: string;
 } = {}): Promise<CustomPagination<Sale>> => {
   let url = `/api/sales/sales/?page=${page}&page_size=${page_size}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
   if (document_type) url += `&document_type=${encodeURIComponent(document_type)}`;
   if (payment_method) url += `&payment_method=${encodeURIComponent(payment_method)}`;
   if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  if (created_at_after) url += `&created_at_after=${encodeURIComponent(created_at_after)}`;
+  if (created_at_before) url += `&created_at_before=${encodeURIComponent(created_at_before)}`;
+  
   const response = await AxiosInstance.get(url);
   return response.data;
 };
@@ -96,17 +103,24 @@ export const fetchQuotes = async ({
   search = '',
   client = '',
   ordering = '-created_at',
+  created_at_after = '',
+  created_at_before = ''
 }: {
   page?: number;
   page_size?: number;
   search?: string;
   client?: string;
   ordering?: string;
+  created_at_after?: string;
+  created_at_before?: string;
 } = {}): Promise<CustomPagination<Quote>> => {
   let url = `/api/sales/quotes/?page=${page}&page_size=${page_size}`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
   if (client) url += `&client=${encodeURIComponent(client)}`;
   if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  if (created_at_after) url += `&created_at_after=${encodeURIComponent(created_at_after)}`;
+  if (created_at_before) url += `&created_at_before=${encodeURIComponent(created_at_before)}`;
+  
   const response = await AxiosInstance.get(url);
   return response.data;
 };

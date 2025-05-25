@@ -18,12 +18,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   fetchDashboardStats,
   fetchMonthlyProfitData,
-  fetchTopProductsData, 
+  fetchTopProductsData,
+  fetchSales,
+  fetchQuotes
 } from "../../services/salesService";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
 
-// Tipos de datos
+// Tipos de datos actualizados
 interface DashboardStats {
   monthlyProfit: number;
   previousMonthProfit: number;
@@ -34,6 +36,18 @@ interface DashboardStats {
   pendingQuotes: number;
   rejectedQuotes: number;
   topClients: { name: string; value: number }[];
+}
+
+interface MonthlyProfitData {
+  name: string;
+  value: number;
+  previousValue?: number;
+}
+
+interface TopProductsData {
+  name: string;
+  value: number;
+  percentage?: number;
 }
 
 // Constantes
@@ -56,23 +70,23 @@ const DashboardSalesPage = () => {
   const currentMonthStart = startOfMonth(currentDate).toISOString().split("T")[0];
   const currentMonthEnd = endOfMonth(currentDate).toISOString().split("T")[0];
 
-  // Queries para obtener datos reales del backend
+  // Queries para obtener datos
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
     queryKey: ["dashboard-stats"],
     queryFn: fetchDashboardStats,
   });
 
-  const { data: monthlyData, isLoading: monthlyDataLoading } = useQuery({
+  const { data: monthlyData, isLoading: monthlyDataLoading } = useQuery<MonthlyProfitData[]>({
     queryKey: ["monthly-profit-data"],
     queryFn: fetchMonthlyProfitData,
   });
 
-  const { data: productsData, isLoading: productsDataLoading } = useQuery({
+  const { data: productsData, isLoading: productsDataLoading } = useQuery<TopProductsData[]>({
     queryKey: ["top-products-data"],
     queryFn: fetchTopProductsData,
   });
 
-  // Prefetch de datos para mejor experiencia de usuario
+  // Prefetch de datos
   useEffect(() => {
     queryClient.prefetchQuery({
       queryKey: ["sales-data", currentMonthStart, currentMonthEnd],
@@ -131,23 +145,25 @@ const DashboardSalesPage = () => {
           amount={stats?.monthlyProfit || 0}
           helperText={`${CURRENT_MONTH} vs ${PREVIOUS_MONTH}: ${stats ? (stats.monthlyProfit - stats.previousMonthProfit > 0 ? "+" : "") + 
             formatMoney(stats.monthlyProfit - stats.previousMonthProfit) : ""}`}
-          trend={stats && stats.monthlyProfit > stats.previousMonthProfit ? "up" : "down"}
+          icon={null} // Añadido icon
         />
         <DashboardCard
           title="Total Ventas"
           amount={stats?.totalSales || 0}
           helperText="Mes actual"
+          icon={null} // Añadido icon
         />
         <DashboardCard
           title="Ventas Pagadas"
           amount={stats?.paidSales || 0}
           helperText={`${stats ? Math.round((stats.paidSales / stats.totalSales) * 100) : 0}% del total`}
+          icon={null} // Añadido icon
         />
         <DashboardCard
           title="Ventas Debidas"
           amount={stats?.dueSales || 0}
           helperText={`${stats ? Math.round((stats.dueSales / stats.totalSales) * 100) : 0}% del total`}
-          trend="warning"
+          icon={null} // Añadido icon
         />
       </Stack>
 
@@ -168,25 +184,13 @@ const DashboardSalesPage = () => {
                 <XAxis dataKey="name" />
                 <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
                 <Tooltip 
-                  formatter={(value: number, name: string) => [
-                    formatMoney(value), 
-                    name === "value" ? "Este año" : "Año anterior"
-                  ]}
+                  formatter={(value: number) => [formatMoney(value), "Valor"]}
                 />
                 <Area
-                  name="Este año"
                   type="monotone"
                   dataKey="value"
                   stroke="#1976d2"
                   fill="#1976d2"
-                  fillOpacity={0.2}
-                />
-                <Area
-                  name="Año anterior"
-                  type="monotone"
-                  dataKey="previousValue"
-                  stroke="#8884d8"
-                  fill="#8884d8"
                   fillOpacity={0.2}
                 />
               </AreaChart>
@@ -212,16 +216,12 @@ const DashboardSalesPage = () => {
                   dataKey="name" 
                   type="category" 
                   width={120} 
-                  tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
                 />
                 <Tooltip 
-                  formatter={(value: number, name: string, props: any) => [
-                    `${value} unidades (${props.payload.percentage}%)`,
-                    "Ventas"
-                  ]}
+                  formatter={(value: number) => [`${value} unidades`, "Ventas"]}
                 />
                 <Bar dataKey="value" fill="#1976d2" radius={[0, 4, 4, 0]}>
-                  {productsData?.map((entry, index) => (
+                  {productsData?.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={`hsl(210, 70%, ${70 - index * 10}%)`} />
                   ))}
                 </Bar>
@@ -236,22 +236,23 @@ const DashboardSalesPage = () => {
         <DashboardCard
           title="Cotizaciones Aprobadas"
           amount={stats?.approvedQuotes || 0}
-          trend="up"
+          icon={null}
         />
         <DashboardCard
           title="Cotizaciones Pendientes"
           amount={stats?.pendingQuotes || 0}
-          trend="warning"
+          icon={null}
         />
         <DashboardCard
           title="Cotizaciones Rechazadas"
           amount={stats?.rejectedQuotes || 0}
-          trend="down"
+          icon={null}
         />
         <DashboardCard
           title="Clientes Destacados"
           amount={stats?.topClients?.length || 0}
           helperText={stats?.topClients?.map(c => c.name).join(", ") || ""}
+          icon={null}
         />
       </Stack>
     </Stack>

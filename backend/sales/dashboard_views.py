@@ -35,6 +35,7 @@ class DashboardViewSet(viewsets.ViewSet):
         )['total'] or 0
         
         total_sales = current_month_sales.count()
+        
         paid_sales = current_month_sales.filter(status='paid').count()
         due_sales = current_month_sales.filter(status='pending').count()
         
@@ -51,6 +52,7 @@ class DashboardViewSet(viewsets.ViewSet):
         top_clients = (
             Sale.objects
             .filter(created_at__gte=current_month_start)
+            .select_related('client')  # Optimización
             .values('client__first_name', 'client__last_name')
             .annotate(total_spent=Sum('total_amount'))
             .order_by('-total_spent')[:3]

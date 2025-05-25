@@ -203,12 +203,12 @@ const SidebarSalesList = () => {
             >
                 <List sx={{ gap: 0.5 }}>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/gestiondeclientes">
                             Gestión de Clientes
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/gestiondeventas">
                             Gestión de Ventas
                         </SidebarLink>
                     </ListItem>

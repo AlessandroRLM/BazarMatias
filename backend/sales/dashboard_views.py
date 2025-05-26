@@ -44,9 +44,9 @@ class DashboardViewSet(viewsets.ViewSet):
             created_at__gte=current_month_start
         )
         
-        approved_quotes = current_month_quotes.filter(status='approved').count()
-        pending_quotes = current_month_quotes.filter(status='pending').count()
-        rejected_quotes = current_month_quotes.filter(status='rejected').count()
+        approved_quotes = current_month_quotes.filter(status='AP').count()
+        pending_quotes = current_month_quotes.filter(status='PE').count()
+        rejected_quotes = current_month_quotes.filter(status='RE').count()
         
         # Obtener clientes destacados (top 3 por monto gastado)
         top_clients = (

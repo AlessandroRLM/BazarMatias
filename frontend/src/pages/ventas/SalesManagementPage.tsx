@@ -20,7 +20,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
 import { fetchSales, updateSaleStatus, deleteSale } from "../../services/salesService";
-import { Sale, Client } from "../../types/sales.types";
+import { Sale, Client, SaleStatus } from "../../types/sales.types";
 import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -133,8 +133,8 @@ export default function SalesManagement() {
     setSaleToDelete(null);
   };
 
-  const handleStatusChange = (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'Debe' ? 'Pagado' : 'Debe';
+  const handleStatusChange = (id: string, currentStatus: SaleStatus) => {
+    const newStatus: SaleStatus = currentStatus === 'paid' ? 'pending' : 'paid';
     statusMutation.mutate({ id, status: newStatus });
   };
 
@@ -231,31 +231,35 @@ export default function SalesManagement() {
               <VisibilityIcon />
             </IconButton>
 
-            <IconButton
-              component={Link}
-              to={`/ventas/gestiondeventas/editar-venta/${row.original.id}`}
-              variant="plain"
-              color="neutral"
-              size="sm"
-              aria-label="Edit"
-            >
-              <EditIcon />
-            </IconButton>
+            {row.original.status !== 'paid' && (
+              <>
+                <IconButton
+                  component={Link}
+                  to={`/ventas/gestiondeventas/editar-venta/${row.original.id}`}
+                  variant="plain"
+                  color="neutral"
+                  size="sm"
+                  aria-label="Edit"
+                >
+                  <EditIcon />
+                </IconButton>
 
-            <IconButton
-              variant="plain"
-              color="danger"
-              size="sm"
-              aria-label="Delete"
-              onClick={() => handleDeleteClick(row.original)}
-              disabled={deleteMutation.isPending}
-            >
-              <DeleteIcon />
-            </IconButton>
+                <IconButton
+                  variant="plain"
+                  color="danger"
+                  size="sm"
+                  aria-label="Delete"
+                  onClick={() => handleDeleteClick(row.original)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
 
             <Checkbox
-              checked={status === 'Pagado'}
-              onChange={() => handleStatusChange(row.original.id, status)}
+              checked={row.original.status === 'paid'}
+              onChange={() => handleStatusChange(row.original.id, row.original.status)}
               color={status === 'Pagado' ? 'success' : 'neutral'}
               variant={status === 'Pagado' ? 'solid' : 'outlined'}
               disabled={statusMutation.isPending}

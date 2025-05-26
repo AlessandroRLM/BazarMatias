@@ -2,6 +2,7 @@ from bson import ObjectId
 from rest_framework import serializers
 from django.db.models import Sum
 from inventory.models import Product
+from inventory.serializers import ProductSerializer
 from users.models import User
 from .models import SaleDetail, Sale, Client, Quote, QuoteDetail, Return, WorkOrder, DocumentCounter
 
@@ -24,14 +25,21 @@ class ClientSerializer(serializers.ModelSerializer):
 
 class SaleDetailSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(
+
+    # Para lectura: devuelve el producto como objeto expandido
+    product = ProductSerializer(read_only=True)
+
+    # Para escritura: se usa solo el ID del producto
+    product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
-        pk_field=ObjectIdField()
+        pk_field=ObjectIdField(),
+        source='product',
+        write_only=True
     )
 
     class Meta:
         model = SaleDetail
-        fields = ['id', 'product', 'quantity', 'unit_price', 'discount']
+        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'discount']
 
 class SaleSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)

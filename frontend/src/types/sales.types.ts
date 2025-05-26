@@ -61,7 +61,7 @@ export interface Sale {
   payment_method: string;
   details: {
     id?: string;
-    product: string | Product;
+    product: Product;
     quantity: number;
     unit_price: number;
     discount: number;

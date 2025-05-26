@@ -545,6 +545,9 @@ paths:
       - inventory
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Shrinkage'
@@ -592,6 +595,9 @@ paths:
       - inventory
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Shrinkage'
@@ -618,6 +624,9 @@ paths:
       - inventory
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedShrinkage'
@@ -653,6 +662,9 @@ paths:
       - inventory
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shrinkage'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Shrinkage'
@@ -888,6 +900,16 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/reports/sales/:
+    get:
+      operationId: reports_sales_retrieve
+      tags:
+      - reports
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
   /api/reports/suppliers/:
     get:
       operationId: reports_suppliers_retrieve
@@ -1060,10 +1082,68 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sales/dashboard/monthly_profit/:
+    get:
+      operationId: sales_dashboard_monthly_profit_retrieve
+      description: Endpoint para obtener datos de ganancias mensuales
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
+  /api/sales/dashboard/stats/:
+    get:
+      operationId: sales_dashboard_stats_retrieve
+      description: Endpoint para obtener las estadísticas principales del dashboard
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
+  /api/sales/dashboard/top_products/:
+    get:
+      operationId: sales_dashboard_top_products_retrieve
+      description: Endpoint para obtener los productos más vendidos
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
+  /api/sales/document-counter/:
+    get:
+      operationId: sales_document_counter_retrieve
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
   /api/sales/quotes/:
     get:
       operationId: sales_quotes_list
       parameters:
+      - in: query
+        name: created_at
+        schema:
+          type: string
+          format: date
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - name: page
         required: false
         in: query
@@ -1076,6 +1156,25 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: Status Buy Order
+          enum:
+          - AP
+          - PE
+          - RE
+        description: |-
+          * `RE` - Rechazado
+          * `PE` - Pendiente
+          * `AP` - Aprobado
       tags:
       - sales
       security:
@@ -1204,6 +1303,178 @@ paths:
         schema:
           type: integer
         description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
+  /api/sales/returns/:
+    get:
+      operationId: sales_returns_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: product__name
+        schema:
+          type: string
+      - in: query
+        name: sale__folio
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReturnList'
+          description: ''
+    post:
+      operationId: sales_returns_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Return'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Return'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Return'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+          description: ''
+  /api/sales/returns/{id}/:
+    get:
+      operationId: sales_returns_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Devolución.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+          description: ''
+    put:
+      operationId: sales_returns_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Devolución.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Return'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Return'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Return'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+          description: ''
+    patch:
+      operationId: sales_returns_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Devolución.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+          description: ''
+    delete:
+      operationId: sales_returns_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Devolución.
         required: true
       tags:
       - sales
@@ -1356,6 +1627,202 @@ paths:
         schema:
           type: integer
         description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
+  /api/sales/sales/document_counter/:
+    get:
+      operationId: sales_sales_document_counter_retrieve
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
+  /api/sales/work-orders/:
+    get:
+      operationId: sales_work_orders_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelada
+          - completada
+          - en_proceso
+          - pendiente
+        description: |-
+          * `pendiente` - Pendiente
+          * `en_proceso` - En proceso
+          * `completada` - Completada
+          * `cancelada` - Cancelada
+      - in: query
+        name: trabajador__national_id
+        schema:
+          type: string
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkOrderList'
+          description: ''
+    post:
+      operationId: sales_work_orders_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+  /api/sales/work-orders/{id}/:
+    get:
+      operationId: sales_work_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Orden de Trabajo.
+        required: true
+      tags:
+      - sales
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+    put:
+      operationId: sales_work_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Orden de Trabajo.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkOrder'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+    patch:
+      operationId: sales_work_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Orden de Trabajo.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrder'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+    delete:
+      operationId: sales_work_orders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Orden de Trabajo.
         required: true
       tags:
       - sales
@@ -2058,7 +2525,7 @@ components:
           type: integer
         status:
           allOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/Status132Enum'
           title: Status Buy Order
         created_at:
           type: string
@@ -2234,6 +2701,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Quote'
+    PaginatedReturnList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Return'
     PaginatedReturnSupplierList:
       type: object
       required:
@@ -2372,6 +2862,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserActivity'
+    PaginatedWorkOrderList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkOrder'
     PatchedBuyOrder:
       type: object
       properties:
@@ -2390,7 +2903,7 @@ components:
           type: integer
         status:
           allOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/Status132Enum'
           title: Status Buy Order
         created_at:
           type: string
@@ -2432,6 +2945,9 @@ components:
         supplier:
           type: string
           nullable: true
+        supplier_name:
+          type: string
+          readOnly: true
         is_below_min_stock:
           type: string
           readOnly: true
@@ -2472,12 +2988,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QuoteDetail'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status132Enum'
+          title: Status Buy Order
         created_at:
           type: string
           format: date
           readOnly: true
         total:
           type: integer
+          readOnly: true
+    PatchedReturn:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          type: string
+        cliente_nombre:
+          type: string
+          readOnly: true
+        sale:
+          type: string
+        fecha_venta:
+          type: string
+          format: date-time
+          readOnly: true
+        product:
+          type: string
+        producto_nombre:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
           readOnly: true
     PatchedReturnSupplier:
       type: object
@@ -2489,12 +3042,6 @@ components:
           type: integer
         product:
           type: integer
-        supplier_name:
-          type: string
-          readOnly: true
-        product_name:
-          type: string
-          readOnly: true
         quantity:
           type: integer
           maximum: 9223372036854775807
@@ -2517,6 +3064,12 @@ components:
         status:
           type: string
           maxLength: 50
+        supplier_name:
+          type: string
+          readOnly: true
+        product_name:
+          type: string
+          readOnly: true
     PatchedSale:
       type: object
       properties:
@@ -2527,6 +3080,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SaleDetail'
+        client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: string
+          writeOnly: true
+          nullable: true
         document_type:
           $ref: '#/components/schemas/DocumentTypeEnum'
         folio:
@@ -2539,22 +3100,19 @@ components:
           readOnly: true
         net_amount:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 1
-          format: int64
+          readOnly: true
         iva:
           type: integer
           readOnly: true
         total_amount:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          readOnly: true
         payment_method:
           $ref: '#/components/schemas/PaymentMethodEnum'
-        client:
-          type: integer
-          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SaleStatusEnum'
+          title: Estado
     PatchedShrinkage:
       type: object
       properties:
@@ -2661,6 +3219,43 @@ components:
           title: Active
           description: Designates whether this user should be treated as active. Unselect
             this instead of deleting accounts.
+    PatchedWorkOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        numero_orden:
+          type: string
+          readOnly: true
+        trabajador:
+          type: string
+        trabajador_nombre:
+          type: string
+          readOnly: true
+        trabajador_rut:
+          type: string
+          readOnly: true
+        trabajador_cargo:
+          type: string
+          readOnly: true
+        tipo_tarea:
+          type: string
+          maxLength: 100
+        descripcion:
+          type: string
+          title: Detalle del trabajo
+        prioridad:
+          $ref: '#/components/schemas/PrioridadEnum'
+        plazo:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/WorkOrderStatusEnum'
+        created_at:
+          type: string
+          format: date
+          readOnly: true
     PaymentMethodEnum:
       enum:
       - EF
@@ -2675,6 +3270,16 @@ components:
         * `TD` - Tarjeta Débito
         * `TR` - Transferencia
         * `OT` - Otro
+    PrioridadEnum:
+      enum:
+      - baja
+      - media
+      - alta
+      type: string
+      description: |-
+        * `baja` - Baja
+        * `media` - Media
+        * `alta` - Alta
     Product:
       type: object
       properties:
@@ -2684,6 +3289,9 @@ components:
         supplier:
           type: string
           nullable: true
+        supplier_name:
+          type: string
+          readOnly: true
         is_below_min_stock:
           type: string
           readOnly: true
@@ -2719,6 +3327,7 @@ components:
       - name
       - price_clp
       - stock
+      - supplier_name
     Quote:
       type: object
       properties:
@@ -2731,6 +3340,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QuoteDetail'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status132Enum'
+          title: Status Buy Order
         created_at:
           type: string
           format: date
@@ -2762,11 +3375,60 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        discount:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
       required:
       - id
       - product
       - quantity
       - unit_price
+    Return:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          type: string
+        cliente_nombre:
+          type: string
+          readOnly: true
+        sale:
+          type: string
+        fecha_venta:
+          type: string
+          format: date-time
+          readOnly: true
+        product:
+          type: string
+        producto_nombre:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - client
+      - cliente_nombre
+      - created_at
+      - fecha_venta
+      - id
+      - product
+      - producto_nombre
+      - quantity
+      - reason
+      - sale
     ReturnSupplier:
       type: object
       properties:
@@ -2777,12 +3439,6 @@ components:
           type: integer
         product:
           type: integer
-        supplier_name:
-          type: string
-          readOnly: true
-        product_name:
-          type: string
-          readOnly: true
         quantity:
           type: integer
           maximum: 9223372036854775807
@@ -2805,6 +3461,12 @@ components:
         status:
           type: string
           maxLength: 50
+        supplier_name:
+          type: string
+          readOnly: true
+        product_name:
+          type: string
+          readOnly: true
       required:
       - id
       - product
@@ -2827,6 +3489,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SaleDetail'
+        client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: string
+          writeOnly: true
+          nullable: true
         document_type:
           $ref: '#/components/schemas/DocumentTypeEnum'
         folio:
@@ -2839,23 +3509,21 @@ components:
           readOnly: true
         net_amount:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 1
-          format: int64
+          readOnly: true
         iva:
           type: integer
           readOnly: true
         total_amount:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          readOnly: true
         payment_method:
           $ref: '#/components/schemas/PaymentMethodEnum'
-        client:
-          type: integer
-          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SaleStatusEnum'
+          title: Estado
       required:
+      - client
       - created_at
       - details
       - folio
@@ -2870,7 +3538,12 @@ components:
           type: string
           readOnly: true
         product:
-          type: integer
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        product_id:
+          type: string
+          writeOnly: true
         quantity:
           type: integer
           maximum: 9223372036854775807
@@ -2889,7 +3562,18 @@ components:
       required:
       - id
       - product
+      - product_id
       - unit_price
+    SaleStatusEnum:
+      enum:
+      - pending
+      - paid
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pendiente
+        * `paid` - Pagada
+        * `cancelled` - Cancelada
     Shrinkage:
       type: object
       properties:
@@ -2922,7 +3606,7 @@ components:
       - price
       - product
       - quantity
-    StatusEnum:
+    Status132Enum:
       enum:
       - RE
       - PE
@@ -3084,6 +3768,66 @@ components:
       - time
       - timestamp
       - user
+    WorkOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        numero_orden:
+          type: string
+          readOnly: true
+        trabajador:
+          type: string
+        trabajador_nombre:
+          type: string
+          readOnly: true
+        trabajador_rut:
+          type: string
+          readOnly: true
+        trabajador_cargo:
+          type: string
+          readOnly: true
+        tipo_tarea:
+          type: string
+          maxLength: 100
+        descripcion:
+          type: string
+          title: Detalle del trabajo
+        prioridad:
+          $ref: '#/components/schemas/PrioridadEnum'
+        plazo:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/WorkOrderStatusEnum'
+        created_at:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - created_at
+      - descripcion
+      - id
+      - numero_orden
+      - plazo
+      - tipo_tarea
+      - trabajador
+      - trabajador_cargo
+      - trabajador_nombre
+      - trabajador_rut
+    WorkOrderStatusEnum:
+      enum:
+      - pendiente
+      - en_proceso
+      - completada
+      - cancelada
+      type: string
+      description: |-
+        * `pendiente` - Pendiente
+        * `en_proceso` - En proceso
+        * `completada` - Completada
+        * `cancelada` - Cancelada
   securitySchemes:
     knoxApiToken:
       type: apiKey

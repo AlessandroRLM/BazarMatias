@@ -195,11 +195,7 @@ class Quote(models.Model):
     created_at = models.DateField(auto_now_add=True)
     details = models.ManyToManyField(QuoteDetail)
     total = models.PositiveIntegerField()
-    status = models.CharField(
-        max_length=10,
-        choices=Status.choices,
-        default=Status.PENDING
-    )
+
 
 class Return(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT)

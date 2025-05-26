@@ -34,9 +34,9 @@ import { Route as AuthInventarioInsumosIndexImport } from './routes/_auth/invent
 import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/administracion/usuarios/index'
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
 import { Route as AuthVentasOrdenesdetrabajoCrearOrdenTrabajoImport } from './routes/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
-import { Route as AuthVentasCotizacionesCrearCotizacionImport } from './routes/_auth/ventas/cotizaciones/crear-cotizacion'
 import { Route as AuthVentasGestiondeventasAadirVentaImport } from './routes/_auth/ventas/gestiondeventas/añadir-venta'
 import { Route as AuthVentasGestiondeclientesAadirClienteImport } from './routes/_auth/ventas/gestiondeclientes/añadir-cliente'
+import { Route as AuthVentasCotizacionesCrearCotizacionImport } from './routes/_auth/ventas/cotizaciones/crear-cotizacion'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
 import { Route as AuthProveedoresVerOrdenesDeCompraIdImport } from './routes/_auth/proveedores/ver-ordenes-de-compra.$id'
 import { Route as AuthProveedoresEliminarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/eliminar-ordenes-de-compra.$id'
@@ -51,14 +51,14 @@ import { Route as AuthInventarioInsumosCrearInsumoImport } from './routes/_auth/
 import { Route as AuthInventarioInsumosCargaMasivaInsumosImport } from './routes/_auth/inventario/insumos/carga-masiva-insumos'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
-import { Route as AuthVentasCotizacionesVerCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/ver-cotizacion.$id'
-import { Route as AuthVentasCotizacionesEditarCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/editar-cotizacion.$id'
 import { Route as AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo.$id'
 import { Route as AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo.$id'
 import { Route as AuthVentasGestiondeventasVerVentaIdImport } from './routes/_auth/ventas/gestiondeventas/ver-venta.$id'
 import { Route as AuthVentasGestiondeventasEditarVentaIdImport } from './routes/_auth/ventas/gestiondeventas/editar-venta.$id'
 import { Route as AuthVentasGestiondeclientesVerClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/ver-cliente.$id'
 import { Route as AuthVentasGestiondeclientesEditarClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/editar-cliente.$id'
+import { Route as AuthVentasCotizacionesVerCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/ver-cotizacion.$id'
+import { Route as AuthVentasCotizacionesEditarCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/editar-cotizacion.$id'
 import { Route as AuthProveedoresDevolucionesVerDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/ver-devolucion.$id'
 import { Route as AuthProveedoresDevolucionesEditarDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/editar-devolucion.$id'
 import { Route as AuthInventarioProductosVerProductoIdImport } from './routes/_auth/inventario/productos/ver-producto.$id'
@@ -344,20 +344,6 @@ const AuthAdministracionUsuariosActividadDeUsuariosRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthVentasCotizacionesVerCotizacionIdRoute =
-  AuthVentasCotizacionesVerCotizacionIdImport.update({
-    id: '/ventas/cotizaciones/ver-cotizacion/$id',
-    path: '/ventas/cotizaciones/ver-cotizacion/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthVentasCotizacionesEditarCotizacionIdRoute =
-  AuthVentasCotizacionesEditarCotizacionIdImport.update({
-    id: '/ventas/cotizaciones/editar-cotizacion/$id',
-    path: '/ventas/cotizaciones/editar-cotizacion/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
 const AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute =
   AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport.update({
     id: '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id',
@@ -397,6 +383,20 @@ const AuthVentasGestiondeclientesEditarClienteIdRoute =
   AuthVentasGestiondeclientesEditarClienteIdImport.update({
     id: '/ventas/gestiondeclientes/editar-cliente/$id',
     path: '/ventas/gestiondeclientes/editar-cliente/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasCotizacionesVerCotizacionIdRoute =
+  AuthVentasCotizacionesVerCotizacionIdImport.update({
+    id: '/ventas/cotizaciones/ver-cotizacion/$id',
+    path: '/ventas/cotizaciones/ver-cotizacion/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasCotizacionesEditarCotizacionIdRoute =
+  AuthVentasCotizacionesEditarCotizacionIdImport.update({
+    id: '/ventas/cotizaciones/editar-cotizacion/$id',
+    path: '/ventas/cotizaciones/editar-cotizacion/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -1507,8 +1507,7 @@ export const routeTree = rootRoute
         "/_auth/proveedores/devoluciones/editar-devolucion/$id",
         "/_auth/proveedores/devoluciones/ver-devolucion/$id",
         "/_auth/ventas/cotizaciones/editar-cotizacion/$id",
-        "/_auth/ventas/cotizaciones/ver-cotizacion/$id"
-        "/_auth/proveedores/devoluciones/ver-devolucion/$id",
+        "/_auth/ventas/cotizaciones/ver-cotizacion/$id",
         "/_auth/ventas/gestiondeclientes/editar-cliente/$id",
         "/_auth/ventas/gestiondeclientes/ver-cliente/$id",
         "/_auth/ventas/gestiondeventas/editar-venta/$id",

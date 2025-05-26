@@ -7,6 +7,7 @@ import PeopleOutlined from "../../assets/PeopleOutlined";
 import WorkOutlined from "../../assets/WorkOutlined";
 import CloseOutlined from "../../assets/CloseOutlined";
 import { fetchSuppliers, fetchReturnSuppliers } from "../../services/inventoryService";
+import { fetchBuyOrders } from "../../services/supplierService";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
@@ -28,18 +29,33 @@ const DashboardSupplierPage = () => {
       try {
         setLoading(true);
 
+        // Obtener proveedores
         const suppliersResponse = await fetchSuppliers({ page: 1, page_size: 1 });
         const totalSuppliers = suppliersResponse.info?.count || 0;
 
-        const returnsResponse = await fetchReturnSuppliers({
+        // Obtener devoluciones pendientes (filtrando por status Pendiente)
+        const pendingReturnsResponse = await fetchReturnSuppliers({
           page: 1,
-          page_size: 1,
-          status: "Pendiente",
+          page_size: 1000, // Aumentamos para obtener todos
+          status: "Pendiente" // Filtramos solo pendientes
         });
-        const totalPendingReturns = returnsResponse.info?.count || 0;
+        const totalPendingReturns = pendingReturnsResponse.results?.length || 0;
 
-        const totalActiveOrders = 5;
-        const totalCompletedOrders = 3;
+        // Obtener órdenes aprobadas (status AP)
+        const approvedOrdersResponse = await fetchBuyOrders({ 
+          page: 1, 
+          page_size: 1000,
+          status: "AP" 
+        });
+        const totalCompletedOrders = approvedOrdersResponse.info?.count || 0;
+
+        // Obtener órdenes pendientes (status PE)
+        const pendingOrdersResponse = await fetchBuyOrders({
+          page: 1,
+          page_size: 1000,
+          status: "PE"
+        });
+        const totalActiveOrders = pendingOrdersResponse.info?.count || 0;
 
         setStats({
           totalSuppliers,
@@ -49,6 +65,7 @@ const DashboardSupplierPage = () => {
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+        toast.error("Error al cargar los datos del dashboard");
       } finally {
         setLoading(false);
       }
@@ -88,22 +105,6 @@ const DashboardSupplierPage = () => {
 
   const COLORS = ["#1976d2", "#2e7d32", "#d32f2f"];
 
-  if (loading) {
-    return (
-      <Stack spacing={3}>
-        <PageHeader
-          title="Dashboard de Proveedores"
-          buttons={[{ text: "Reporte", onClick: handleGenerateReport }]}
-        />
-        <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-          {[...Array(4)].map((_, i) => (
-            <DashboardCard key={i} loading />
-          ))}
-        </Stack>
-      </Stack>
-    );
-  }
-
   return (
     <Stack spacing={3}>
       <PageHeader
@@ -111,86 +112,102 @@ const DashboardSupplierPage = () => {
         buttons={[{ text: "Reporte", onClick: handleGenerateReport }]}
       />
 
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-        <DashboardCard
-          title="Total de Proveedores"
-          amount={stats.totalSuppliers}
-          icon={<PeopleOutlined width={32} height={32} />}
-          helperText={`${stats.totalSuppliers} proveedores registrados`}
-        />
-        <DashboardCard
-          title="Órdenes Activas"
-          amount={stats.totalActiveOrders}
-          icon={<WorkOutlined width={32} height={32} />}
-          helperText={`${stats.totalActiveOrders} órdenes en proceso`}
-        />
-        <DashboardCard
-          title="Devoluciones Pendientes"
-          amount={stats.totalPendingReturns}
-          icon={<CloseOutlined width={32} height={32} />}
-          helperText={`${stats.totalPendingReturns} por resolver`}
-          helperTextColor="danger"
-        />
-        <DashboardCard
-          title="Órdenes Completadas"
-          amount={stats.totalCompletedOrders}
-          icon={<MdiPackageVariantClosed width={32} height={32} />}
-          helperText={`${stats.totalCompletedOrders} finalizadas`}
-          helperTextColor="success"
-        />
-      </Stack>
+      {loading ? (
+        <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+          {[...Array(4)].map((_, i) => (
+            <DashboardCard 
+              key={i} 
+              title="" 
+              amount={0} 
+              helperText="" 
+              icon={<PeopleOutlined width={32} height={32} />} // Icono de placeholder
+            />
+          ))}
+        </Stack>
+      ) : (
+        <>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+            <DashboardCard
+              title="Total de Proveedores"
+              amount={stats.totalSuppliers}
+              icon={<PeopleOutlined width={32} height={32} />}
+              helperText={`${stats.totalSuppliers} proveedores registrados`}
+            />
+            <DashboardCard
+              title="Órdenes Activas"
+              amount={stats.totalActiveOrders}
+              icon={<WorkOutlined width={32} height={32} />}
+              helperText={`${stats.totalActiveOrders} órdenes en proceso`}
+            />
+            <DashboardCard
+              title="Devoluciones Pendientes"
+              amount={stats.totalPendingReturns}
+              icon={<CloseOutlined width={32} height={32} />}
+              helperText={`${stats.totalPendingReturns} por resolver`}
+              helperTextColor="danger"
+            />
+            <DashboardCard
+              title="Órdenes Completadas"
+              amount={stats.totalCompletedOrders}
+              icon={<MdiPackageVariantClosed width={32} height={32} />}
+              helperText={`${stats.totalCompletedOrders} finalizadas`}
+              helperTextColor="success"
+            />
+          </Stack>
 
-      <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
-        <Card sx={{ flex: 1 }}>
-          <CardContent>
-            <Typography level="title-md" sx={{ mb: 1 }}>
-              Distribución de Órdenes
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  labelLine={false}
-                  label={({ name }) => name}
-                >
-                  {pieData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+          <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
+            <Card sx={{ flex: 1 }}>
+              <CardContent>
+                <Typography level="title-md" sx={{ mb: 1 }}>
+                  Distribución de Órdenes
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      dataKey="value"
+                      labelLine={false}
+                      label={({ name }) => name}
+                    >
+                      {pieData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number, name: string) => [`${value}`, name]}
                     />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number, name: string) => [`${value}`, name]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-        <Card sx={{ flex: 2 }}>
-          <CardContent>
-            <Typography level="title-md" sx={{ mb: 1 }}>
-              Comparativa General
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={barData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="Total" fill="#1976d2" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </Stack>
+            <Card sx={{ flex: 2 }}>
+              <CardContent>
+                <Typography level="title-md" sx={{ mb: 1 }}>
+                  Comparativa General
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={barData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="Total" fill="#1976d2" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </Stack>
+        </>
+      )}
     </Stack>
   );
 };

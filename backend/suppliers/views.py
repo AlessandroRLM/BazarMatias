@@ -19,6 +19,6 @@ class BuyOrderViewSet(viewsets.ModelViewSet):
     serializer_class = BuyOrderSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['status']
+    filterset_fields = ['status']
     ordering_fields = ['status', 'created_at', 'supplier__name']
     search_fields = ['supplier__name', 'supplier__category']

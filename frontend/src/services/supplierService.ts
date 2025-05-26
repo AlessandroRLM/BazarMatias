@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import AxiosInstance from "../helpers/AxiosInstance";
 import { CustomPagination } from "../types/core.types";
 import { Product } from "../types/inventory.types";
-import { BuyOrder, Supplier } from "../types/proveedores.types";
+import { BuyOrder, Supplier, BuyOrdersParams } from "../types/proveedores.types";
 import { BuyOrderCreationFormValues } from "../schemas/proveedores/buyOrderSchema";
 
 //para formulario de ordenes de compra
@@ -47,4 +47,20 @@ export const editBuyOrder = async (id: string, data: BuyOrderCreationFormValues)
 export const deleteBuyOrder = async (orderId: string) => {
     const response = await AxiosInstance.delete(`/api/suppliers/buy_orders/${orderId}/`);
     return response.data;
-  };
+};
+
+export const fetchBuyOrders = async (params: BuyOrdersParams = {}) => {
+  const url = '/api/suppliers/buy_orders/';
+  const queryParams = new URLSearchParams();
+  
+  if (params.page) queryParams.append('page', params.page.toString());
+  if (params.page_size) queryParams.append('page_size', params.page_size.toString());
+  if (params.status) queryParams.append('status', params.status);
+  if (params.search) queryParams.append('search', params.search);
+  if (params.ordering) queryParams.append('ordering', params.ordering);
+  
+  const response: AxiosResponse<CustomPagination<BuyOrder>> = await AxiosInstance.get(
+    `${url}?${queryParams.toString()}`
+  );
+  return response.data;
+};

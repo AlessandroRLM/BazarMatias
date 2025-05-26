@@ -1,4 +1,5 @@
 import AxiosInstance from '../helpers/AxiosInstance';
+import { ReturnSupplierParams } from "../types/inventory.types";
 
 // CRUD de Proveedores con paginación, búsqueda y filtros
 export const fetchSuppliers = async ({
@@ -223,17 +224,16 @@ export const downloadShrinkageTemplate = async () => {
 export const fetchReturnSuppliers = async ({
   page = 1,
   page_size = 10,
+  status = '', // Añade este parámetro
   search = '',
   ordering = '',
-}: {
-  page?: number;
-  page_size?: number;
-  search?: string;
-  ordering?: string;
-} = {}) => {
+}: ReturnSupplierParams = {}) => {
   let url = `/api/inventory/return-suppliers/?page=${page}&page_size=${page_size}`;
+  
+  if (status) url += `&status=${encodeURIComponent(status)}`; // Añade esta línea
   if (search) url += `&search=${encodeURIComponent(search)}`;
   if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+  
   const response = await AxiosInstance.get(url);
   return response.data;
 };

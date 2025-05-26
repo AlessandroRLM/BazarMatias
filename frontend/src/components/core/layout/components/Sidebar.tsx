@@ -9,6 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { KeyboardArrowDown } from "@mui/icons-material"
 import SidebarLink from "./SidebarLink"
 import { useAuth } from "../../../../hooks/auth/useAuth"
+import ColorSchemeToggle from "../../../../components/administracion/UserManagementColorScheme/ColorSchemeToggle";
 
 interface TogglerProps {
     defaultExpanded?: boolean
@@ -75,7 +76,8 @@ const SidebarHeader = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 width: '100%',
-                borderBottom: '1px solid var(--joy-palette-divider)'
+                pb: 2,
+                borderBottom: '1px solid var(--joy-palette-divider)',
             }}
         >
             <SidebarLink to="/home">
@@ -83,6 +85,7 @@ const SidebarHeader = () => {
                     Bazar Matias
                 </Typography>
             </SidebarLink>
+            <ColorSchemeToggle />
         </Box>
     )
 }
@@ -134,7 +137,7 @@ const SidebarAdminList = () => {
     )
 }
 
-const SidebarInventorykList = () => {
+const SidebarInventoryList = () => {
     return (
         <ListItem nested>
             <Toggler
@@ -218,7 +221,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/cotizaciones">
                             Gestión de Cotizaciones
                         </SidebarLink>
                     </ListItem>
@@ -305,7 +308,7 @@ const SidebarContent = () => {
                 }}
             >
                 <SidebarAdminList />
-                <SidebarInventorykList />
+                <SidebarInventoryList />
                 <SidebarSalesList />
                 <SidebarSuppliersList />
             </List>

@@ -66,7 +66,13 @@ const BuyOrderManagementPage = () => {
             <FilterOptions
                 onChangeFilters={(filters) => setFilters(filters)}
                 selects={[
-                    { id: 'status', placeholder: 'Estado', options: [{ value: null, label: 'Estado' }, { value: 'RE', label: 'Rechazado' }, { value: 'PE', label: 'Pendiente' }, { value: 'AP', label: 'Aprobado' }] }
+                    {
+                        id: 'status', placeholder: 'Estado', options: [
+                            { value: null, label: 'Estado' },
+                            { value: 'RE', label: 'Rechazado' },
+                            { value: 'PE', label: 'Pendiente' },
+                            { value: 'AP', label: 'Aprobado' }]
+                    }
                 ]}
             />
             <CustomTable

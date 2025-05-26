@@ -21,4 +21,4 @@ class BuyOrderViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status']
     ordering_fields = ['status', 'created_at', 'supplier__name']
-    search_fields = ['supplier__name', 'supplier__category']
+    search_fields = ['supplier']

@@ -12,6 +12,18 @@ declare module '@mui/joy/Avatar' {
 const materialTheme = createTheme()
 
 const theme = extendTheme({
+  colorSchemes: {
+    light: {
+      palette: {
+        // Puedes personalizar los colores del tema claro aquí si lo deseas
+      },
+    },
+    dark: {
+      palette: {
+        // Puedes personalizar los colores del tema oscuro aquí si lo deseas
+      },
+    },
+  },
   components: {
     JoyAvatar: {
       styleOverrides: {
@@ -32,7 +44,7 @@ const theme = extendTheme({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={{ [MATERIAL_THEME_ID]: materialTheme}}>
-      <CssVarsProvider theme={theme}>
+      <CssVarsProvider theme={theme} defaultMode="light" modeStorageKey="bazar-matias-color-scheme">
         <CssBaseline>
           <GlobalStyles
             styles={(theme) => ({

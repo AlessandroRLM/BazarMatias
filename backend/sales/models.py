@@ -179,20 +179,23 @@ class QuoteDetail(models.Model):
     discount = models.PositiveIntegerField(default=0)
 
 class Quote(models.Model):
-    class Status(models.TextChoices):
-        PENDING = 'pending', 'Pendiente'
-        APPROVED = 'approved', 'Aprobada'
-        REJECTED = 'rejected', 'Rechazada'
-    
+    class StatusQuote(models.TextChoices):
+        REJECTED = 'RE', 'Rechazado'
+        PENDING = 'PE', 'Pendiente'
+        APROVED = 'AP', 'Aprobado'
+        
+    status = models.CharField(
+        max_length=2,
+        choices=StatusQuote.choices,
+        default=StatusQuote.PENDING,
+        verbose_name='Status Buy Order'
+    )
+        
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
     details = models.ManyToManyField(QuoteDetail)
     total = models.PositiveIntegerField()
-    status = models.CharField(
-        max_length=10,
-        choices=Status.choices,
-        default=Status.PENDING
-    )
+
 
 class Return(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT)

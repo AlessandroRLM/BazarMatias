@@ -1,6 +1,7 @@
 import { User } from "./auth.types";
 import { Product } from "./inventory.types";
 
+
 export interface Client {
   id: string;
   national_id: string;
@@ -71,21 +72,6 @@ export interface Sale {
   total_amount: number;
   status: SaleStatus;
 }
-export interface QuoteDetail {
-  id: string;
-  product: Product;
-  quantity: number;
-  unit_price: number;
-  discount: number;
-}
-
-export interface Quote {
-  id: string;
-  client: Client;
-  created_at: string;
-  details: QuoteDetail[];
-  total: number;
-}
 
 export interface Return {
   id: string;
@@ -102,6 +88,24 @@ export interface Return {
   producto_nombre?: string;
   cliente_nombre?: string;
   fecha_venta?: string;
+}
+
+export interface QuoteDetail {
+    id: string
+    product: string
+    quantity: number
+    unit_price: number
+    discount: number;
+
+}
+
+export interface Quote {
+    id: string
+    client: string
+    details: QuoteDetail[]
+    status: string
+    created_at: Date
+    total: number
 }
 
 export type WorkOrderPriority = 'baja' | 'media' | 'alta';

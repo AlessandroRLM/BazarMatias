@@ -23,13 +23,15 @@ export interface SaleDetail {
 
 export type DocumentType = 'FAC' | 'BOL'; // Factura o Boleta
 export type PaymentMethod = 'EF' | 'TC' | 'TD' | 'TR' | 'OT'; // Efectivo, Tarjeta Crédito, Tarjeta Débito, Transferencia, Otro
+export type SaleStatus = 'pending' | 'paid' | 'completed' | 'cancelled';
 
 export type CreateSaleData = {
   document_type: DocumentType;
-  client: string; // Solo el ID del cliente
+  client?: string;
+  client_id?: string;
   payment_method: PaymentMethod;
   details: Array<{
-    product: string; // Solo el ID del producto
+    product: string;
     quantity: number;
     unit_price: number;
     discount: number;
@@ -39,6 +41,17 @@ export type CreateSaleData = {
   total_amount: number;
 };
 
+export interface SaleUpdateData extends Omit<Partial<Sale>, 'client' | 'details'> {
+  client: string | null;
+  details: Array<{
+    id?: string;
+    product: string;
+    quantity: number;
+    unit_price: number;
+    discount: number;
+  }>;
+}
+
 // Sale original para las respuestas
 export interface Sale {
   id: string;
@@ -47,8 +60,8 @@ export interface Sale {
   client: Client | null;
   payment_method: string;
   details: {
-    id: string;
-    product: Product;
+    id?: string;
+    product: string | Product;
     quantity: number;
     unit_price: number;
     discount: number;
@@ -56,8 +69,8 @@ export interface Sale {
   net_amount: number;
   iva: number;
   total_amount: number;
+  status: SaleStatus;
 }
-
 export interface QuoteDetail {
   id: string;
   product: Product;

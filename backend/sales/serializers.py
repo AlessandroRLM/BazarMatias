@@ -49,12 +49,20 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = '__all__'
-        read_only_fields = ['folio', 'created_at', 'net_amount', 'iva', 'total_amount']
+        read_only_fields = ['folio', 'created_at', 'net_amount', 'iva', 'total_amount', 'client']
 
     def validate(self, data):
-        if data.get('document_type') == Sale.DocType.INVOICE and not data.get('client'):
-            raise serializers.ValidationError("Facturas requieren un cliente asociado")
+        if 'client' not in data and 'client_id' not in data:
+            if data.get('document_type') == Sale.DocType.INVOICE:
+                raise serializers.ValidationError(
+                    "Facturas requieren un cliente asociado"
+                )
         return data
+
+    def to_internal_value(self, data):
+        if 'client' in data and isinstance(data['client'], str):
+            data['client_id'] = data.pop('client')
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         try:
@@ -114,6 +122,36 @@ class SaleSerializer(serializers.ModelSerializer):
 
         except Exception as e:
             raise serializers.ValidationError(str(e))
+        
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details', [])
+        
+        # Update the sale instance
+        instance = super().update(instance, validated_data)
+        
+        # Clear existing details and add new ones
+        instance.details.clear()
+        
+        total_net = 0
+        total_iva = 0
+        
+        for detail_data in details_data:
+            # Create new detail
+            detail = SaleDetail.objects.create(**detail_data)
+            instance.details.add(detail)
+            
+            # Calculate amounts
+            net_price = detail.net_price * detail.quantity
+            total_net += net_price
+            total_iva += detail.iva_amount * detail.quantity
+        
+        # Update totals
+        instance.net_amount = total_net
+        instance.iva = total_iva
+        instance.total_amount = total_net + total_iva
+        instance.save()
+        
+        return instance
 
 class QuoteDetailSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)

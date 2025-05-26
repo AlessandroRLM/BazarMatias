@@ -150,10 +150,10 @@ const SalesCreate = () => {
       
       const saleData: CreateSaleData = {
         document_type: tipoDocumento,
-        client: cliente, // Solo el ID
+        client: cliente,
         payment_method: metodoPago,
         details: productosAgregados.map(p => ({
-          product: p.id, // Solo el ID
+          product: p.id,
           quantity: p.cantidad,
           unit_price: p.precio,
           discount: 0

@@ -22,8 +22,19 @@ import { Add as AddIcon, Remove as RemoveIcon, Delete as DeleteIcon, LocalOffer 
 import { fetchSaleById, updateSale } from '../../services/salesService';
 import { fetchClients } from '../../services/salesService';
 import { fetchProducts } from '../../services/inventoryService';
-import { Sale, Client } from '../../types/sales.types';
+import { Sale, Client, SaleStatus } from '../../types/sales.types';
 import { Product } from '../../types/inventory.types';
+
+interface SaleUpdateData extends Omit<Partial<Sale>, 'client' | 'details'> {
+  client: string | null;
+  details: Array<{
+    id?: string;
+    product: string;
+    quantity: number;
+    unit_price: number;
+    discount: number;
+  }>;
+}
 
 const SalesEdit = () => {
   const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' });
@@ -38,6 +49,13 @@ const SalesEdit = () => {
     clientes: true,
     productos: true
   });
+
+  const statusOptions = [
+    { value: 'pending', label: 'Pendiente' },
+    { value: 'paid', label: 'Pagada' },
+    { value: 'completed', label: 'Completada' },
+    { value: 'cancelled', label: 'Cancelada' }
+  ];
 
   useEffect(() => {
     const loadData = async () => {
@@ -65,10 +83,25 @@ const SalesEdit = () => {
     if (!venta) return;
 
     try {
-      await updateSale(id, venta);
+      // Prepare the data for update
+      const updateData: SaleUpdateData = {
+        ...venta,
+        client: venta.client?.id || null,
+        details: venta.details.map(detail => ({
+          id: detail.id?.startsWith('temp-') ? undefined : detail.id,
+          product: typeof detail.product === 'string' ? detail.product : detail.product.id,
+          quantity: detail.quantity,
+          unit_price: detail.unit_price,
+          discount: detail.discount
+        })),
+        status: venta.status
+      };
+
+      await updateSale(id, updateData);
       navigate({ to: '/ventas/gestiondeventas' });
     } catch (error) {
       console.error('Error al actualizar la venta:', error);
+      alert('Error al actualizar la venta. Verifique los datos.');
     }
   };
 
@@ -98,7 +131,7 @@ const SalesEdit = () => {
   };
 
   const handleIncrementarCantidad = (detailId: string) => {
-    if (!venta) return;
+    if (!venta || !detailId) return;
 
     setVenta({
       ...venta,
@@ -111,7 +144,7 @@ const SalesEdit = () => {
   };
 
   const handleDecrementarCantidad = (detailId: string) => {
-    if (!venta) return;
+    if (!venta || !detailId) return;
 
     setVenta({
       ...venta,
@@ -124,7 +157,7 @@ const SalesEdit = () => {
   };
 
   const handleCambiarPrecio = (detailId: string, nuevoPrecio: number) => {
-    if (!venta) return;
+    if (!venta || !detailId) return;
 
     setVenta({
       ...venta,
@@ -137,7 +170,7 @@ const SalesEdit = () => {
   };
 
   const handleEliminarProducto = (detailId: string) => {
-    if (!venta) return;
+    if (!venta || !detailId) return;
 
     setVenta({
       ...venta,
@@ -219,11 +252,34 @@ const SalesEdit = () => {
                   <MenuItem value="OT">Otro</MenuItem>
                 </Select>
               </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body2">Estado</Typography>
+                <Select
+                  value={venta.status}
+                  onChange={(e) => setVenta({ 
+                    ...venta, 
+                    status: e.target.value as SaleStatus 
+                  })}
+                  fullWidth
+                  sx={{
+                    backgroundColor: 
+                      venta.status === 'completed' ? '#e8f5e9' : 
+                      venta.status === 'cancelled' ? '#ffebee' : 
+                      venta.status === 'paid' ? '#e3f2fd' : 
+                      '#fff8e1'
+                  }}
+                >
+                  {statusOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
             </Box>
 
             <Typography variant="h6" sx={{ mb: 2 }}>Productos</Typography>
             
-            {/* Formulario para agregar nuevos productos */}
             <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
               <Box sx={{ flex: 1 }}>
                 <Select
@@ -294,11 +350,15 @@ const SalesEdit = () => {
               <TableBody>
                 {venta.details.map((detail) => (
                   <TableRow key={detail.id}>
-                    <TableCell>{detail.product.name}</TableCell>
+                    <TableCell>
+                      {typeof detail.product === 'string' ? 
+                        productosDisponibles.find(p => p.id === detail.product)?.name || 'Producto no encontrado' : 
+                        detail.product.name}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton 
                         size="small" 
-                        onClick={() => handleDecrementarCantidad(detail.id)}
+                        onClick={() => handleDecrementarCantidad(detail.id!)}
                         disabled={detail.quantity <= 1}
                       >
                         <RemoveIcon fontSize="small" />
@@ -306,7 +366,7 @@ const SalesEdit = () => {
                       {detail.quantity}
                       <IconButton 
                         size="small" 
-                        onClick={() => handleIncrementarCantidad(detail.id)}
+                        onClick={() => handleIncrementarCantidad(detail.id!)}
                       >
                         <AddIcon fontSize="small" />
                       </IconButton>
@@ -314,7 +374,7 @@ const SalesEdit = () => {
                     <TableCell align="right">
                       <TextField
                         value={detail.unit_price}
-                        onChange={(e) => handleCambiarPrecio(detail.id, parseFloat(e.target.value) || 0)}
+                        onChange={(e) => handleCambiarPrecio(detail.id!, parseFloat(e.target.value) || 0)}
                         size="small"
                         type="number"
                         sx={{ width: 100 }}
@@ -325,7 +385,7 @@ const SalesEdit = () => {
                     <TableCell align="center">
                       <IconButton 
                         size="small" 
-                        onClick={() => handleEliminarProducto(detail.id)}
+                        onClick={() => handleEliminarProducto(detail.id!)}
                         color="error"
                       >
                         <DeleteIcon fontSize="small" />

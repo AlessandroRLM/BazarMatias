@@ -66,7 +66,25 @@ class SaleViewSet(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         
+        try:
+            serializer.is_valid(raise_exception=True)
+            sale = serializer.save()
+            return Response(
+                self.get_serializer(sale).data,
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     @action(detail=False, methods=['GET'])
     def document_counter(self, request):
         document_type = request.query_params.get('document_type')

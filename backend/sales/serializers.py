@@ -132,33 +132,31 @@ class SaleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(str(e))
         
     def update(self, instance, validated_data):
-        details_data = validated_data.pop('details', [])
-        
-        # Update the sale instance
+        details_data = validated_data.pop('details', None)
+
+        # Actualiza los campos normales
         instance = super().update(instance, validated_data)
-        
-        # Clear existing details and add new ones
-        instance.details.clear()
-        
-        total_net = 0
-        total_iva = 0
-        
-        for detail_data in details_data:
-            # Create new detail
-            detail = SaleDetail.objects.create(**detail_data)
-            instance.details.add(detail)
-            
-            # Calculate amounts
-            net_price = detail.net_price * detail.quantity
-            total_net += net_price
-            total_iva += detail.iva_amount * detail.quantity
-        
-        # Update totals
-        instance.net_amount = total_net
-        instance.iva = total_iva
-        instance.total_amount = total_net + total_iva
-        instance.save()
-        
+
+        # Solo actualizar detalles si vienen en la petición
+        if details_data is not None:
+            instance.details.clear()
+
+            total_net = 0
+            total_iva = 0
+
+            for detail_data in details_data:
+                detail = SaleDetail.objects.create(**detail_data)
+                instance.details.add(detail)
+
+                net_price = detail.net_price * detail.quantity
+                total_net += net_price
+                total_iva += detail.iva_amount * detail.quantity
+
+            instance.net_amount = total_net
+            instance.iva = total_iva
+            instance.total_amount = total_net + total_iva
+            instance.save()
+
         return instance
 
 class QuoteDetailSerializer(serializers.ModelSerializer):

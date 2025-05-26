@@ -32,7 +32,7 @@ export type CreateSaleData = {
   client_id?: string;
   payment_method: PaymentMethod;
   details: Array<{
-    product: string;
+    product_id: string;
     quantity: number;
     unit_price: number;
     discount: number;
@@ -46,7 +46,7 @@ export interface SaleUpdateData extends Omit<Partial<Sale>, 'client' | 'details'
   client: string | null;
   details: Array<{
     id?: string;
-    product: string;
+    product_id: string;
     quantity: number;
     unit_price: number;
     discount: number;

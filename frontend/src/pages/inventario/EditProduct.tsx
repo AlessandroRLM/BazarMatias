@@ -5,7 +5,8 @@ import {
   Input,
   Select,
   Option,
-  Stack
+  Stack,
+  Alert
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { useEffect, useState } from "react";
@@ -19,7 +20,7 @@ export default function EditarProducto() {
   const [stock, setStock] = useState("");
   const [minStock, setMinStock] = useState(""); // Nuevo estado
   const [categoria, setCategoria] = useState("");
-  const [proveedor, setProveedor] = useState(""); // ID del proveedor actual
+  const [proveedor, setProveedor] = useState<string | null>(null);
   const [proveedorNombre, setProveedorNombre] = useState(""); // Nombre del proveedor actual
   const [proveedores, setProveedores] = useState([]); // Lista de proveedores
   const [loading, setLoading] = useState(false);
@@ -50,19 +51,17 @@ export default function EditarProducto() {
   }, [id]);
 
   const handleSubmit = async () => {
-    if (!id) {
-      alert("ID del producto no encontrado.");
-      return;
-    }
+    if (!id) return;
+    
     setLoading(true);
     try {
       await updateProduct(id, {
         name: nombre,
         price_clp: Number(precio),
         stock: Number(stock),
-        min_stock: Number(minStock), // Enviar min_stock
+        min_stock: Number(minStock),
         category: categoria,
-        supplier: proveedor || null,
+        supplier: proveedor, // Now properly sends ID or null
       });
       navigate({ to: "/inventario/productos" });
     } catch (e) {
@@ -124,8 +123,11 @@ export default function EditarProducto() {
       </FormControl>
       <FormControl>
         <FormLabel>Proveedor</FormLabel>
-        <Select value={proveedor} onChange={(_, v) => setProveedor(v ?? "")}>
-          <Option value="">Ninguno</Option>
+        <Select 
+          value={proveedor} 
+          onChange={(_, v) => setProveedor(v || null)}
+        >
+          <Option value={null}>Ninguno</Option>
           {proveedores.map(prov => (
             <Option key={prov.id} value={prov.id}>
               {prov.name}

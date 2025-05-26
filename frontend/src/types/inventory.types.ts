@@ -11,3 +11,11 @@ export interface Product {
 
 export interface Data {
 }
+
+export interface ReturnSupplierParams {
+  page?: number;
+  page_size?: number;
+  status?: string;
+  search?: string;
+  ordering?: string;
+}

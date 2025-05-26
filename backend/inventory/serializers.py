@@ -29,18 +29,31 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_supplier_name(self, obj):
-        if obj.supplier:
-            try:
-                supplier = Supplier.objects.get(id=obj.supplier)
-                return supplier.name
-            except Supplier.DoesNotExist:
-                return None
-        return None
+        return obj.supplier
 
     def get_is_below_min_stock(self, obj):
         if obj.min_stock is None:
             return False
         return obj.stock < obj.min_stock
+
+    def create(self, validated_data):
+        supplier_name = validated_data.get('supplier')
+        validated_data['supplier'] = (
+            'Sin proveedor' if supplier_name is None or not supplier_name.strip() 
+            else supplier_name.strip()
+        )
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'supplier' in validated_data:
+            supplier_name = validated_data['supplier']
+            
+            if supplier_name is None or supplier_name.strip() == '':
+                validated_data['supplier'] = 'Sin proveedor'
+            else:
+                validated_data['supplier'] = supplier_name.strip()
+        
+        return super().update(instance, validated_data)
 
 class SupplySerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)

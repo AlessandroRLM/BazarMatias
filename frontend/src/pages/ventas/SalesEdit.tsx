@@ -29,7 +29,7 @@ interface SaleUpdateData extends Omit<Partial<Sale>, 'client' | 'details'> {
   client: string | null;
   details: Array<{
     id?: string;
-    product: string;
+    product_id: string;
     quantity: number;
     unit_price: number;
     discount: number;
@@ -83,13 +83,12 @@ const SalesEdit = () => {
     if (!venta) return;
 
     try {
-      // Prepare the data for update
       const updateData: SaleUpdateData = {
         ...venta,
         client: venta.client?.id || null,
         details: venta.details.map(detail => ({
           id: detail.id?.startsWith('temp-') ? undefined : detail.id,
-          product: typeof detail.product === 'string' ? detail.product : detail.product.id,
+          product_id: typeof detail.product === 'string' ? detail.product : detail.product.id,
           quantity: detail.quantity,
           unit_price: detail.unit_price,
           discount: detail.discount
@@ -351,9 +350,9 @@ const SalesEdit = () => {
                 {venta.details.map((detail) => (
                   <TableRow key={detail.id}>
                     <TableCell>
-                      {typeof detail.product === 'string' ? 
-                        productosDisponibles.find(p => p.id === detail.product)?.name || 'Producto no encontrado' : 
-                        detail.product.name}
+                      {typeof detail.product === 'string' 
+                        ? productosDisponibles.find(p => p.id === detail.product)?.name || 'Producto no encontrado' 
+                        : detail.product.name}
                     </TableCell>
                     <TableCell align="center">
                       <IconButton 

@@ -25,3 +25,11 @@ export interface BuyOrderDetail {
     quantity:   number;
     unit_price: number;
 }
+
+export interface BuyOrdersParams {
+  page?: number;
+  page_size?: number;
+  status?: 'PE' | 'AP' | 'RE';
+  search?: string;
+  ordering?: string;
+}

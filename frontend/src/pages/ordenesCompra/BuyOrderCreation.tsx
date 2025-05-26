@@ -1,5 +1,3 @@
-"use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Add, ArrowBack, Delete } from "@mui/icons-material"
 import { Button, IconButton, Stack, Typography, Sheet, Table, Grid, Divider } from "@mui/joy" // Added Sheet, Table, Grid
@@ -19,11 +17,6 @@ import { useEffect } from "react"
 const BuyOrderCreation = () => {
   const navigate = useNavigate()
 
-  // Consulta para proveedores
-  const { data: suppliers, isLoading: suppliersLoading } = useQuery({
-    queryKey: ["suppliers"],
-    queryFn: fetchSuppliers,
-  })
 
   const {
     handleSubmit,
@@ -41,6 +34,12 @@ const BuyOrderCreation = () => {
     mode: "onBlur",
   })
 
+  // Consulta para proveedores
+  const { data: suppliers, isLoading: suppliersLoading } = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: fetchSuppliers,
+  })
+  // Convertir proveedores a opciones para el Autocomplete
   const supplierToOptions = (suppliers?: Supplier[]): SelectOption[] => {
     return (
       suppliers?.map((supplier) => ({

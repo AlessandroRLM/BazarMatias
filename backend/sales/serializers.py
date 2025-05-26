@@ -118,3 +118,23 @@ class QuoteSerializer(serializers.ModelSerializer):
             quote.details.add(detail)
         
         return quote
+    
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details')
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.total = sum(detail['unit_price'] * detail['quantity'] for detail in details_data)
+        
+        # Eliminar los detalles existentes
+        instance.details.all().delete()
+        
+        for detail_data in details_data:
+            product = detail_data.pop('product')
+            detail = QuoteDetail.objects.create(product=product, **detail_data)
+            instance.details.add(detail)
+        
+        instance.save()
+        
+        return instance

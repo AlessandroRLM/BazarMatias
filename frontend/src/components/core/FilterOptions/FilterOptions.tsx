@@ -55,7 +55,7 @@ const FilterOptions = <T,>(props: Props<T>) => {
     }
 
     const handleDateChange = (date: Date | null) => {
-        onChangeFilters({ date: dayjs(date).format('YYYY-MM-DD') } as Partial<T> & { date: string })
+        onChangeFilters({ created_at: dayjs(date).format('YYYY-MM-DD') } as Partial<T> & { created_at: string })
     }
 
     const handleDateRangeChange = (dates: { start: Date | null; end: Date | null }) => {

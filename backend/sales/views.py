@@ -1,18 +1,21 @@
 # views.py
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from users.pagination import CustomPagination
 from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer
 from .models import Client, Sale, DocumentCounter, Quote
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     pagination_class = CustomPagination
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         try:
             client = Client.objects.create(**serializer.validated_data)
         except Exception as e:
@@ -20,15 +23,17 @@ class ClientViewSet(viewsets.ModelViewSet):
                 {"error": f"Error creando cliente: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
+
         return Response(
             self.get_serializer(client).data,
             status=status.HTTP_201_CREATED
         )
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -42,12 +47,13 @@ class ClientViewSet(viewsets.ModelViewSet):
         return Response(
             serializer.data,
             status=status.HTTP_200_OK
-            )
-    
+        )
+
+
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
-    pagination_class = CustomPagination    
+    pagination_class = CustomPagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -79,10 +85,17 @@ class SaleViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
+
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()
     serializer_class = QuoteSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'created_at']
+    search_fields = ['client__first_name', 'client__last_name', 'client__national_id', 'client__email', 'client__phone_number']
+    ordering_fields = ['created_at', 'total', 'status']
+    ordering = ['-created_at']
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -95,7 +108,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
                 f"Error creando cotización: {str(e)}",
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         return Response(
             "Cotización creada correctamente",
             status=status.HTTP_201_CREATED

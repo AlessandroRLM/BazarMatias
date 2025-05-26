@@ -134,7 +134,7 @@ const SidebarAdminList = () => {
     )
 }
 
-const SidebarInventorykList = () => {
+const SidebarInventoryList = () => {
     return (
         <ListItem nested>
             <Toggler
@@ -218,7 +218,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/cotizaciones">
                             Gestión de Cotizaciones
                         </SidebarLink>
                     </ListItem>
@@ -305,7 +305,7 @@ const SidebarContent = () => {
                 }}
             >
                 <SidebarAdminList />
-                <SidebarInventorykList />
+                <SidebarInventoryList />
                 <SidebarSalesList />
                 <SidebarSuppliersList />
             </List>

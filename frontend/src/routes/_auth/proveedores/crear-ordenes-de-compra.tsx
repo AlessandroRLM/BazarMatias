@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import BuyOrderCreation from '../../../pages/ordenesCompra/buyOrderCreation'
+import BuyOrderCreation from '../../../pages/ordenesCompra/BuyOrderCreation'
 
 
 export const Route = createFileRoute(

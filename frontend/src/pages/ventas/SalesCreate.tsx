@@ -153,7 +153,7 @@ const SalesCreate = () => {
         client: cliente,
         payment_method: metodoPago,
         details: productosAgregados.map(p => ({
-          product: p.id,
+          product_id: p.id,
           quantity: p.cantidad,
           unit_price: p.precio,
           discount: 0

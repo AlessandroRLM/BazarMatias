@@ -31,7 +31,7 @@ export type CreateSaleData = {
   client_id?: string;
   payment_method: PaymentMethod;
   details: Array<{
-    product: string;
+    product_id: string;
     quantity: number;
     unit_price: number;
     discount: number;

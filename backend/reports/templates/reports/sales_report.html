@@ -1,0 +1,182 @@
+{% load dict_filters %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'DejaVu Sans', sans-serif;
+            margin: 40px;
+            background-color: #FAFAFC;
+            color: #2E2E38;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #694ED6;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 6px 0;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            border: 1px solid #E0E0E0;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #F5F5FA;
+            color: #444;
+        }
+
+        .chart-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 15px 20px;
+            min-width: 180px;
+            text-align: center;
+            margin: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #694ED6;
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Ventas</h1>
+
+    <div class="summary-stats">
+        <div class="stat-box">
+            <div class="stat-value">{{ data.total_sales }}</div>
+            <div class="stat-label">Ventas totales</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">${{ data.total_amount|floatformat:0 }}</div>
+            <div class="stat-label">Monto total</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ data.average_sale|floatformat:0 }}</div>
+            <div class="stat-label">Ticket promedio</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ data.invoices }}</div>
+            <div class="stat-label">Facturas</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ data.receipts }}</div>
+            <div class="stat-label">Boletas</div>
+        </div>
+    </div>
+
+    <h2>Ventas por tipo de documento</h2>
+    <div class="chart-container">
+        <svg width="300" height="200" role="img" aria-label="Gráfico de ventas por tipo">
+            {% for bar in data.sales_by_type %}
+            <rect
+                x="{{ bar.x }}"
+                y="{{ bar.y }}"
+                width="40"
+                height="{{ bar.height }}"
+                fill="{{ bar.color }}"
+                rx="4" ry="4"
+            />
+            <text x="{{ bar.x|add:'20' }}" y="195" text-anchor="middle">{{ bar.label }}</text>
+            {% endfor %}
+        </svg>
+    </div>
+
+    <h2>Métodos de pago</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Método</th>
+                <th>Cantidad</th>
+                <th>Monto total</th>
+                <th>Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for method in data.payment_methods %}
+            <tr>
+                <td>{{ method.name }}</td>
+                <td>{{ method.count }}</td>
+                <td>${{ method.amount|floatformat:0 }}</td>
+                <td>{{ method.percentage|floatformat:1 }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Últimas ventas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Folio</th>
+                <th>Tipo</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Método</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in data.recent_sales %}
+            <tr>
+                <td>{{ sale.folio }}</td>
+                <td>{{ sale.get_document_type_display }}</td>
+                <td>{{ sale.client.first_name }} {{ sale.client.last_name|default:"" }}</td>
+                <td>{{ sale.created_at|date:"d/m/Y" }}</td>
+                <td>${{ sale.total_amount|floatformat:0 }}</td>
+                <td>{{ sale.get_payment_method_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -24,8 +24,9 @@ import {
 } from "../../services/salesService";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
+import toast from "react-hot-toast";
+import { downloadSalesReportPDF } from "../../services/reportsService";
 
-// Tipos de datos actualizados
 interface DashboardStats {
   monthlyProfit: number;
   previousMonthProfit: number;
@@ -50,11 +51,9 @@ interface TopProductsData {
   percentage?: number;
 }
 
-// Constantes
 const CURRENT_MONTH = format(new Date(), "MMMM", { locale: es });
 const PREVIOUS_MONTH = format(subMonths(new Date(), 1), "MMMM", { locale: es });
 
-// Función para formatear dinero
 const formatMoney = (amount: number) => {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",
@@ -63,14 +62,12 @@ const formatMoney = (amount: number) => {
   }).format(amount);
 };
 
-// Componente principal
 const DashboardSalesPage = () => {
   const queryClient = useQueryClient();
   const currentDate = new Date();
   const currentMonthStart = startOfMonth(currentDate).toISOString().split("T")[0];
   const currentMonthEnd = endOfMonth(currentDate).toISOString().split("T")[0];
 
-  // Queries para obtener datos
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
     queryKey: ["dashboard-stats"],
     queryFn: fetchDashboardStats,
@@ -86,7 +83,6 @@ const DashboardSalesPage = () => {
     queryFn: fetchTopProductsData,
   });
 
-  // Prefetch de datos
   useEffect(() => {
     queryClient.prefetchQuery({
       queryKey: ["sales-data", currentMonthStart, currentMonthEnd],
@@ -107,13 +103,24 @@ const DashboardSalesPage = () => {
     });
   }, [queryClient, currentMonthStart, currentMonthEnd]);
 
-  const handleGenerateReport = () => {
-    console.log("Función de generación de reporte clickeada, pero aún no implementada");
-  };
+const handleGenerateReport = async () => {
+  try {
+    const blob = await downloadSalesReportPDF();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Reporte-Ventas-${new Date().toISOString().split('T')[0]}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Reporte de ventas descargado correctamente');
+  } catch (error) {
+    console.error('Error al descargar el reporte de ventas:', error);
+    toast.error('Hubo un error al generar el reporte de ventas');
+  }
+};
 
   const isLoading = statsLoading || monthlyDataLoading || productsDataLoading;
 
-  // Componente de carga esqueleto
   const renderSkeletonCards = (count: number) => (
     <Stack direction="row" spacing={2} flexWrap="wrap">
       {Array.from({ length: count }).map((_, i) => (
@@ -135,39 +142,43 @@ const DashboardSalesPage = () => {
     <Stack spacing={2}>
       <PageHeader
         title="Dashboard de Ventas"
-        buttons={[{ text: "Reporte", onClick: handleGenerateReport }]}
+        buttons={[
+          { 
+            text: "Descargar Reporte", 
+            onClick: handleGenerateReport,
+            variant: "outlined"
+          }
+        ]}
       />
 
-      {/* Sección de métricas principales */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Ganancia Mensual"
           amount={stats?.monthlyProfit || 0}
           helperText={`${CURRENT_MONTH} vs ${PREVIOUS_MONTH}: ${stats ? (stats.monthlyProfit - stats.previousMonthProfit > 0 ? "+" : "") + 
             formatMoney(stats.monthlyProfit - stats.previousMonthProfit) : ""}`}
-          icon={null} // Añadido icon
+          icon={null}
         />
         <DashboardCard
           title="Total Ventas"
           amount={stats?.totalSales || 0}
           helperText="Mes actual"
-          icon={null} // Añadido icon
+          icon={null}
         />
         <DashboardCard
           title="Ventas Pagadas"
           amount={stats?.paidSales || 0}
           helperText={`${stats ? Math.round((stats.paidSales / stats.totalSales) * 100) : 0}% del total`}
-          icon={null} // Añadido icon
+          icon={null}
         />
         <DashboardCard
           title="Ventas Debidas"
           amount={stats?.dueSales || 0}
           helperText={`${stats ? Math.round((stats.dueSales / stats.totalSales) * 100) : 0}% del total`}
-          icon={null} // Añadido icon
+          icon={null}
         />
       </Stack>
 
-      {/* Sección de gráficos */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <Card sx={{ flex: 1, minWidth: 300 }}>
           <CardContent>
@@ -231,7 +242,6 @@ const DashboardSalesPage = () => {
         </Card>
       </Stack>
 
-      {/* Sección de métricas secundarias */}
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Cotizaciones Aprobadas"

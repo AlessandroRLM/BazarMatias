@@ -170,6 +170,18 @@ class QuoteDetail(models.Model):
 
 
 class Quote(models.Model):
+    class StatusQuote(models.TextChoices):
+        REJECTED = 'RE', 'Rechazado'
+        PENDING = 'PE', 'Pendiente'
+        APROVED = 'AP', 'Aprobado'
+        
+    status = models.CharField(
+        max_length=2,
+        choices=StatusQuote.choices,
+        default=StatusQuote.PENDING,
+        verbose_name='Status Buy Order'
+    )
+        
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
     details = models.ManyToManyField(QuoteDetail)

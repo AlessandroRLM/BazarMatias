@@ -202,15 +202,15 @@ export default function SalesManagement() {
       cell: info => `$${info.getValue<number>().toLocaleString('es-ES')}`
     },
     {
-      accessorKey: "payment_method",
-      header: "Estado",
-      cell: info => {
-        const paymentMethod = info.getValue<string>();
-        const status = paymentMethod === 'EF' ? 'Pagado' : 'Debe';
-        const color = status === 'Pagado' ? 'success' : 'danger';
-        return <Typography color={color}>{status}</Typography>;
-      }
-    },
+    accessorKey: "status",
+    header: "Estado",
+    cell: info => {
+      const status = info.getValue<SaleStatus>();
+      const displayStatus = status === 'paid' ? 'Pagado' : 'Debe';
+      const color = status === 'paid' ? 'success' : 'danger';
+      return <Typography color={color}>{displayStatus}</Typography>;
+    }
+  },
     {
       id: "actions",
       header: "Acciones",
@@ -260,8 +260,8 @@ export default function SalesManagement() {
             <Checkbox
               checked={row.original.status === 'paid'}
               onChange={() => handleStatusChange(row.original.id, row.original.status)}
-              color={status === 'Pagado' ? 'success' : 'neutral'}
-              variant={status === 'Pagado' ? 'solid' : 'outlined'}
+              color={row.original.status === 'paid' ? 'success' : 'neutral'}
+              variant={row.original.status === 'paid' ? 'solid' : 'outlined'}
               disabled={statusMutation.isPending}
               sx={{ ml: 1 }}
             />

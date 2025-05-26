@@ -102,6 +102,22 @@ class SaleViewSet(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )  
+    
+    @action(detail=True, methods=['patch'], url_path='cambiar-estado')
+    def cambiar_estado(self, request, pk=None):
+        sale = self.get_object()
+        new_status = request.data.get('status')
+
+        if new_status not in ['paid', 'pending']:
+            return Response(
+                {"error": "Estado inválido. Usa 'paid' o 'pending'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        sale.status = new_status
+        sale.save()
+        serializer = self.get_serializer(sale)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.all()

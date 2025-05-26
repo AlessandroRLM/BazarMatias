@@ -72,10 +72,10 @@ export const fetchSales = async ({
   return response.data;
 };
 
-export const updateSaleStatus = async (id: string, status: string): Promise<Sale> => {
-  const response = await AxiosInstance.patch(`/api/sales/sales/${id}/`, { status });
-  return response.data;
-};
+export async function updateSaleStatus(id: string, status: string) {
+  const { data } = await AxiosInstance.patch(`/api/sales/sales/${id}/cambiar-estado/`, { status });
+  return data;
+}
 
 export const fetchSaleById = async (id: string): Promise<Sale> => {
   const response = await AxiosInstance.get(`/api/sales/sales/${id}/`);

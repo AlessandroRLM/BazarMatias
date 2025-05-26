@@ -20,4 +20,5 @@ router.register(r'dashboard', DashboardViewSet, basename='dashboard')
 urlpatterns = [
     path('', include(router.urls)),
     path('document-counter/', SaleViewSet.as_view({'get': 'document_counter'}), name='document-counter'),
+    path('sales/<str:pk>/cambiar-estado/', SaleViewSet.as_view({'patch': 'cambiar_estado'}), name='cambiar-estado'),
 ]

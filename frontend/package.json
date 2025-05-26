@@ -24,6 +24,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/zod-adapter": "^1.116.0",
     "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

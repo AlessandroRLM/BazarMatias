@@ -29,18 +29,31 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_supplier_name(self, obj):
-        if obj.supplier:
-            try:
-                supplier = Supplier.objects.get(id=obj.supplier)
-                return supplier.name
-            except Supplier.DoesNotExist:
-                return None
-        return None
+        return obj.supplier
 
     def get_is_below_min_stock(self, obj):
         if obj.min_stock is None:
             return False
         return obj.stock < obj.min_stock
+
+    def create(self, validated_data):
+        supplier_name = validated_data.get('supplier')
+        validated_data['supplier'] = (
+            'Sin proveedor' if supplier_name is None or not supplier_name.strip() 
+            else supplier_name.strip()
+        )
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'supplier' in validated_data:
+            supplier_name = validated_data['supplier']
+            
+            if supplier_name is None or supplier_name.strip() == '':
+                validated_data['supplier'] = 'Sin proveedor'
+            else:
+                validated_data['supplier'] = supplier_name.strip()
+        
+        return super().update(instance, validated_data)
 
 class SupplySerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
@@ -75,27 +88,26 @@ class ReturnSupplierSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReturnSupplier
-        fields = '__all__'
+        fields = [
+            'id',
+            'supplier',
+            'product',
+            'quantity',
+            'product_condition',
+            'reason',
+            'purchase_number',
+            'purchase_date',
+            'return_date',
+            'status',
+            'supplier_name',
+            'product_name'
+        ]
 
     def get_supplier_name(self, obj):
-        if obj.supplier:
-            # If obj.supplier is already a string (supplier name), return it directly
-            if isinstance(obj.supplier, str) and not ObjectId.is_valid(obj.supplier):
-                return obj.supplier
-            
-            # If it's an ObjectId or a valid ObjectId string, try to find the supplier
-            try:
-                supplier = Supplier.objects.get(id=obj.supplier)
-                return supplier.name
-            except (Supplier.DoesNotExist, Exception):
-                return None
-        return None
+        return getattr(obj.supplier, 'name', None)
 
     def get_product_name(self, obj):
-        try:
-            return obj.product.name
-        except Product.DoesNotExist:
-            return "Producto eliminado"
+        return getattr(obj.product, 'name', 'Producto eliminado')
 
     def update(self, instance, validated_data):
         if "status" in validated_data:

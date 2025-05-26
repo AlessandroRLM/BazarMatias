@@ -7,6 +7,7 @@ interface Props {
     helperTitle?: string
     helperText?: string
     helperTextColor?: ColorPaletteProp
+    subText?: string
     icon: ReactNode
 }
 
@@ -34,6 +35,9 @@ const DashboardCard = (props: Props) => {
                 </Typography>
                 <Typography level='body-xs' color={props?.helperTextColor} fontWeight={300}>
                     {props?.helperText}
+                </Typography>
+                <Typography level='body-xs' color={props?.helperTextColor} fontWeight={300}>
+                    {props?.subText}
                 </Typography>
             </Stack>
             <Box>

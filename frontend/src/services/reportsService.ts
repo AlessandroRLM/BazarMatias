@@ -23,3 +23,11 @@ export const downloadSupplierReportPDF = async (): Promise<Blob> => {
   });
   return response.data;
 };
+
+// Descargar reporte PDF de ventas
+export const downloadSalesReportPDF = async (): Promise<Blob> => {
+  const response = await AxiosInstance.get('/api/reports/sales/', {
+    responseType: 'blob',
+  });
+  return response.data;
+};

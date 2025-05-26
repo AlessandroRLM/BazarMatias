@@ -1,7 +1,9 @@
+from urllib import response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .utils import render_to_pdf
 from .services import (
+    get_sales_report_data,
     get_user_report_data,
     get_inventory_report_data,
     get_supplier_report_data
@@ -31,3 +33,8 @@ class SupplierReportPDFView(BasePDFView):
     template_name = 'reports/supplier_report.html'
     filename = 'reporte_proveedores.pdf'
     get_data_function = staticmethod(get_supplier_report_data)
+
+class SalesReportPDFView(BasePDFView):
+    template_name = 'reports/sales_report.html'
+    filename = 'reporte_ventas.pdf'
+    get_data_function = staticmethod(get_sales_report_data)

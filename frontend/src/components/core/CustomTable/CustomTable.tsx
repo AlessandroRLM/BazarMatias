@@ -17,7 +17,8 @@ import {
   Table, 
   Typography, 
   Option,
-  Box
+  Box,
+  CircularProgress
 } from "@mui/joy"
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown"
 
@@ -62,156 +63,160 @@ export default function CustomTable<T extends Record<string, any>>({
 
   return (
     <Box sx={{ width: '100%', overflowX: 'auto' }}>
-      <Sheet
-        className="OrderTableContainer"
-        variant="outlined"
-        sx={{
-          width: '100%',
-          borderRadius: 'sm',
-          flexShrink: 1,
-          minHeight: 0,
-          display: 'inline-block', 
-          minWidth: '100%',
-        }}
-      >
-        <Table
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <CircularProgress /> {/* Asegúrate de importar CircularProgress de @mui/joy */}
+        </Box>
+      ) : (
+        <Sheet
+          className="OrderTableContainer"
+          variant="outlined"
           sx={{
-            '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
-            '--Table-headerUnderlineThickness': '1px',
-            '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
-            '--TableCell-paddingY': '4px',
-            '--TableCell-paddingX': '8px',
-            minWidth: '800px',
             width: '100%',
+            borderRadius: 'sm',
+            flexShrink: 1,
+            minHeight: 0,
+            display: 'inline-block', 
+            minWidth: '100%',
           }}
-        > 
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th style={{ padding: '12px 6px' }} key={header.id} colSpan={header.colSpan} >
-                    {header.isPlaceholder ? null :
-                      header.column.getCanSort() ? (
-                        <Link
-                          {...{ onClick: header.column.getToggleSortingHandler() }}
-                          key={header.id}
-                          underline="none"
-                          color="neutral"
-                          component={'a'}
-                          endDecorator={<ArrowDropDown />}
-                          sx={[
-                            header.column.getCanSort() && {
-                              '&:hover': {
-                                textDecoration: 'none',
-                                color: 'primary.plainColor',
-                              },
-                              '& svg': {
-                                transition: '0.2s',
-                                transform: 'rotate(0deg)'
-                              }
-                            },
-
-                            header.column.getIsSorted() && {
-                              color: 'primary.plainColor',
-                              fontWeight: 'bold',
-                            },
-
-                            header.column.getIsSorted() === 'desc' && {
-                              '& svg': { transform: 'rotate(0deg)' }
-                            },
-
-                            header.column.getIsSorted() === 'asc' && {
-                              '& svg': { transform: 'rotate(180deg)' }
-                            },
-
-                          ]}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </Link>) : (
-                        <Typography level='body-sm' color="neutral" fontWeight={600}>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </Typography>
-                      )
-                    }
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody >
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
+        >
+          <Table
+            sx={{
+              '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
+              '--Table-headerUnderlineThickness': '1px',
+              '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
+              '--TableCell-paddingY': '4px',
+              '--TableCell-paddingX': '8px',
+              minWidth: '800px',
+              width: '100%',
+            }}
+          > 
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <td style={{ fontSize: 'var(--joy-fontSize-xs)', overflow: 'hidden', textOverflow: 'ellipsis' }} key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
+                    <th style={{ padding: '12px 6px' }} key={header.id} colSpan={header.colSpan} >
+                      {header.isPlaceholder ? null :
+                        header.column.getCanSort() ? (
+                          <Link
+                            {...{ onClick: header.column.getToggleSortingHandler() }}
+                            key={header.id}
+                            underline="none"
+                            color="neutral"
+                            component={'a'}
+                            endDecorator={<ArrowDropDown />}
+                            sx={[
+                              header.column.getCanSort() && {
+                                '&:hover': {
+                                  textDecoration: 'none',
+                                  color: 'primary.plainColor',
+                                },
+                                '& svg': {
+                                  transition: '0.2s',
+                                  transform: 'rotate(0deg)'
+                                }
+                              },
+
+                              header.column.getIsSorted() && {
+                                color: 'primary.plainColor',
+                                fontWeight: 'bold',
+                              },
+
+                              header.column.getIsSorted() === 'desc' && {
+                                '& svg': { transform: 'rotate(0deg)' }
+                              },
+
+                              header.column.getIsSorted() === 'asc' && {
+                                '& svg': { transform: 'rotate(180deg)' }
+                              },
+
+                            ]}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </Link>) : (
+                          <Typography level='body-sm' color="neutral" fontWeight={600}>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </Typography>
+                        )
+                      }
+                    </th>
                   )
                 })}
               </tr>
-            )
-          })}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={columns.length}>
-              <Stack direction={'row'} justifyContent={'flex-end'} alignItems={'center'} spacing={1} sx={{ padding: '.5rem 1rem' }}>
-                <Stack direction={'row'} spacing={1} alignItems={'center'}>
-                  <Typography level='body-sm' color="neutral">
-                    Filas por pagina:
-                  </Typography>
-                  <Select
-                    value={table.getState().pagination.pageSize}
-                    onChange={(_, newValue) => {
-                      if (newValue !== null) {
-                        table.setPageSize(Number(newValue));
-                      }
-                    }}
-                  >
-                    {[5, 10, 20, 50, 100].map((pageSize) => (
-                      <Option key={pageSize} value={pageSize}>
-                        {pageSize}
-                      </Option>
-                    ))}
-                  </Select>
-                </Stack>
-                <Typography level='body-sm' color="neutral">
-                  {labelDisplayedRows({
-                    from: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
-                    to: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getRowCount()),
-                    count: table.getRowCount(),
+            ))}
+          </thead>
+          <tbody >
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td style={{ fontSize: 'var(--joy-fontSize-xs)', overflow: 'hidden', textOverflow: 'ellipsis' }} key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    )
                   })}
-                </Typography>
+                </tr>
+              )
+            })}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>
+                <Stack direction={'row'} justifyContent={'flex-end'} alignItems={'center'} spacing={1} sx={{ padding: '.5rem 1rem' }}>
+                  <Stack direction={'row'} spacing={1} alignItems={'center'}>
+                    <Typography level='body-sm' color="neutral">
+                      Filas por pagina:
+                    </Typography>
+                    <Select
+                      value={table.getState().pagination.pageSize}
+                      onChange={(_, newValue) => {
+                        if (newValue !== null) {
+                          table.setPageSize(Number(newValue));
+                        }
+                      }}
+                    >
+                      {[5, 10, 20, 50, 100].map((pageSize) => (
+                        <Option key={pageSize} value={pageSize}>
+                          {pageSize}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Stack>
+                  <Typography level='body-sm' color="neutral">
+                    {labelDisplayedRows({
+                      from: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+                      to: Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getRowCount()),
+                      count: table.getRowCount(),
+                    })}
+                  </Typography>
 
-                <Stack direction={'row'} spacing={1} alignItems={'center'}>
-                  <Button variant="outlined" color="neutral" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                    {'<'}
-                  </Button>
-                  <Button variant="outlined" color="neutral" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                    {'>'}
-                  </Button>
+                  <Stack direction={'row'} spacing={1} alignItems={'center'}>
+                    <Button variant="outlined" color="neutral" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                      {'<'}
+                    </Button>
+                    <Button variant="outlined" color="neutral" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                      {'>'}
+                    </Button>
+                  </Stack>
+
                 </Stack>
-
-              </Stack>
-            </td>
-          </tr>
-        </tfoot>
-      </Table>
-    </Sheet>
+              </td>
+            </tr>
+          </tfoot>
+        </Table>
+      </Sheet>
+      )}
     </Box>
-  )
-
-
+  );
 }

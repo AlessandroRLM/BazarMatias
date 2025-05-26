@@ -1,4 +1,4 @@
-from django.db.models import Count, F
+from django.db.models import Count, Sum, F
 from users.models import User, UserActivity
 from inventory.models import Product, Supply, ReturnSupplier, Shrinkage
 from suppliers.models import Supplier, BuyOrder
@@ -106,3 +106,81 @@ def get_supplier_report_data():
         'positions': positions,
         'bar_data': bar_data,
     }
+
+def get_sales_report_data():
+    try:
+        from sales.models import Sale
+        
+        # Obtener datos básicos de ventas
+        total_sales = Sale.objects.count()
+        total_amount = Sale.objects.aggregate(total=Sum('total_amount'))['total'] or 0
+        average_sale = total_amount / total_sales if total_sales > 0 else 0
+        
+        # Tipos de documento
+        invoices = Sale.objects.filter(document_type='F').count()
+        receipts = Sale.objects.filter(document_type='B').count()
+        
+        # Métodos de pago (ajustado para trabajar sin el modelo PaymentMethod)
+        payment_methods_data = Sale.objects.values('payment_method').annotate(
+            count=Count('id'),
+            amount=Sum('total_amount')
+        ).order_by('-amount')
+        
+        total_payments = sum(method['amount'] for method in payment_methods_data) or 1
+        payment_methods = []
+        for method in payment_methods_data:
+            percentage = (method['amount'] / total_payments) * 100
+            payment_methods.append({
+                'name': method['payment_method'],
+                'count': method['count'],
+                'amount': method['amount'],
+                'percentage': round(percentage, 1)
+            })
+        
+        # Ventas recientes
+        recent_sales = Sale.objects.select_related('client').order_by('-created_at')[:10]
+        
+        # Datos para gráficos
+        sales_by_type = [
+            {
+                'label': 'Facturas',
+                'count': invoices,
+                'height': invoices * 2,
+                'y': 180 - (invoices * 2),
+                'x': 40,
+                'color': '#694ED6'
+            },
+            {
+                'label': 'Boletas',
+                'count': receipts,
+                'height': receipts * 2,
+                'y': 180 - (receipts * 2),
+                'x': 120,
+                'color': '#17C964'
+            }
+        ]
+        
+        return {
+            'total_sales': total_sales,
+            'total_amount': total_amount,
+            'average_sale': average_sale,
+            'invoices': invoices,
+            'receipts': receipts,
+            'payment_methods': payment_methods,
+            'recent_sales': recent_sales,
+            'sales_by_type': sales_by_type
+        }
+        
+    except Exception as e:
+        print(f"Error generando reporte de ventas: {e}")
+        # Datos de prueba para desarrollo
+        return {
+            'total_sales': 0,
+            'total_amount': 0,
+            'average_sale': 0,
+            'invoices': 0,
+            'receipts': 0,
+            'payment_methods': [],
+            'recent_sales': [],
+            'sales_by_type': []
+        }

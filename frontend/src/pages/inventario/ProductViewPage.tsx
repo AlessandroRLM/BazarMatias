@@ -109,7 +109,7 @@ export default function VerProducto() {
       <FormControl>
         <FormLabel>Proveedor</FormLabel>
         <Typography level="body-md" sx={{ p: 1, bgcolor: 'background.level1', borderRadius: 'sm' }}>
-          {proveedor?.name || "Ninguno"}
+          {proveedor ? proveedor.name : "Ninguno"}
         </Typography>
       </FormControl>
     </Information>

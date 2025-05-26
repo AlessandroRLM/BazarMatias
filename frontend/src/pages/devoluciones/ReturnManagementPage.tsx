@@ -51,6 +51,7 @@ export default function ReturnManagementPage() {
           date: item.return_date || item.date,
         }));
         setData(mappedResults);
+        setFilteredData(mappedResults);
       });
   }, [pagination, filters]);
 

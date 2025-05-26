@@ -75,27 +75,26 @@ class ReturnSupplierSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReturnSupplier
-        fields = '__all__'
+        fields = [
+            'id',
+            'supplier',
+            'product',
+            'quantity',
+            'product_condition',
+            'reason',
+            'purchase_number',
+            'purchase_date',
+            'return_date',
+            'status',
+            'supplier_name',
+            'product_name'
+        ]
 
     def get_supplier_name(self, obj):
-        if obj.supplier:
-            # If obj.supplier is already a string (supplier name), return it directly
-            if isinstance(obj.supplier, str) and not ObjectId.is_valid(obj.supplier):
-                return obj.supplier
-            
-            # If it's an ObjectId or a valid ObjectId string, try to find the supplier
-            try:
-                supplier = Supplier.objects.get(id=obj.supplier)
-                return supplier.name
-            except (Supplier.DoesNotExist, Exception):
-                return None
-        return None
+        return getattr(obj.supplier, 'name', None)
 
     def get_product_name(self, obj):
-        try:
-            return obj.product.name
-        except Product.DoesNotExist:
-            return "Producto eliminado"
+        return getattr(obj.product, 'name', 'Producto eliminado')
 
     def update(self, instance, validated_data):
         if "status" in validated_data:

@@ -54,6 +54,28 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/auth/reset-password/:
+    post:
+      operationId: auth_reset_password_create
+      tags:
+      - auth
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/auth/reset-password-confirm/:
+    post:
+      operationId: auth_reset_password_confirm_create
+      tags:
+      - auth
+      security:
+      - knoxApiToken: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/inventory/metrics/:
     get:
       operationId: inventory_metrics_retrieve
@@ -1311,6 +1333,40 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sales/quotes/{id}/send-email/:
+    post:
+      operationId: sales_quotes_send_email_create
+      description: Acción para enviar cotizaciones por correo electrónico a los clientes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this quote.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Quote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Quote'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+          description: ''
   /api/sales/returns/:
     get:
       operationId: sales_returns_list
@@ -1635,6 +1691,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sales/sales/{id}/cambiar-estado/:
+    patch:
+      operationId: sales_sales_cambiar_estado_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this sale.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSale'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          description: ''
   /api/sales/sales/document_counter/:
     get:
       operationId: sales_sales_document_counter_retrieve
@@ -1859,6 +1947,19 @@ paths:
         description: A search term.
         schema:
           type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: Status Buy Order
+          enum:
+          - AP
+          - PE
+          - RE
+        description: |-
+          * `RE` - Rechazado
+          * `PE` - Pendiente
+          * `AP` - Aprobado
       tags:
       - suppliers
       security:
@@ -3566,14 +3667,14 @@ components:
       - unit_price
     SaleStatusEnum:
       enum:
-      - pending
-      - paid
-      - cancelled
+      - PE
+      - PA
+      - CA
       type: string
       description: |-
-        * `pending` - Pendiente
-        * `paid` - Pagada
-        * `cancelled` - Cancelada
+        * `PE` - Pendiente
+        * `PA` - Pagada
+        * `CA` - Cancelada
     Shrinkage:
       type: object
       properties:

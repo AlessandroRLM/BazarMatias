@@ -54,7 +54,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) =>
           label='Contraseña'
           placeholder='Contraseña'
           type='password'
-          fullWidht={true}
+          fullWidth={true}
           error={errors.password}
         />
         <FormField
@@ -63,7 +63,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) =>
           label='Confirmar Contraseña'
           placeholder='Confirmar Contraseña'
           type='password'
-          fullWidht={true}
+          fullWidth={true}
           error={errors.confirmPassword}
         /> 
         

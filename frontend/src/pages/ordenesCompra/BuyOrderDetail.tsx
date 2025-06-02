@@ -123,7 +123,7 @@ const BuyOrderDetail = () => {
             <Typography level="title-md" mb={2}>Detalles de la Orden</Typography>
             <Table stickyHeader sx={{
               "& thead th": { fontWeight: "lg" },
-              "& tr > *:not(:first-child)": { textAlign: "right" },
+              "& tr > *:not(:first-of-type)": { textAlign: "right" },
               "& td": { verticalAlign: "top", paddingTop: "12px", paddingBottom: "12px" },
             }}>
               <thead>

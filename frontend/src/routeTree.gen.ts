@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RestablecerContrasenaImport } from './routes/restablecer-contrasena'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
@@ -51,6 +52,7 @@ import { Route as AuthInventarioInsumosCrearInsumoImport } from './routes/_auth/
 import { Route as AuthInventarioInsumosCargaMasivaInsumosImport } from './routes/_auth/inventario/insumos/carga-masiva-insumos'
 import { Route as AuthAdministracionUsuariosCrearUsuarioImport } from './routes/_auth/administracion/usuarios/crear-usuario'
 import { Route as AuthAdministracionUsuariosActividadDeUsuariosImport } from './routes/_auth/administracion/usuarios/actividad-de-usuarios'
+import { Route as ConfirmarContrasenaUidTokenImport } from './routes/confirmar-contrasena.$uid.$token.'
 import { Route as AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo.$id'
 import { Route as AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo.$id'
 import { Route as AuthVentasGestiondeventasVerVentaIdImport } from './routes/_auth/ventas/gestiondeventas/ver-venta.$id'
@@ -72,6 +74,12 @@ import { Route as AuthAdministracionUsuariosEditarUsuarioRutImport } from './rou
 import { Route as AuthAdministracionUsuariosActividadDeUsuarioIdImport } from './routes/_auth/administracion/usuarios/actividad-de-usuario.$id'
 
 // Create/Update Routes
+
+const RestablecerContrasenaRoute = RestablecerContrasenaImport.update({
+  id: '/restablecer-contrasena',
+  path: '/restablecer-contrasena',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -344,6 +352,13 @@ const AuthAdministracionUsuariosActividadDeUsuariosRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const ConfirmarContrasenaUidTokenRoute =
+  ConfirmarContrasenaUidTokenImport.update({
+    id: '/confirmar-contrasena/$uid/$token/',
+    path: '/confirmar-contrasena/$uid/$token/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
 const AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdRoute =
   AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport.update({
     id: '/ventas/ordenesdetrabajo/ver-orden-trabajo/$id',
@@ -502,6 +517,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/restablecer-contrasena': {
+      id: '/restablecer-contrasena'
+      path: '/restablecer-contrasena'
+      fullPath: '/restablecer-contrasena'
+      preLoaderRoute: typeof RestablecerContrasenaImport
+      parentRoute: typeof rootRoute
+    }
     '/_auth/administracion/dashboard': {
       id: '/_auth/administracion/dashboard'
       path: '/administracion/dashboard'
@@ -557,6 +579,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/proveedores'
       preLoaderRoute: typeof AuthProveedoresIndexImport
       parentRoute: typeof AuthImport
+    }
+    '/confirmar-contrasena/$uid/$token/': {
+      id: '/confirmar-contrasena/$uid/$token/'
+      path: '/confirmar-contrasena/$uid/$token'
+      fullPath: '/confirmar-contrasena/$uid/$token'
+      preLoaderRoute: typeof ConfirmarContrasenaUidTokenImport
+      parentRoute: typeof rootRoute
     }
     '/_auth/administracion/usuarios/actividad-de-usuarios': {
       id: '/_auth/administracion/usuarios/actividad-de-usuarios'
@@ -1055,6 +1084,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
@@ -1063,6 +1093,7 @@ export interface FileRoutesByFullPath {
   '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
+  '/confirmar-contrasena/$uid/$token': typeof ConfirmarContrasenaUidTokenRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
@@ -1117,6 +1148,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
@@ -1125,6 +1157,7 @@ export interface FileRoutesByTo {
   '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
+  '/confirmar-contrasena/$uid/$token': typeof ConfirmarContrasenaUidTokenRoute
   '/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
@@ -1180,6 +1213,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
   '/_auth/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
@@ -1188,6 +1222,7 @@ export interface FileRoutesById {
   '/_auth/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
+  '/confirmar-contrasena/$uid/$token/': typeof ConfirmarContrasenaUidTokenRoute
   '/_auth/administracion/usuarios/actividad-de-usuarios': typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
   '/_auth/administracion/usuarios/crear-usuario': typeof AuthAdministracionUsuariosCrearUsuarioRoute
   '/_auth/inventario/insumos/carga-masiva-insumos': typeof AuthInventarioInsumosCargaMasivaInsumosRoute
@@ -1244,6 +1279,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/restablecer-contrasena'
     | '/administracion/dashboard'
     | '/inventario/dashboard'
     | '/proveedores/crear-ordenes-de-compra'
@@ -1252,6 +1288,7 @@ export interface FileRouteTypes {
     | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
+    | '/confirmar-contrasena/$uid/$token'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/inventario/insumos/carga-masiva-insumos'
@@ -1305,6 +1342,7 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
+    | '/restablecer-contrasena'
     | '/administracion/dashboard'
     | '/inventario/dashboard'
     | '/proveedores/crear-ordenes-de-compra'
@@ -1313,6 +1351,7 @@ export interface FileRouteTypes {
     | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
+    | '/confirmar-contrasena/$uid/$token'
     | '/administracion/usuarios/actividad-de-usuarios'
     | '/administracion/usuarios/crear-usuario'
     | '/inventario/insumos/carga-masiva-insumos'
@@ -1366,6 +1405,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/login'
+    | '/restablecer-contrasena'
     | '/_auth/administracion/dashboard'
     | '/_auth/inventario/dashboard'
     | '/_auth/proveedores/crear-ordenes-de-compra'
@@ -1374,6 +1414,7 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/ordenes-de-compra'
     | '/_auth/home/'
     | '/_auth/proveedores/'
+    | '/confirmar-contrasena/$uid/$token/'
     | '/_auth/administracion/usuarios/actividad-de-usuarios'
     | '/_auth/administracion/usuarios/crear-usuario'
     | '/_auth/inventario/insumos/carga-masiva-insumos'
@@ -1429,12 +1470,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RestablecerContrasenaRoute: typeof RestablecerContrasenaRoute
+  ConfirmarContrasenaUidTokenRoute: typeof ConfirmarContrasenaUidTokenRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
+  RestablecerContrasenaRoute: RestablecerContrasenaRoute,
+  ConfirmarContrasenaUidTokenRoute: ConfirmarContrasenaUidTokenRoute,
 }
 
 export const routeTree = rootRoute
@@ -1449,7 +1494,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_auth",
-        "/login"
+        "/login",
+        "/restablecer-contrasena",
+        "/confirmar-contrasena/$uid/$token/"
       ]
     },
     "/": {
@@ -1519,6 +1566,9 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
+    "/restablecer-contrasena": {
+      "filePath": "restablecer-contrasena.tsx"
+    },
     "/_auth/administracion/dashboard": {
       "filePath": "_auth/administracion/dashboard.tsx",
       "parent": "/_auth"
@@ -1550,6 +1600,9 @@ export const routeTree = rootRoute
     "/_auth/proveedores/": {
       "filePath": "_auth/proveedores/index.tsx",
       "parent": "/_auth"
+    },
+    "/confirmar-contrasena/$uid/$token/": {
+      "filePath": "confirmar-contrasena.$uid.$token..tsx"
     },
     "/_auth/administracion/usuarios/actividad-de-usuarios": {
       "filePath": "_auth/administracion/usuarios/actividad-de-usuarios.tsx",

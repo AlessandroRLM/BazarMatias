@@ -89,9 +89,10 @@ class SaleDetail(models.Model):
 
 class Sale(models.Model):
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pendiente'
-        PAID = 'paid', 'Pagada'
-        CANCELLED = 'cancelled', 'Cancelada'
+        PENDING = 'PE', 'Pendiente'
+        PAID = 'PA', 'Pagada'
+        CANCELLED = 'CA', 'Cancelada'
+        
     class DocType(models.TextChoices):
         INVOICE = 'FAC', 'Factura'        # requiere de un cliente con rut
         RECEIPT = 'BOL', 'Boleta'

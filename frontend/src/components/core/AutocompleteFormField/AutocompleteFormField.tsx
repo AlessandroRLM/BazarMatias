@@ -13,7 +13,7 @@ interface AutocompleteFormFieldProps<T extends FieldValues> {
     placeholder?: string
     type?: string
     size?: "md" | "sm" | "lg"
-    fullWidht?: boolean
+    fullWidth?: boolean
     options: SelectOption[]
     disabled?: boolean
     readonly?: boolean
@@ -33,7 +33,7 @@ const AutocompleteFormField = <T extends FieldValues>({
     type = 'text',
     size = 'md',
     options,
-    fullWidht = false,
+    fullWidth = false,
     disabled = false,
     readonly = false,
     error,
@@ -52,7 +52,7 @@ const AutocompleteFormField = <T extends FieldValues>({
             render={({ field: { onChange: fieldOnChange, value: fieldValue, ...field } }) => {
                 const selectedOption = options.find(option => option.value === fieldValue) || null
                 return (
-                    <FormControl error={!!error} sx={{ mb: 2, width: fullWidht ? '100%' : 'auto' }}>
+                    <FormControl error={!!error} sx={{ mb: 2, width: fullWidth ? '100%' : 'auto' }}>
                         <FormLabel>{label}</FormLabel>
                         <Autocomplete
                             {...field}

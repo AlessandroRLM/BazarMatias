@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización - Bazar Matias</title>
+</head>
+<body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; margin: 0; padding: 0; background-color: #f7f7f8; color: #2a2b30;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="background-color: white; border-radius: 8px; box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.12); padding: 32px; margin-bottom: 24px;">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <div style="font-size: 24px; font-weight: bold; color: #0072e5; margin-bottom: 8px;">Bazar Matias</div>
+            </div>
+                        
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px; color: #41434a;">Hola {{ client.first_name }} {{ client.last_name }},</p>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px; color: #41434a;">Adjuntamos la cotización solicitada para los siguientes productos:</p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                <thead>
+                    <tr style="background-color: #f7f7f8;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e8e8e9; color: #131318;">Producto</th>
+                        <th style="padding: 12px; text-align: center; border-bottom: 1px solid #e8e8e9; color: #131318;">Cantidad</th>
+                        <th style="padding: 12px; text-align: right; border-bottom: 1px solid #e8e8e9; color: #131318;">Precio Unitario</th>
+                        <th style="padding: 12px; text-align: right; border-bottom: 1px solid #e8e8e9; color: #131318;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in quote_details %}
+                    <tr>
+                        <td style="padding: 12px; text-align: left; border-bottom: 1px solid #e8e8e9; color: #41434a;">{{ detail.product.name }}</td>
+                        <td style="padding: 12px; text-align: center; border-bottom: 1px solid #e8e8e9; color: #41434a;">{{ detail.quantity }}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e8e8e9; color: #41434a;">${{ detail.unit_price }}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e8e8e9; color: #41434a;">${{ detail.subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="padding: 12px; text-align: right; font-weight: 600; color: #131318;">Total:</td>
+                        <td style="padding: 12px; text-align: right; font-weight: 600; color: #131318;">${{ quote.total }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            
+
+            <div style="height: 1px; background-color: #d1d2d4; margin: 24px 0;"></div>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px; color: #41434a;">Si tienes alguna pregunta o necesitas más información, no dudes en contactarnos.</p>
+            
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px; color: #41434a;">Saludos cordiales,</p>
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 16px; color: #41434a;">Equipo de Bazar Matias.</p>
+        </div>
+        
+    </div>
+</body>
+</html>

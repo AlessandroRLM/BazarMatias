@@ -182,7 +182,7 @@ const BuyOrderCreation = () => {
                   label="Proveedor"
                   options={supplierOptions}
                   error={errors.supplier}
-                  fullWidht={true}
+                  fullWidth={true}
                   placeholder="Buscar proveedor"
                   loading={suppliersLoading}
                   freeSolo={false}
@@ -197,7 +197,7 @@ const BuyOrderCreation = () => {
                     { value: "RE", label: "Rechazado" },
                   ]}
                   error={errors.status}
-                  fullWidht={true}
+                  fullWidth={true}
                 />
               </Stack>
 
@@ -217,7 +217,7 @@ const BuyOrderCreation = () => {
                         stickyHeader // Makes header sticky if table scrolls
                         sx={{
                           "& thead th": { fontWeight: "lg" },
-                          "& tr > *:not(:first-child)": { textAlign: "right" },
+                          "& tr > *:not(:first-of-type)": { textAlign: "right" },
                           "& td": { verticalAlign: "top", paddingTop: "12px", paddingBottom: "12px" }, // Adjust padding for FormControls
                         }}
                       >

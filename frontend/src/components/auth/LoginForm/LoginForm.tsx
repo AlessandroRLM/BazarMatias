@@ -7,7 +7,6 @@ import FormField from "../../core/FormField/FormField"
 import { useAuth } from "../../../hooks/auth/useAuth"
 import { useState } from "react"
 import LockIcon from '@mui/icons-material/Lock';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 const LoginForm = () => {
@@ -22,7 +21,7 @@ const LoginForm = () => {
     })
 
     const [loginError, setLoginError] = useState<string | null>(null);
-    const [attemptsInfo, setAttemptsInfo] = useState<{ attempts?: number, remaining?: number } | null>(null);
+    const [_, setAttemptsInfo] = useState<{ attempts?: number, remaining?: number } | null>(null);
     const [blockedInfo, setBlockedInfo] = useState<{ blocked?: boolean, blocked_until?: string, blocked_seconds?: number } | null>(null);
 
     const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
@@ -60,14 +59,14 @@ const LoginForm = () => {
                 name="email"
                 control={control}
                 label="Correo"
-                fullWidht={true}
+                fullWidth={true}
                 error={errors.email}
             />
             <FormField
                 name="password"
                 control={control}
                 label="Contraseña"
-                fullWidht={true}
+                fullWidth={true}
                 type="password"
                 error={errors.password}
             />
@@ -91,7 +90,7 @@ const LoginForm = () => {
                 </>
             )}
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Link to=".">¿Olvidaste tu contraseña?</Link>
+                <Link to="/restablecer-contrasena">¿Olvidaste tu contraseña?</Link>
             </Box>
             <Button sx={{
                 width: '100%'

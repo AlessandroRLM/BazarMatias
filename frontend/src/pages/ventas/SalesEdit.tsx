@@ -1,452 +1,517 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from '@tanstack/react-router';
-import {
-  Box,
-  Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Divider,
-  Button,
-  TextField,
-  Select,
-  MenuItem,
-  IconButton,
-  CircularProgress,
-  InputAdornment
-} from '@mui/material';
-import { Add as AddIcon, Remove as RemoveIcon, Delete as DeleteIcon, LocalOffer as LocalOfferIcon } from '@mui/icons-material';
-import { fetchSaleById, updateSale } from '../../services/salesService';
-import { fetchClients } from '../../services/salesService';
-import { fetchProducts } from '../../services/inventoryService';
-import { Sale, Client, SaleStatus } from '../../types/sales.types';
-import { Product } from '../../types/inventory.types';
+import { useCallback, useEffect, useMemo } from "react"
+import { useNavigate, useParams } from "@tanstack/react-router" 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query"
+import { ArrowBack, Delete, Add, Edit } from "@mui/icons-material" 
+import { Stack, IconButton, Typography, Grid, Sheet, Table, Button, Divider, Card, CardContent, Avatar, Input, FormControl, FormLabel, CircularProgress } from "@mui/joy"
+import dayjs from "dayjs"
 
-interface SaleUpdateData extends Omit<Partial<Sale>, 'client' | 'details'> {
-  client: string | null;
-  details: Array<{
-    id?: string;
-    product_id: string;
-    quantity: number;
-    unit_price: number;
-    discount: number;
-  }>;
-}
+import { SaleCreationFormValues, saleCreationSchema } from "../../schemas/ventas/ventas/saleCreationSchema" 
+import { fetchClientsForSelect } from "../../services/saleService"
+import { Client, Sale, SaleDetail } from "../../types/sales.types" 
+import AutocompleteFormField, { SelectOption } from "../../components/core/AutocompleteFormField/AutocompleteFormField"
+import { Product } from "../../types/inventory.types"
+import { fetchProducts } from "../../services/supplierService"
+import { fetchSaleById, updateSale } from "../../services/salesService" 
+import FormField from "../../components/core/FormField/FormField"
+import FormSelect from "../../components/core/FormSelect/FormSelect"
 
 const SalesEdit = () => {
-  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' });
-  const navigate = useNavigate();
-  const [venta, setVenta] = useState<Sale | null>(null);
-  const [clientes, setClientes] = useState<Client[]>([]);
-  const [productosDisponibles, setProductosDisponibles] = useState<Product[]>([]);
-  const [nuevoProducto, setNuevoProducto] = useState<string>('');
-  const [nuevaCantidad, setNuevaCantidad] = useState<number>(1);
-  const [loading, setLoading] = useState({
-    venta: true,
-    clientes: true,
-    productos: true
-  });
+  const navigate = useNavigate()
+  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' }) 
 
-  const statusOptions = [
-    { value: 'pending', label: 'Pendiente' },
-    { value: 'paid', label: 'Pagada' },
-    { value: 'completed', label: 'Completada' },
-    { value: 'cancelled', label: 'Cancelada' }
-  ];
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    watch,
+    setValue,
+    reset, 
+  } = useForm<SaleCreationFormValues>({
+    resolver: zodResolver(saleCreationSchema), 
+    defaultValues: {
+      client_id: '',
+      document_type: 'BOL' as const,
+      payment_method: undefined,
+      status: undefined,
+      details: [{ product_id: '', quantity: 1, unit_price: 0 }],
+      // folio: undefined, // Add folio to defaultValues if it's part of the form
+    }
+  })
+
+  // Fetch existing sale data
+  const { data: existingSale, isLoading: isLoadingSale, error: saleError } = useQuery<Sale>({
+    queryKey: ['sale', id],
+    queryFn: () => fetchSaleById(id as string),
+    enabled: !!id, 
+  })
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [ventaData, clientesData, productosData] = await Promise.all([
-          fetchSaleById(id),
-          fetchClients({ page_size: 100 }),
-          fetchProducts({ page_size: 100 })
-        ]);
+    if (existingSale) {
+      reset({
+        client_id: existingSale?.client?.id, // Correctly access client ID
+        document_type: existingSale.document_type as 'BOL' | 'FAC',
+        payment_method: existingSale.payment_method,
+        status: existingSale.status as 'PE' | 'PA' | 'CA', // Add type assertion for status
+        details: existingSale.details.map((d: SaleDetail) => ({ // Use SaleDetail type
+          product_id: d.product.id, // Correctly access product ID from nested product object
+          quantity: d.quantity,
+          unit_price: d.unit_price,
+        })),
+      });
+    }
+  }, [existingSale, reset])
 
-        setVenta(ventaData);
-        setClientes(clientesData.results);
-        setProductosDisponibles(productosData.results);
-      } catch (error) {
-        console.error('Error al cargar datos:', error);
-      } finally {
-        setLoading({ venta: false, clientes: false, productos: false });
+  // const folio = watch('folio') // If folio is managed by react-hook-form
+  // If folio is not part of the form state, you can get it directly from existingSale for display
+
+  const { data: clients, isLoading: isLoadingClients } = useQuery({
+    queryKey: ['clients'],
+    queryFn: ({ queryKey }: { queryKey: unknown[] }) => {
+      const searchTerm = queryKey[1] as string | undefined
+      if (searchTerm) {
+        return fetchClientsForSelect(searchTerm)
       }
-    };
+      return fetchClientsForSelect('')
+    },
+    staleTime: 1000 * 60 * 2,
+  })
 
-    loadData();
-  }, [id]);
 
-  const handleSave = async () => {
-    if (!venta) return;
+  const clientsToOptions = (clients?: Client[]): SelectOption[] => {
+    return (
+      clients?.map((client) => ({
+        value: client.id,
+        label: client.first_name + ' ' + client.last_name,
+      })) ?? []
+    )
+  }
 
-    try {
-      const updateData: SaleUpdateData = {
-        ...venta,
-        client: venta.client?.id || null,
-        details: venta.details.map(detail => ({
-          id: detail.id?.startsWith('temp-') ? undefined : detail.id,
-          product_id: typeof detail.product === 'string' ? detail.product : detail.product.id,
+  const clientsOptions = clientsToOptions(clients?.results)
+
+  const selectedClient = clients?.results.find((client: Client) => client.id === watch('client_id'))
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+  }
+
+  const details = watch('details') || []
+
+
+  const queriesForUseQueries = useMemo(() => {
+    return details.map((_, index) => ({
+      queryKey: ['products', index], 
+      queryFn: () => fetchProducts(''), 
+      staleTime: 1000 * 60 * 2,
+    }))
+
+  }, [details.length])
+
+  const productQueries = useQueries({
+    queries: queriesForUseQueries, // Use the memoized configuration
+  })
+
+  const findProductById = useCallback((productId: string): Product | undefined => {
+
+    for (const query of productQueries) {
+      if (query.data?.results) {
+        const product = query.data.results.find((product) => product.id === productId)
+        if (product) return product
+      }
+    }
+    return undefined
+  }, [productQueries])
+
+
+  useEffect(() => {
+    details.forEach((detail, index) => {
+      const unitPricePath = `details.${index}.unit_price` as const
+      const currentUnitPrice = watch(unitPricePath)
+
+      if (detail.product_id) {
+        const selectedProduct = findProductById(detail.product_id)
+        if (selectedProduct && typeof selectedProduct.price_clp === 'number') {
+          if (currentUnitPrice !== selectedProduct.price_clp) {
+            setValue(unitPricePath, selectedProduct.price_clp)
+          }
+        }
+              
+      } else {
+        if (currentUnitPrice !== 0) {
+          setValue(unitPricePath, 0)
+        }
+      }
+    })
+
+  }, [details, setValue, watch, findProductById])
+
+  const mutation = useMutation({
+    mutationFn: (data: SaleCreationFormValues) => {
+      // Construct the payload for updateSale according to your backend's expected format
+      // This might involve transforming the data if SaleCreationFormValues doesn't exactly match
+      // what your updateSale endpoint expects, especially regarding client and product IDs.
+      const payload = {
+        ...data,
+        // Ensure client_id is just the ID string if your backend expects that
+        client_id: data.client_id, 
+        details: data.details.map(detail => ({
+          product_id: detail.product_id,
           quantity: detail.quantity,
           unit_price: detail.unit_price,
-          discount: detail.discount
+          // id: detail.id, // If your backend needs the detail ID for updates, include it here
         })),
-        status: venta.status
       };
+      return updateSale(id as string, payload as any); // Use 'as any' if payload type is complex or use a specific update type
+    },
+    onSuccess: () => {
+      alert('Venta actualizada con éxito!')
+      navigate({ to: '/ventas/gestiondeventas' }) // Or to the specific sale view page
+    },
+    onError: (error) => {
+      console.error(error)
+      alert(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error al actualizar'}`)
+    },
+  })
 
-      await updateSale(id, updateData);
-      navigate({ to: '/ventas/gestiondeventas' });
-    } catch (error) {
-      console.error('Error al actualizar la venta:', error);
-      alert('Error al actualizar la venta. Verifique los datos.');
+  const onSubmit: SubmitHandler<SaleCreationFormValues> = (data) => {
+    console.log('Updating sale:', data)
+    mutation.mutate(data)
+  }
+
+  // Agregar nuevo detalle
+  const addDetail = () => {
+    setValue('details', [...watch('details'), { product_id: '', quantity: 1, unit_price: 0 }])
+  }
+
+  // Eliminar detalle
+  const removeDetail = (index: number) => {
+    const currentDetails = [...watch('details')]
+    currentDetails.splice(index, 1)
+    setValue('details', currentDetails)
+  }
+
+  // Manejar cambio de producto
+  const handleProductChange = (index: number, productId: string | null) => {
+    if (productId) {
+      const selectedProduct = findProductById(productId)
+      if (selectedProduct && typeof selectedProduct.price_clp === 'number') {
+        setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
+      } else {
+        setValue(`details.${index}.unit_price`, 0) 
+      }
+    } else {
+      setValue(`details.${index}.unit_price`, 0) 
     }
-  };
-
-  const handleAgregarProducto = () => {
-    if (!nuevoProducto || nuevaCantidad <= 0 || !venta) return;
-
-    const productoSeleccionado = productosDisponibles.find(p => p.id === nuevoProducto);
-    if (!productoSeleccionado) return;
-
-    setVenta({
-      ...venta,
-      details: [
-        ...venta.details,
-        {
-          id: `temp-${Date.now()}`,
-          product: productoSeleccionado,
-          quantity: nuevaCantidad,
-          unit_price: productoSeleccionado.price_clp,
-          discount: 0
-        }
-      ]
-    });
-
-    // Resetear selección
-    setNuevoProducto('');
-    setNuevaCantidad(1);
-  };
-
-  const handleIncrementarCantidad = (detailId: string) => {
-    if (!venta || !detailId) return;
-
-    setVenta({
-      ...venta,
-      details: venta.details.map(detail => 
-        detail.id === detailId 
-          ? { ...detail, quantity: detail.quantity + 1 }
-          : detail
-      )
-    });
-  };
-
-  const handleDecrementarCantidad = (detailId: string) => {
-    if (!venta || !detailId) return;
-
-    setVenta({
-      ...venta,
-      details: venta.details.map(detail => 
-        detail.id === detailId 
-          ? { ...detail, quantity: Math.max(1, detail.quantity - 1) }
-          : detail
-      )
-    });
-  };
-
-  const handleCambiarPrecio = (detailId: string, nuevoPrecio: number) => {
-    if (!venta || !detailId) return;
-
-    setVenta({
-      ...venta,
-      details: venta.details.map(detail => 
-        detail.id === detailId 
-          ? { ...detail, unit_price: Math.max(0, nuevoPrecio) }
-          : detail
-      )
-    });
-  };
-
-  const handleEliminarProducto = (detailId: string) => {
-    if (!venta || !detailId) return;
-
-    setVenta({
-      ...venta,
-      details: venta.details.filter(detail => detail.id !== detailId)
-    });
-  };
-
-  if (loading.venta || loading.clientes || loading.productos) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
   }
 
-  if (!venta) {
-    return <Typography>No se encontró la venta</Typography>;
-  }
+  const totalAmount = details.reduce((sum, item) => {
+    return sum + Number(item.quantity) * Number(item.unit_price)
+  }, 0)
 
-  const subtotal = venta.details.reduce((sum, detail) => sum + (detail.unit_price * detail.quantity), 0);
-  const iva = subtotal * 0.19;
-  const total = subtotal + iva;
+  const iva = Math.round(totalAmount * 0.19)
+  const netAmount = totalAmount - iva
+
+  if (isLoadingSale) return <CircularProgress />;
+  if (saleError) return <Typography color="danger">Error al cargar la venta: {saleError.message}</Typography>;
+  // Make sure existingSale is checked before trying to access its properties
+  if (!existingSale) return <Typography>Cargando datos de la venta...</Typography>; 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', p: 3, position: 'relative' }}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Editar Venta
-      </Typography>
+    <>
+      <Stack spacing={1} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
+        <IconButton onClick={() => navigate({ to: '/ventas/gestiondeventas' })}> 
+          <ArrowBack />
+        </IconButton>
+        <Typography level='h4'>Editar Venta {existingSale?.folio ? ` #${existingSale.folio}` : ''}</Typography> {/* Display folio in title */}
+      </Stack>
 
-      <Box sx={{ display: 'flex', gap: 3 }}>
-        <Box sx={{ flex: 2 }}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Información de venta</Typography>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container spacing={2}>
+          <Grid xs={12} sm={8}>
+            <Sheet variant='outlined' sx={{ p: 2, borderRadius: 'md', flex: 2 }}>
+              <Stack spacing={3}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <FormSelect
+                    name='document_type'
+                    control={control}
+                    label='Tipo de Documento'
+                    options={[
+                      { value: 'FAC', label: 'Factura' },
+                      { value: 'BOL', label: 'Boleta' },
+                    ]}
+                    error={errors.document_type} 
+                    fullWidth={true}
+                  />
+                  <FormControl>
+                    <FormLabel>Número de Venta</FormLabel>
+                    <Input
+                      value={existingSale.folio} // Display existing folio directly
+                      readOnly
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Fecha de Venta</FormLabel>
+                    <Input
+                      value={dayjs(existingSale.created_at).format('DD/MM/YYYY')} // Use created_at for date
+                      readOnly
+                    />
+                  </FormControl>
 
-            <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">Número de Venta</Typography>
-                <Typography sx={{ p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                  {venta.folio}
-                </Typography>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">Fecha de Venta</Typography>
-                <Typography sx={{ p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                  {new Date(venta.created_at).toLocaleDateString()}
-                </Typography>
-              </Box>
-            </Box>
+                </Stack>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <AutocompleteFormField
+                    label='Cliente'
+                    placeholder='Buscar cliente'
+                    control={control}
+                    name='client_id'
+                    fullWidth={true}
+                    options={clientsOptions}
+                    loading={isLoadingClients}
+                    error={errors?.client_id}
+                    freeSolo={false}
+                  />
+                  <FormSelect
+                    name='payment_method'
+                    control={control}
+                    label='Metodo de pago'
+                    options={[
+                      { value: 'EF', label: 'Efectivo' },
+                      { value: 'TC', label: 'Tarjeta Crédito' },
+                      { value: 'TD', label: 'Tarjeta Débito' },
+                      { value: 'TR', label: 'Transferencia' },
+                      { value: 'OT', label: 'Otro' },
+                    ]}
+                    error={errors?.payment_method}
+                    fullWidth={true}
+                  />
+                  <FormSelect
+                    name='status'
+                    control={control}
+                    label='Estado'
+                    options={[
+                      { value: 'PE', label: 'Pendiente' },
+                      { value: 'PA', label: 'Pagada' },
+                      { value: 'CA', label: 'Cancelada' },
+                    ]}
+                    error={errors?.status}
+                    fullWidth={true}
+                  />
 
-            <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">Cliente</Typography>
-                <Select
-                  value={venta.client?.id || ''}
-                  onChange={(e) => setVenta({
-                    ...venta,
-                    client: clientes.find(c => c.id === e.target.value) || null
-                  })}
-                  fullWidth
-                >
-                  {clientes.map((cliente) => (
-                    <MenuItem key={cliente.id} value={cliente.id}>
-                      {cliente.first_name} {cliente.last_name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">Método de Pago</Typography>
-                <Select
-                  value={venta.payment_method}
-                  onChange={(e) => setVenta({ ...venta, payment_method: e.target.value })}
-                  fullWidth
-                >
-                  <MenuItem value="EF">Efectivo</MenuItem>
-                  <MenuItem value="TC">Tarjeta de Crédito</MenuItem>
-                  <MenuItem value="TD">Tarjeta de Débito</MenuItem>
-                  <MenuItem value="TR">Transferencia</MenuItem>
-                  <MenuItem value="OT">Otro</MenuItem>
-                </Select>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">Estado</Typography>
-                <Select
-                  value={venta.status}
-                  onChange={(e) => setVenta({ 
-                    ...venta, 
-                    status: e.target.value as SaleStatus 
-                  })}
-                  fullWidth
+                </Stack>
+                <Grid container sx={{ flexGrow: 1 }}>
+                  <Grid xs={12}>
+                    <Stack spacing={2}>
+                      <Typography level='title-md'>Detalles de la Orden</Typography>
+                      <Sheet variant='outlined' sx={{
+                        borderRadius: 'var(--joy-radius-md)',
+                        height: '15.9rem',
+                        overflow: 'auto',
+                      }}
+                      >
+                        <Table
+                          stickyHeader 
+                          sx={{
+                            '& thead th': { fontWeight: 'lg' },
+                            '& tr > *:not(:first-of-type)': { textAlign: 'right' },
+                            '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' }, 
+                          }}
+                        >
+                          <thead>
+                            <tr>
+                              <th style={{ width: '40%', textAlign: 'left' }}>Producto</th>
+                              <th style={{ width: '20%' }}>Cantidad</th>
+                              <th style={{ width: '25%' }}>Precio Unitario</th>
+                              <th style={{ width: '15%', textAlign: 'center' }}>Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody >
+                            {details.map((_, index) => {
+                              const productQuery = productQueries[index] || {}
+                              const { data: productsData, isLoading: isProductsLoading } = productQuery
+
+                              const currentProductOptions = productsData?.results?.map(product => ({
+                                value: product.id,
+                                label: product.name
+                              })) ?? []
+
+                              return (
+                                <tr key={index}>
+                                  <td>
+                                    <AutocompleteFormField
+                                      name={`details.${index}.product_id`}
+                                      control={control}
+                                      options={currentProductOptions}
+                                      error={errors.details?.[index]?.product_id}
+                                      onChange={(value) => handleProductChange(index, value as string)}
+                                      placeholder='Buscar producto'
+                                      size='sm'
+                                      loading={isProductsLoading}
+                                      freeSolo={false}
+                                      onInputChange={(_, value) => {
+                                        if (value && value.length > 2) {
+                                          productQueries[index].refetch()
+                                        }
+                                      }}
+                                    />
+                                  </td>
+                                  <td>
+                                    <FormField
+                                      name={`details.${index}.quantity`}
+                                      control={control}
+                                      type='number'
+                                      error={errors.details?.[index]?.quantity}
+                                      transform={Number}
+                                      size='sm'
+                                    />
+                                  </td>
+                                  <td>
+                                    <FormField
+                                      name={`details.${index}.unit_price`}
+                                      control={control}
+                                      type='number'
+                                      error={errors.details?.[index]?.unit_price}
+                                      transform={Number}
+                                      disabled={!!watch(`details.${index}.product_id`)} 
+                                      size='sm'
+                                    />
+                                  </td>
+                                  <td style={{ textAlign: 'center' }}>
+                                    <IconButton
+                                      variant='plain'
+                                      color='danger'
+                                      size='sm'
+                                      onClick={() => removeDetail(index)}
+                                      disabled={details.length <= 1} 
+                                    >
+                                      <Delete />
+                                    </IconButton>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </Table>
+                      </Sheet>
+                      <Button
+                        variant='soft'
+                        color='primary'
+                        onClick={addDetail}
+                        startDecorator={<Add />}
+                        sx={{ alignSelf: 'flex-start', mt: 1 }}
+                      >
+                        Agregar Item
+                      </Button>
+
+                      {errors.details?.root && (
+                        <Typography color='danger' level='body-sm' sx={{ mt: 1 }}>
+                          {errors.details.root.message}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </Sheet>
+          </Grid>
+          <Grid xs={12} sm={4} >
+            <Stack spacing={2} sx={{ height: '100%' }}>
+              <Sheet
+                variant='outlined'
+                sx={{
+                  p: 2,
+                  borderRadius: 'md',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flexGrow: 1, 
+                  height: '100%'
+                }}
+              >
+                <Stack spacing={2} sx={{ flexGrow: 1 }}>
+                  <Typography level='title-md'>Resumen</Typography>
+                  <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                    <Typography>Total Neto:</Typography>
+                    <Typography level='title-md'>{netAmount.toLocaleString('es-CL')}</Typography>
+                  </Stack>
+                  <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                    <Typography>IVA (19%):</Typography>
+                    <Typography level='title-md'>{iva.toLocaleString('es-CL')}</Typography>
+                  </Stack>
+                  <Divider />
+                  <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                    <Typography>Total:</Typography>
+                    <Typography level='title-md'>{totalAmount.toLocaleString('es-CL')}</Typography>
+                  </Stack>
+                </Stack>
+                <Stack
+                  spacing={1}
+                  direction={'column'}
                   sx={{
-                    backgroundColor: 
-                      venta.status === 'completed' ? '#e8f5e9' : 
-                      venta.status === 'cancelled' ? '#ffebee' : 
-                      venta.status === 'paid' ? '#e3f2fd' : 
-                      '#fff8e1'
+                    mt: 'auto',
                   }}
                 >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-            </Box>
-
-            <Typography variant="h6" sx={{ mb: 2 }}>Productos</Typography>
-            
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
-              <Box sx={{ flex: 1 }}>
-                <Select
-                  value={nuevoProducto}
-                  onChange={(e) => setNuevoProducto(e.target.value)}
-                  fullWidth
-                  size="small"
-                  displayEmpty
-                  startAdornment={
-                    <InputAdornment position="start">
-                      <LocalOfferIcon fontSize="small" />
-                    </InputAdornment>
-                  }
-                >
-                  <MenuItem value="">Selecciona un producto</MenuItem>
-                  {productosDisponibles.map((producto) => (
-                    <MenuItem key={producto.id} value={producto.id}>
-                      {producto.name} - ${producto.price_clp.toLocaleString()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton 
-                  size="small" 
-                  onClick={() => setNuevaCantidad(Math.max(1, nuevaCantidad - 1))}
-                  disabled={nuevaCantidad <= 1}
-                >
-                  <RemoveIcon fontSize="small" />
-                </IconButton>
-                <TextField
-                  value={nuevaCantidad}
-                  onChange={(e) => setNuevaCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                  type="number"
-                  inputProps={{ min: 1 }}
-                  size="small"
-                  sx={{ width: 80, textAlign: 'center' }}
-                />
-                <IconButton 
-                  size="small" 
-                  onClick={() => setNuevaCantidad(nuevaCantidad + 1)}
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Box>
-              
-              <Button 
-                variant="contained" 
-                onClick={handleAgregarProducto}
-                disabled={!nuevoProducto}
-                sx={{ width: 150 }}
+                  <Button
+                    type='submit'
+                    fullWidth
+                    size='md'
+                    sx={{ mt: 'auto' }}
+                    startDecorator={<Edit />} // Changed icon to Edit
+                    loading={mutation.isPending}
+                    disabled={mutation.isPending || isLoadingSale} // Disable if loading sale data
+                  >
+                    Guardar Cambios {/* Changed button text */}
+                  </Button>
+                </Stack>
+              </Sheet>
+              <Sheet
+                variant='outlined'
+                sx={{ p: 2, borderRadius: 'md' }}
               >
-                Agregar
-              </Button>
-            </Box>
-
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Producto</TableCell>
-                  <TableCell align="center">Cantidad</TableCell>
-                  <TableCell align="right">Precio Unitario</TableCell>
-                  <TableCell align="right">Subtotal</TableCell>
-                  <TableCell align="center">Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {venta.details.map((detail) => (
-                  <TableRow key={detail.id}>
-                    <TableCell>
-                      {typeof detail.product === 'string' 
-                        ? productosDisponibles.find(p => p.id === detail.product)?.name || 'Producto no encontrado' 
-                        : detail.product.name}
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton 
-                        size="small" 
-                        onClick={() => handleDecrementarCantidad(detail.id!)}
-                        disabled={detail.quantity <= 1}
-                      >
-                        <RemoveIcon fontSize="small" />
-                      </IconButton>
-                      {detail.quantity}
-                      <IconButton 
-                        size="small" 
-                        onClick={() => handleIncrementarCantidad(detail.id!)}
-                      >
-                        <AddIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell align="right">
-                      <TextField
-                        value={detail.unit_price}
-                        onChange={(e) => handleCambiarPrecio(detail.id!, parseFloat(e.target.value) || 0)}
-                        size="small"
-                        type="number"
-                        sx={{ width: 100 }}
-                        inputProps={{ min: 0, step: "any" }}
-                      />
-                    </TableCell>
-                    <TableCell align="right">${(detail.unit_price * detail.quantity).toLocaleString()}</TableCell>
-                    <TableCell align="center">
-                      <IconButton 
-                        size="small" 
-                        onClick={() => handleEliminarProducto(detail.id!)}
-                        color="error"
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        </Box>
-
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Resumen de venta</Typography>
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography>Subtotal:</Typography>
-                <Typography>${subtotal.toLocaleString()}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography>IVA (19%):</Typography>
-                <Typography>${iva.toLocaleString()}</Typography>
-              </Box>
-              <Divider sx={{ my: 1 }} />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography fontWeight="bold">Total:</Typography>
-                <Typography fontWeight="bold">${total.toLocaleString()}</Typography>
-              </Box>
-            </Box>
-          </Paper>
-
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Cliente seleccionado</Typography>
-            <Box>
-              {venta.client ? (
-                <>
-                  <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                    {venta.client.first_name} {venta.client.last_name}
+                <Typography level='title-md' sx={{ mb: 2 }}>Cliente</Typography>
+                {selectedClient ? (
+                  <Card variant='outlined' sx={{ p: 2 }}>
+                    <CardContent>
+                      <Stack spacing={2} alignItems='center' direction={'row'}>
+                        <Avatar
+                          size='lg'
+                          variant='soft'
+                          color='primary'
+                          sx={{
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          {getInitials(selectedClient.first_name, selectedClient.last_name)}
+                        </Avatar>
+                        <Stack spacing={1} alignItems={'flex-start'} justifyContent={'center'}>
+                          <Typography level='title-sm' textAlign='center' overflow={'clip'}>
+                            {selectedClient.first_name} {selectedClient.last_name}
+                          </Typography>
+                          <Typography level='body-sm' textAlign='center' overflow={'clip'}>
+                            {selectedClient.national_id}
+                          </Typography>
+                          <Typography level='body-sm' textAlign='center' overflow={'clip'}>
+                            {selectedClient.email}
+                          </Typography>
+                          <Typography level='body-sm' textAlign='center' overflow={'clip'}>
+                            {selectedClient.phone_number}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Typography level='body-sm' textAlign='center'>
+                    Seleccione un cliente para ver sus datos
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    RUT: {venta.client.formatted_rut || venta.client.national_id}
-                  </Typography>
-                </>
-              ) : (
-                <Typography>Sin cliente</Typography>
-              )}
-            </Box>
-          </Paper>
-        </Box>
-      </Box>
+                )}
+              </Sheet>
+            </Stack>
+          </Grid>
+        </Grid>
+      </form>
+    </>
+  )
+}
 
-      <Box sx={{ position: 'fixed', bottom: 24, right: 24, display: 'flex', gap: 2 }}>
-        <Button variant="outlined" onClick={() => navigate({ to: '/ventas/gestiondeventas' })}>
-          Cancelar
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          Guardar Cambios
-        </Button>
-      </Box>
-    </Box>
-  );
-};
-
-export default SalesEdit;
+export default SalesEdit // Changed export name

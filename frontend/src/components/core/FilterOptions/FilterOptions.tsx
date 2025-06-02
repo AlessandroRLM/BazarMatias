@@ -55,11 +55,15 @@ const FilterOptions = <T,>(props: Props<T>) => {
     }
 
     const handleDateChange = (date: Date | null) => {
-        onChangeFilters({ created_at: dayjs(date).format('YYYY-MM-DD') } as Partial<T> & { created_at: string })
+        if (date) {
+            onChangeFilters({ created_at: dayjs(date).format('YYYY-MM-DD') } as Partial<T> & { created_at: string })
+        } else {
+            onChangeFilters({ created_at: undefined } as unknown as Partial<T>)
+        }
     }
 
     const handleDateRangeChange = (dates: { start: Date | null; end: Date | null }) => {
-        if (dates.start && dates.end){
+        if (dates.start && dates.end) {
             onChangeFilters({
                 date__range_after: dayjs(dates.start).format('YYYY-MM-DD'),
                 date__range_before: dayjs(dates.end).format('YYYY-MM-DD'),

@@ -4,7 +4,7 @@ import { QuoteCreationFormValues, quoteCreationSchema } from '../../schemas/vent
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useMutation, useQueries, useQuery } from '@tanstack/react-query'
-import { editQuote, fetchClientsForSelect } from '../../services/saleService'
+import { editQuote, fetchClientsForSelect, sendQuoteEmail } from '../../services/saleService'
 import { Client, QuoteDetail } from '../../types/sales.types'
 import AutocompleteFormField, { SelectOption } from '../../components/core/AutocompleteFormField/AutocompleteFormField'
 import { Product } from '../../types/inventory.types'
@@ -24,6 +24,7 @@ const QuoteEditPage = () => {
         queryKey: ['quote', id],
         queryFn: async () => {
             const response = await AxiosInstance.get(`/api/sales/quotes/${id}/`)
+            console.log(response.data)
             return response.data
         },
         enabled: !!id,
@@ -158,11 +159,33 @@ const QuoteEditPage = () => {
         },
     })
 
+    const sendEmailMutation = useMutation({
+        mutationFn: sendQuoteEmail,
+        onSuccess: () => {
+            alert('Cotización actualizada y enviada con éxito!')
+            navigate({ to: '/ventas/cotizaciones' })
+        },
+        onError: (error) => {
+            console.error(error)
+            alert(`Error al enviar el email: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+        },
+    })
+
     const onSubmit: SubmitHandler<QuoteCreationFormValues> = (data) => {
         console.log(data)
         mutation.mutate(data)
     }
 
+    const handleUpdateAndSend: SubmitHandler<QuoteCreationFormValues> = (data) => {
+        console.log(data)
+        mutation.mutate(data, {
+            onSuccess: () => {
+                // Enviar email después de actualizar la cotización
+                sendEmailMutation.mutate(id)
+            }
+        })
+    }
+    
     // Agregar nuevo detalle
     const addDetail = () => {
         setValue('details', [...watch('details'), { product: '', quantity: 1, unit_price: 0 }])
@@ -239,7 +262,7 @@ const QuoteEditPage = () => {
                                         placeholder='Buscar cliente'
                                         control={control}
                                         name='client'
-                                        fullWidht={true}
+                                        fullWidth={true}
                                         options={clientsOptions}
                                         loading={isLoadingClients}
                                         error={errors?.client}
@@ -255,7 +278,7 @@ const QuoteEditPage = () => {
                                             { value: 'RE', label: 'Rechazado' },
                                         ]}
                                         error={errors.status}
-                                        fullWidht={true}
+                                        fullWidth={true}
                                     />
                                 </Stack>
                                 <Grid container sx={{ flexGrow: 1 }}>
@@ -273,7 +296,7 @@ const QuoteEditPage = () => {
                                                     stickyHeader // Makes header sticky if table scrolls
                                                     sx={{
                                                         '& thead th': { fontWeight: 'lg' },
-                                                        '& tr > *:not(:first-child)': { textAlign: 'right' },
+                                                        '& tr > *:not(:first-of-type)': { textAlign: 'right' },
                                                         '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' }, // Adjust padding for FormControls
                                                     }}
                                                 >
@@ -412,13 +435,25 @@ const QuoteEditPage = () => {
                                     }}
                                 >
                                     <Button
-                                        type='submit'
+                                        onClick={handleSubmit(handleUpdateAndSend)}
                                         fullWidth
                                         size='md'
                                         sx={{ mt: 'auto' }}
                                         startDecorator={<Send />}
+                                        loading={mutation.isPending || sendEmailMutation.isPending}
+                                        disabled={mutation.isPending || sendEmailMutation.isPending}
+                                    >
+                                        Actualizar y Enviar
+                                    </Button>
+                                    <Button
+                                        type='submit'
+                                        fullWidth
+                                        size='md'
+                                        color='neutral'
+                                        variant='outlined'
+                                        sx={{ mt: 'auto' }}
                                         loading={mutation.isPending}
-                                        disabled={mutation.isPending}
+                                        disabled={mutation.isPending || sendEmailMutation.isPending}
                                     >
                                         Actualizar Cotización
                                     </Button>

@@ -112,7 +112,7 @@ const FormUserCreation = ({
         label="Nombre"
         placeholder="Nombre"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.name}
         disabled={isFieldDisabled('name')}
         readonly={mode === 'view'}
@@ -123,7 +123,7 @@ const FormUserCreation = ({
         label="Apellido"
         placeholder="Apellido"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.lastName}
         disabled={isFieldDisabled('lastName')}
         readonly={mode === 'view'}
@@ -134,7 +134,7 @@ const FormUserCreation = ({
         label="RUT"
         placeholder="Ej: 12.345.678-9"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.rut}
         disabled={isFieldDisabled('rut')}
         readonly={mode === 'view' || mode === 'edit'}
@@ -146,7 +146,7 @@ const FormUserCreation = ({
         placeholder="correo@ejemplo.com"
         type="email"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.email}
         disabled={isFieldDisabled('email')}
         readonly={mode === 'view'}
@@ -157,7 +157,7 @@ const FormUserCreation = ({
         label="Teléfono"
         placeholder="+56912345678"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.phone}
         disabled={isFieldDisabled('phone')}
         readonly={mode === 'view'}

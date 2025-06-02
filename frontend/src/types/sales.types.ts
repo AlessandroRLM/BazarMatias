@@ -169,3 +169,5 @@ export interface CustomPagination<T> {
   };
   results: T[];
 }
+
+export type { Product };

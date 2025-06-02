@@ -24,6 +24,7 @@ import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventari
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthVentasOrdenesdetrabajoIndexImport } from './routes/_auth/ventas/ordenesdetrabajo/index'
 import { Route as AuthVentasGestiondeventasIndexImport } from './routes/_auth/ventas/gestiondeventas/index'
+import { Route as AuthVentasGestiondedevolucionesIndexImport } from './routes/_auth/ventas/gestiondedevoluciones/index'
 import { Route as AuthVentasGestiondeclientesIndexImport } from './routes/_auth/ventas/gestiondeclientes/index'
 import { Route as AuthVentasDashboardIndexImport } from './routes/_auth/ventas/dashboard/index'
 import { Route as AuthVentasCotizacionesIndexImport } from './routes/_auth/ventas/cotizaciones/index'
@@ -35,6 +36,7 @@ import { Route as AuthAdministracionUsuariosIndexImport } from './routes/_auth/a
 import { Route as AuthAdministracionPerfilIndexImport } from './routes/_auth/administracion/perfil/index'
 import { Route as AuthVentasOrdenesdetrabajoCrearOrdenTrabajoImport } from './routes/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
 import { Route as AuthVentasGestiondeventasAadirVentaImport } from './routes/_auth/ventas/gestiondeventas/añadir-venta'
+import { Route as AuthVentasGestiondedevolucionesAadirDevolucionImport } from './routes/_auth/ventas/gestiondedevoluciones/añadir-devolucion'
 import { Route as AuthVentasGestiondeclientesAadirClienteImport } from './routes/_auth/ventas/gestiondeclientes/añadir-cliente'
 import { Route as AuthVentasCotizacionesCrearCotizacionImport } from './routes/_auth/ventas/cotizaciones/crear-cotizacion'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
@@ -55,6 +57,8 @@ import { Route as AuthVentasOrdenesdetrabajoVerOrdenTrabajoIdImport } from './ro
 import { Route as AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdImport } from './routes/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo.$id'
 import { Route as AuthVentasGestiondeventasVerVentaIdImport } from './routes/_auth/ventas/gestiondeventas/ver-venta.$id'
 import { Route as AuthVentasGestiondeventasEditarVentaIdImport } from './routes/_auth/ventas/gestiondeventas/editar-venta.$id'
+import { Route as AuthVentasGestiondedevolucionesVerDevolucionIdImport } from './routes/_auth/ventas/gestiondedevoluciones/ver-devolucion.$id'
+import { Route as AuthVentasGestiondedevolucionesEditarDevolucionIdImport } from './routes/_auth/ventas/gestiondedevoluciones/editar-devolucion.$id'
 import { Route as AuthVentasGestiondeclientesVerClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/ver-cliente.$id'
 import { Route as AuthVentasGestiondeclientesEditarClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/editar-cliente.$id'
 import { Route as AuthVentasCotizacionesVerCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/ver-cotizacion.$id'
@@ -156,6 +160,13 @@ const AuthVentasGestiondeventasIndexRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthVentasGestiondedevolucionesIndexRoute =
+  AuthVentasGestiondedevolucionesIndexImport.update({
+    id: '/ventas/gestiondedevoluciones/',
+    path: '/ventas/gestiondedevoluciones/',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthVentasGestiondeclientesIndexRoute =
   AuthVentasGestiondeclientesIndexImport.update({
     id: '/ventas/gestiondeclientes/',
@@ -229,6 +240,13 @@ const AuthVentasGestiondeventasAadirVentaRoute =
   AuthVentasGestiondeventasAadirVentaImport.update({
     id: '/ventas/gestiondeventas/añadir-venta',
     path: '/ventas/gestiondeventas/añadir-venta',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasGestiondedevolucionesAadirDevolucionRoute =
+  AuthVentasGestiondedevolucionesAadirDevolucionImport.update({
+    id: '/ventas/gestiondedevoluciones/añadir-devolucion',
+    path: '/ventas/gestiondedevoluciones/añadir-devolucion',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -369,6 +387,20 @@ const AuthVentasGestiondeventasEditarVentaIdRoute =
   AuthVentasGestiondeventasEditarVentaIdImport.update({
     id: '/ventas/gestiondeventas/editar-venta/$id',
     path: '/ventas/gestiondeventas/editar-venta/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasGestiondedevolucionesVerDevolucionIdRoute =
+  AuthVentasGestiondedevolucionesVerDevolucionIdImport.update({
+    id: '/ventas/gestiondedevoluciones/ver-devolucion/$id',
+    path: '/ventas/gestiondedevoluciones/ver-devolucion/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthVentasGestiondedevolucionesEditarDevolucionIdRoute =
+  AuthVentasGestiondedevolucionesEditarDevolucionIdImport.update({
+    id: '/ventas/gestiondedevoluciones/editar-devolucion/$id',
+    path: '/ventas/gestiondedevoluciones/editar-devolucion/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -670,6 +702,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVentasGestiondeclientesAadirClienteImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/ventas/gestiondedevoluciones/añadir-devolucion': {
+      id: '/_auth/ventas/gestiondedevoluciones/añadir-devolucion'
+      path: '/ventas/gestiondedevoluciones/añadir-devolucion'
+      fullPath: '/ventas/gestiondedevoluciones/añadir-devolucion'
+      preLoaderRoute: typeof AuthVentasGestiondedevolucionesAadirDevolucionImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/ventas/gestiondeventas/añadir-venta': {
       id: '/_auth/ventas/gestiondeventas/añadir-venta'
       path: '/ventas/gestiondeventas/añadir-venta'
@@ -745,6 +784,13 @@ declare module '@tanstack/react-router' {
       path: '/ventas/gestiondeclientes'
       fullPath: '/ventas/gestiondeclientes'
       preLoaderRoute: typeof AuthVentasGestiondeclientesIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/ventas/gestiondedevoluciones/': {
+      id: '/_auth/ventas/gestiondedevoluciones/'
+      path: '/ventas/gestiondedevoluciones'
+      fullPath: '/ventas/gestiondedevoluciones'
+      preLoaderRoute: typeof AuthVentasGestiondedevolucionesIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/ventas/gestiondeventas/': {
@@ -866,6 +912,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVentasGestiondeclientesVerClienteIdImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id': {
+      id: '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id'
+      path: '/ventas/gestiondedevoluciones/editar-devolucion/$id'
+      fullPath: '/ventas/gestiondedevoluciones/editar-devolucion/$id'
+      preLoaderRoute: typeof AuthVentasGestiondedevolucionesEditarDevolucionIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id': {
+      id: '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id'
+      path: '/ventas/gestiondedevoluciones/ver-devolucion/$id'
+      fullPath: '/ventas/gestiondedevoluciones/ver-devolucion/$id'
+      preLoaderRoute: typeof AuthVentasGestiondedevolucionesVerDevolucionIdImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/ventas/gestiondeventas/editar-venta/$id': {
       id: '/_auth/ventas/gestiondeventas/editar-venta/$id'
       path: '/ventas/gestiondeventas/editar-venta/$id'
@@ -924,6 +984,7 @@ interface AuthRouteChildren {
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthVentasCotizacionesCrearCotizacionRoute: typeof AuthVentasCotizacionesCrearCotizacionRoute
   AuthVentasGestiondeclientesAadirClienteRoute: typeof AuthVentasGestiondeclientesAadirClienteRoute
+  AuthVentasGestiondedevolucionesAadirDevolucionRoute: typeof AuthVentasGestiondedevolucionesAadirDevolucionRoute
   AuthVentasGestiondeventasAadirVentaRoute: typeof AuthVentasGestiondeventasAadirVentaRoute
   AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute: typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   AuthAdministracionPerfilIndexRoute: typeof AuthAdministracionPerfilIndexRoute
@@ -935,6 +996,7 @@ interface AuthRouteChildren {
   AuthVentasCotizacionesIndexRoute: typeof AuthVentasCotizacionesIndexRoute
   AuthVentasDashboardIndexRoute: typeof AuthVentasDashboardIndexRoute
   AuthVentasGestiondeclientesIndexRoute: typeof AuthVentasGestiondeclientesIndexRoute
+  AuthVentasGestiondedevolucionesIndexRoute: typeof AuthVentasGestiondedevolucionesIndexRoute
   AuthVentasGestiondeventasIndexRoute: typeof AuthVentasGestiondeventasIndexRoute
   AuthVentasOrdenesdetrabajoIndexRoute: typeof AuthVentasOrdenesdetrabajoIndexRoute
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute: typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -952,6 +1014,8 @@ interface AuthRouteChildren {
   AuthVentasCotizacionesVerCotizacionIdRoute: typeof AuthVentasCotizacionesVerCotizacionIdRoute
   AuthVentasGestiondeclientesEditarClienteIdRoute: typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   AuthVentasGestiondeclientesVerClienteIdRoute: typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  AuthVentasGestiondedevolucionesEditarDevolucionIdRoute: typeof AuthVentasGestiondedevolucionesEditarDevolucionIdRoute
+  AuthVentasGestiondedevolucionesVerDevolucionIdRoute: typeof AuthVentasGestiondedevolucionesVerDevolucionIdRoute
   AuthVentasGestiondeventasEditarVentaIdRoute: typeof AuthVentasGestiondeventasEditarVentaIdRoute
   AuthVentasGestiondeventasVerVentaIdRoute: typeof AuthVentasGestiondeventasVerVentaIdRoute
   AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute: typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
@@ -996,6 +1060,8 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthVentasCotizacionesCrearCotizacionRoute,
   AuthVentasGestiondeclientesAadirClienteRoute:
     AuthVentasGestiondeclientesAadirClienteRoute,
+  AuthVentasGestiondedevolucionesAadirDevolucionRoute:
+    AuthVentasGestiondedevolucionesAadirDevolucionRoute,
   AuthVentasGestiondeventasAadirVentaRoute:
     AuthVentasGestiondeventasAadirVentaRoute,
   AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute:
@@ -1009,6 +1075,8 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthVentasCotizacionesIndexRoute: AuthVentasCotizacionesIndexRoute,
   AuthVentasDashboardIndexRoute: AuthVentasDashboardIndexRoute,
   AuthVentasGestiondeclientesIndexRoute: AuthVentasGestiondeclientesIndexRoute,
+  AuthVentasGestiondedevolucionesIndexRoute:
+    AuthVentasGestiondedevolucionesIndexRoute,
   AuthVentasGestiondeventasIndexRoute: AuthVentasGestiondeventasIndexRoute,
   AuthVentasOrdenesdetrabajoIndexRoute: AuthVentasOrdenesdetrabajoIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuarioIdRoute:
@@ -1039,6 +1107,10 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthVentasGestiondeclientesEditarClienteIdRoute,
   AuthVentasGestiondeclientesVerClienteIdRoute:
     AuthVentasGestiondeclientesVerClienteIdRoute,
+  AuthVentasGestiondedevolucionesEditarDevolucionIdRoute:
+    AuthVentasGestiondedevolucionesEditarDevolucionIdRoute,
+  AuthVentasGestiondedevolucionesVerDevolucionIdRoute:
+    AuthVentasGestiondedevolucionesVerDevolucionIdRoute,
   AuthVentasGestiondeventasEditarVentaIdRoute:
     AuthVentasGestiondeventasEditarVentaIdRoute,
   AuthVentasGestiondeventasVerVentaIdRoute:
@@ -1079,6 +1151,7 @@ export interface FileRoutesByFullPath {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
+  '/ventas/gestiondedevoluciones/añadir-devolucion': typeof AuthVentasGestiondedevolucionesAadirDevolucionRoute
   '/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
@@ -1090,6 +1163,7 @@ export interface FileRoutesByFullPath {
   '/ventas/cotizaciones': typeof AuthVentasCotizacionesIndexRoute
   '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
+  '/ventas/gestiondedevoluciones': typeof AuthVentasGestiondedevolucionesIndexRoute
   '/ventas/gestiondeventas': typeof AuthVentasGestiondeventasIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -1107,6 +1181,8 @@ export interface FileRoutesByFullPath {
   '/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/ventas/gestiondedevoluciones/editar-devolucion/$id': typeof AuthVentasGestiondedevolucionesEditarDevolucionIdRoute
+  '/ventas/gestiondedevoluciones/ver-devolucion/$id': typeof AuthVentasGestiondedevolucionesVerDevolucionIdRoute
   '/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
   '/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
@@ -1141,6 +1217,7 @@ export interface FileRoutesByTo {
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
+  '/ventas/gestiondedevoluciones/añadir-devolucion': typeof AuthVentasGestiondedevolucionesAadirDevolucionRoute
   '/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
   '/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/administracion/perfil': typeof AuthAdministracionPerfilIndexRoute
@@ -1152,6 +1229,7 @@ export interface FileRoutesByTo {
   '/ventas/cotizaciones': typeof AuthVentasCotizacionesIndexRoute
   '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
+  '/ventas/gestiondedevoluciones': typeof AuthVentasGestiondedevolucionesIndexRoute
   '/ventas/gestiondeventas': typeof AuthVentasGestiondeventasIndexRoute
   '/ventas/ordenesdetrabajo': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -1169,6 +1247,8 @@ export interface FileRoutesByTo {
   '/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/ventas/gestiondedevoluciones/editar-devolucion/$id': typeof AuthVentasGestiondedevolucionesEditarDevolucionIdRoute
+  '/ventas/gestiondedevoluciones/ver-devolucion/$id': typeof AuthVentasGestiondedevolucionesVerDevolucionIdRoute
   '/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
   '/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
@@ -1204,6 +1284,7 @@ export interface FileRoutesById {
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/_auth/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
+  '/_auth/ventas/gestiondedevoluciones/añadir-devolucion': typeof AuthVentasGestiondedevolucionesAadirDevolucionRoute
   '/_auth/ventas/gestiondeventas/añadir-venta': typeof AuthVentasGestiondeventasAadirVentaRoute
   '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo': typeof AuthVentasOrdenesdetrabajoCrearOrdenTrabajoRoute
   '/_auth/administracion/perfil/': typeof AuthAdministracionPerfilIndexRoute
@@ -1215,6 +1296,7 @@ export interface FileRoutesById {
   '/_auth/ventas/cotizaciones/': typeof AuthVentasCotizacionesIndexRoute
   '/_auth/ventas/dashboard/': typeof AuthVentasDashboardIndexRoute
   '/_auth/ventas/gestiondeclientes/': typeof AuthVentasGestiondeclientesIndexRoute
+  '/_auth/ventas/gestiondedevoluciones/': typeof AuthVentasGestiondedevolucionesIndexRoute
   '/_auth/ventas/gestiondeventas/': typeof AuthVentasGestiondeventasIndexRoute
   '/_auth/ventas/ordenesdetrabajo/': typeof AuthVentasOrdenesdetrabajoIndexRoute
   '/_auth/administracion/usuarios/actividad-de-usuario/$id': typeof AuthAdministracionUsuariosActividadDeUsuarioIdRoute
@@ -1232,6 +1314,8 @@ export interface FileRoutesById {
   '/_auth/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/_auth/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
   '/_auth/ventas/gestiondeclientes/ver-cliente/$id': typeof AuthVentasGestiondeclientesVerClienteIdRoute
+  '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id': typeof AuthVentasGestiondedevolucionesEditarDevolucionIdRoute
+  '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id': typeof AuthVentasGestiondedevolucionesVerDevolucionIdRoute
   '/_auth/ventas/gestiondeventas/editar-venta/$id': typeof AuthVentasGestiondeventasEditarVentaIdRoute
   '/_auth/ventas/gestiondeventas/ver-venta/$id': typeof AuthVentasGestiondeventasVerVentaIdRoute
   '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id': typeof AuthVentasOrdenesdetrabajoEditarOrdenTrabajoIdRoute
@@ -1268,6 +1352,7 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/cotizaciones/crear-cotizacion'
     | '/ventas/gestiondeclientes/añadir-cliente'
+    | '/ventas/gestiondedevoluciones/añadir-devolucion'
     | '/ventas/gestiondeventas/añadir-venta'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/administracion/perfil'
@@ -1279,6 +1364,7 @@ export interface FileRouteTypes {
     | '/ventas/cotizaciones'
     | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
+    | '/ventas/gestiondedevoluciones'
     | '/ventas/gestiondeventas'
     | '/ventas/ordenesdetrabajo'
     | '/administracion/usuarios/actividad-de-usuario/$id'
@@ -1296,6 +1382,8 @@ export interface FileRouteTypes {
     | '/ventas/cotizaciones/ver-cotizacion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
     | '/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/ventas/gestiondedevoluciones/editar-devolucion/$id'
+    | '/ventas/gestiondedevoluciones/ver-devolucion/$id'
     | '/ventas/gestiondeventas/editar-venta/$id'
     | '/ventas/gestiondeventas/ver-venta/$id'
     | '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
@@ -1329,6 +1417,7 @@ export interface FileRouteTypes {
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/cotizaciones/crear-cotizacion'
     | '/ventas/gestiondeclientes/añadir-cliente'
+    | '/ventas/gestiondedevoluciones/añadir-devolucion'
     | '/ventas/gestiondeventas/añadir-venta'
     | '/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/administracion/perfil'
@@ -1340,6 +1429,7 @@ export interface FileRouteTypes {
     | '/ventas/cotizaciones'
     | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
+    | '/ventas/gestiondedevoluciones'
     | '/ventas/gestiondeventas'
     | '/ventas/ordenesdetrabajo'
     | '/administracion/usuarios/actividad-de-usuario/$id'
@@ -1357,6 +1447,8 @@ export interface FileRouteTypes {
     | '/ventas/cotizaciones/ver-cotizacion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
     | '/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/ventas/gestiondedevoluciones/editar-devolucion/$id'
+    | '/ventas/gestiondedevoluciones/ver-devolucion/$id'
     | '/ventas/gestiondeventas/editar-venta/$id'
     | '/ventas/gestiondeventas/ver-venta/$id'
     | '/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
@@ -1390,6 +1482,7 @@ export interface FileRouteTypes {
     | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/ventas/cotizaciones/crear-cotizacion'
     | '/_auth/ventas/gestiondeclientes/añadir-cliente'
+    | '/_auth/ventas/gestiondedevoluciones/añadir-devolucion'
     | '/_auth/ventas/gestiondeventas/añadir-venta'
     | '/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo'
     | '/_auth/administracion/perfil/'
@@ -1401,6 +1494,7 @@ export interface FileRouteTypes {
     | '/_auth/ventas/cotizaciones/'
     | '/_auth/ventas/dashboard/'
     | '/_auth/ventas/gestiondeclientes/'
+    | '/_auth/ventas/gestiondedevoluciones/'
     | '/_auth/ventas/gestiondeventas/'
     | '/_auth/ventas/ordenesdetrabajo/'
     | '/_auth/administracion/usuarios/actividad-de-usuario/$id'
@@ -1418,6 +1512,8 @@ export interface FileRouteTypes {
     | '/_auth/ventas/cotizaciones/ver-cotizacion/$id'
     | '/_auth/ventas/gestiondeclientes/editar-cliente/$id'
     | '/_auth/ventas/gestiondeclientes/ver-cliente/$id'
+    | '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id'
+    | '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id'
     | '/_auth/ventas/gestiondeventas/editar-venta/$id'
     | '/_auth/ventas/gestiondeventas/ver-venta/$id'
     | '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id'
@@ -1482,6 +1578,7 @@ export const routeTree = rootRoute
         "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/ventas/cotizaciones/crear-cotizacion",
         "/_auth/ventas/gestiondeclientes/añadir-cliente",
+        "/_auth/ventas/gestiondedevoluciones/añadir-devolucion",
         "/_auth/ventas/gestiondeventas/añadir-venta",
         "/_auth/ventas/ordenesdetrabajo/crear-orden-trabajo",
         "/_auth/administracion/perfil/",
@@ -1493,6 +1590,7 @@ export const routeTree = rootRoute
         "/_auth/ventas/cotizaciones/",
         "/_auth/ventas/dashboard/",
         "/_auth/ventas/gestiondeclientes/",
+        "/_auth/ventas/gestiondedevoluciones/",
         "/_auth/ventas/gestiondeventas/",
         "/_auth/ventas/ordenesdetrabajo/",
         "/_auth/administracion/usuarios/actividad-de-usuario/$id",
@@ -1510,6 +1608,8 @@ export const routeTree = rootRoute
         "/_auth/ventas/cotizaciones/ver-cotizacion/$id",
         "/_auth/ventas/gestiondeclientes/editar-cliente/$id",
         "/_auth/ventas/gestiondeclientes/ver-cliente/$id",
+        "/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id",
+        "/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id",
         "/_auth/ventas/gestiondeventas/editar-venta/$id",
         "/_auth/ventas/gestiondeventas/ver-venta/$id",
         "/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id",
@@ -1615,6 +1715,10 @@ export const routeTree = rootRoute
       "filePath": "_auth/ventas/gestiondeclientes/añadir-cliente.tsx",
       "parent": "/_auth"
     },
+    "/_auth/ventas/gestiondedevoluciones/añadir-devolucion": {
+      "filePath": "_auth/ventas/gestiondedevoluciones/añadir-devolucion.tsx",
+      "parent": "/_auth"
+    },
     "/_auth/ventas/gestiondeventas/añadir-venta": {
       "filePath": "_auth/ventas/gestiondeventas/añadir-venta.tsx",
       "parent": "/_auth"
@@ -1657,6 +1761,10 @@ export const routeTree = rootRoute
     },
     "/_auth/ventas/gestiondeclientes/": {
       "filePath": "_auth/ventas/gestiondeclientes/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/gestiondedevoluciones/": {
+      "filePath": "_auth/ventas/gestiondedevoluciones/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/gestiondeventas/": {
@@ -1725,6 +1833,14 @@ export const routeTree = rootRoute
     },
     "/_auth/ventas/gestiondeclientes/ver-cliente/$id": {
       "filePath": "_auth/ventas/gestiondeclientes/ver-cliente.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id": {
+      "filePath": "_auth/ventas/gestiondedevoluciones/editar-devolucion.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id": {
+      "filePath": "_auth/ventas/gestiondedevoluciones/ver-devolucion.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/gestiondeventas/editar-venta/$id": {

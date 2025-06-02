@@ -134,7 +134,7 @@ export default function SalesManagement() {
   };
 
   const handleStatusChange = (id: string, currentStatus: SaleStatus) => {
-    const newStatus: SaleStatus = currentStatus === 'paid' ? 'pending' : 'paid';
+    const newStatus: SaleStatus = currentStatus === 'PA' ? 'PE' : 'PA';
     statusMutation.mutate({ id, status: newStatus });
   };
 
@@ -206,8 +206,8 @@ export default function SalesManagement() {
     header: "Estado",
     cell: info => {
       const status = info.getValue<SaleStatus>();
-      const displayStatus = status === 'paid' ? 'Pagado' : 'Debe';
-      const color = status === 'paid' ? 'success' : 'danger';
+      const displayStatus = status === 'PA' ? 'Pagado' : 'Debe';
+      const color = status === 'PA' ? 'success' : 'danger';
       return <Typography color={color}>{displayStatus}</Typography>;
     }
   },
@@ -215,8 +215,6 @@ export default function SalesManagement() {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
-        const paymentMethod = row.original.payment_method;
-        const status = paymentMethod === 'EF' ? 'Pagado' : 'Debe';
         
         return (
           <Stack direction="row" spacing={1} alignItems="center">
@@ -231,7 +229,7 @@ export default function SalesManagement() {
               <VisibilityIcon />
             </IconButton>
 
-            {row.original.status !== 'paid' && (
+            {row.original.status !== 'PA' && (
               <>
                 <IconButton
                   component={Link}
@@ -258,10 +256,10 @@ export default function SalesManagement() {
             )}
 
             <Checkbox
-              checked={row.original.status === 'paid'}
+              checked={row.original.status === 'PA'}
               onChange={() => handleStatusChange(row.original.id, row.original.status)}
-              color={row.original.status === 'paid' ? 'success' : 'neutral'}
-              variant={row.original.status === 'paid' ? 'solid' : 'outlined'}
+              color={row.original.status === 'PA' ? 'success' : 'neutral'}
+              variant={row.original.status === 'PA' ? 'solid' : 'outlined'}
               disabled={statusMutation.isPending}
               sx={{ ml: 1 }}
             />

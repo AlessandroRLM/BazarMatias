@@ -1,6 +1,7 @@
 import AxiosInstance from '../helpers/AxiosInstance';
+import { SaleCreationFormValues } from '../schemas/ventas/ventas/saleCreationSchema';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, CreateSaleData, SaleUpdateData } from '../types/sales.types';
+import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -82,12 +83,12 @@ export const fetchSaleById = async (id: string): Promise<Sale> => {
   return response.data;
 };
 
-export const createSale = async (sale: CreateSaleData): Promise<Sale> => {
+export const createSale = async (sale: SaleCreationFormValues): Promise<Sale> => {
   const response = await AxiosInstance.post('/api/sales/sales/', sale);
   return response.data;
 };
 
-export const updateSale = async (id: string, sale: SaleUpdateData): Promise<Sale> => {
+export const updateSale = async (id: string, sale: SaleCreationFormValues): Promise<Sale> => {
   const response = await AxiosInstance.put(`/api/sales/sales/${id}/`, sale);
   return response.data;
 };

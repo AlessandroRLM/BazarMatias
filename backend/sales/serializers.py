@@ -197,7 +197,9 @@ class QuoteSerializer(serializers.ModelSerializer):
         
         # Crear los detalles de cotización
         for detail_data in details_data:
-            QuoteDetail.objects.create(quote=quote, **detail_data)
+            product = detail_data.pop('product')
+            detail = QuoteDetail.objects.create(product=product, **detail_data)
+            quote.details.add(detail)
         
         return quote
     

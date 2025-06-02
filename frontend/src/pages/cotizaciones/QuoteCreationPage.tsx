@@ -4,7 +4,7 @@ import { QuoteCreationFormValues, quoteCreationSchema } from '../../schemas/vent
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useMutation, useQueries, useQuery } from '@tanstack/react-query'
-import { createQuote, fetchClientsForSelect } from '../../services/saleService'
+import { createQuote, fetchClientsForSelect, sendQuoteEmail } from '../../services/saleService'
 import { Client } from '../../types/sales.types'
 import AutocompleteFormField, { SelectOption } from '../../components/core/AutocompleteFormField/AutocompleteFormField'
 import { Product } from '../../types/inventory.types'
@@ -74,7 +74,7 @@ const QuoteCreationPage = () => {
                 }
                 return fetchProducts('')
             },
-            staleTime: Infinity,
+            staleTime: 1000 * 60 * 2,
         })),
     })
 
@@ -112,8 +112,8 @@ const QuoteCreationPage = () => {
                     }
                 }
             } else {
-                // Optionally, clear unit price if product is removed
-                // setValue(`details.${index}.unit_price`, 0)
+
+                setValue(`details.${index}.unit_price`, 0)
             }
         })
     }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
@@ -130,11 +130,33 @@ const QuoteCreationPage = () => {
         },
     })
 
+    const sendEmailMutation = useMutation({
+        mutationFn: sendQuoteEmail,
+        onSuccess: () => {
+            alert('Cotización creada y enviada con éxito!')
+            navigate({ to: '/ventas/cotizaciones' })
+        },
+        onError: (error) => {
+            console.error(error)
+            alert(`Error al enviar el email: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+        },
+    })
+
     const onSubmit: SubmitHandler<QuoteCreationFormValues> = (data) => {
         console.log(data)
         mutation.mutate(data)
     }
 
+    const handleSaveAndSend: SubmitHandler<QuoteCreationFormValues> = (data) => {
+        console.log(data)
+        mutation.mutate(data, {
+            onSuccess: (newQuote) => {
+                // Enviar email después de crear la cotización
+                sendEmailMutation.mutate(newQuote.id)
+            }
+        })
+    }
+    
     // Agregar nuevo detalle
     const addDetail = () => {
         setValue('details', [...watch('details'), { product: '', quantity: 1, unit_price: 0 }])
@@ -191,7 +213,7 @@ const QuoteCreationPage = () => {
                                         placeholder='Buscar cliente'
                                         control={control}
                                         name='client'
-                                        fullWidht={true}
+                                        fullWidth={true}
                                         options={clientsOptions}
                                         loading={isLoadingClients}
                                         error={errors?.client}
@@ -207,7 +229,7 @@ const QuoteCreationPage = () => {
                                             { value: 'RE', label: 'Rechazado' },
                                         ]}
                                         error={errors.status}
-                                        fullWidht={true}
+                                        fullWidth={true}
                                     />
                                 </Stack>
                                 <Grid container sx={{ flexGrow: 1 }}>
@@ -225,7 +247,7 @@ const QuoteCreationPage = () => {
                                                     stickyHeader // Makes header sticky if table scrolls
                                                     sx={{
                                                         '& thead th': { fontWeight: 'lg' },
-                                                        '& tr > *:not(:first-child)': { textAlign: 'right' },
+                                                        '& tr > *:not(:first-of-type)': { textAlign: 'right' },
                                                         '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' }, // Adjust padding for FormControls
                                                     }}
                                                 >
@@ -364,13 +386,13 @@ const QuoteCreationPage = () => {
                                     }}
                                 >
                                     <Button
-                                        type='submit'
+                                        onClick={handleSubmit(handleSaveAndSend)}
                                         fullWidth
                                         size='md'
                                         sx={{ mt: 'auto' }}
                                         startDecorator={<Send />}
-                                        loading={mutation.isPending}
-                                        disabled={mutation.isPending}
+                                        loading={mutation.isPending || sendEmailMutation.isPending}
+                                        disabled={mutation.isPending || sendEmailMutation.isPending}
                                     >
                                         Guardar y Enviar Cotización
                                     </Button>
@@ -382,7 +404,7 @@ const QuoteCreationPage = () => {
                                         variant='outlined'
                                         sx={{ mt: 'auto' }}
                                         loading={mutation.isPending}
-                                        disabled={mutation.isPending}
+                                        disabled={mutation.isPending || sendEmailMutation.isPending}
                                     >
                                         Guardar Cotización
                                     </Button>

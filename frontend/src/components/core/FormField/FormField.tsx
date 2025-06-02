@@ -8,7 +8,7 @@ interface FormFieldProps<T extends FieldValues> {
     placeholder?: string
     type?: string
     size?: "md" | "sm" | "lg"
-    fullWidht?: boolean
+    fullWidth?: boolean
     disabled?: boolean
     readonly?: boolean
     error?: FieldError
@@ -22,7 +22,7 @@ const FormField = <T extends FieldValues>({
     placeholder,
     type = 'text',
     size = 'md',
-    fullWidht = false,
+    fullWidth = false,
     disabled = false,
     readonly = false,
     error,
@@ -33,14 +33,14 @@ const FormField = <T extends FieldValues>({
             name={name}
             control={control}
             render={({ field: { onChange, ...field } }) => (
-                <FormControl error={!!error} sx={{ mb: 2, width: fullWidht ? '100%' : 'auto' }}>
+                <FormControl error={!!error} sx={{ mb: 2, width: fullWidth ? '100%' : 'auto' }}>
                     <FormLabel>{label}</FormLabel>
                     <Input
                         {...field}
                         type={type}
                         placeholder={placeholder}
                         size={size}
-                        fullWidth={fullWidht}
+                        fullWidth={fullWidth}
                         disabled={disabled}
                         readOnly={readonly}
                         onChange={(e) => {

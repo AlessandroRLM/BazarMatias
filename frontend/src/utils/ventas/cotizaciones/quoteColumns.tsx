@@ -1,11 +1,13 @@
 import { createColumnHelper } from "@tanstack/react-table"
 
-import { Check, Delete, Edit, Error, RemoveRedEye, WarningOutlined } from "@mui/icons-material"
+import { Check, Delete, Edit, Error, RemoveRedEye, Send, WarningOutlined } from "@mui/icons-material"
 import { Chip, IconButton, Stack } from "@mui/joy"
 import { ReactNode } from "react"
 
 import { Quote } from "../../../types/sales.types"
 import IconLink from "../../../components/administracion/IconLink/IconLink"
+import AxiosInstance from "../../../helpers/AxiosInstance"
+import dayjs from "dayjs"
 
 function statusMapper(statusType: string): ReactNode {
     switch (statusType) {
@@ -31,7 +33,7 @@ export const QUOTE_COLUMNS = (handleDeleteClick: (id: string) => void) => [
     columnHelper.accessor('created_at', {
         id: 'created_at',
         header: 'Fecha de Creación',
-        cell: (info) => info.getValue(),
+        cell: (info) => dayjs(info.getValue()).format('DD/MM/YYYY'),
     }),
 
     columnHelper.accessor('total', {
@@ -67,6 +69,23 @@ export const QUOTE_COLUMNS = (handleDeleteClick: (id: string) => void) => [
                 >
                     <RemoveRedEye />
                 </IconLink>
+                <IconButton
+                    variant="plain"
+                    color="neutral"
+                    size="sm"
+                    aria-label="Send"
+                    onClick={() => {
+                        AxiosInstance.post(`/api/sales/quotes/${info.getValue()}/send-email/`)
+                            .then(() => {
+                                console.log('Email sent successfully')
+                            })
+                            .catch((error) => {
+                                console.error('Error sending email:', error)
+                            })
+                    }}
+                >
+                    <Send />
+                </IconButton>
                 <IconButton
                     variant="plain"
                     color="danger"

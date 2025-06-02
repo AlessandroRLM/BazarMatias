@@ -116,7 +116,7 @@ const FormUserCreation = ({
         label="Nombre"
         placeholder="Nombre"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.name}
         disabled={isFieldDisabled('name')}
         readonly={mode === 'view'}
@@ -127,7 +127,7 @@ const FormUserCreation = ({
         label="Apellido"
         placeholder="Apellido"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.lastName}
         disabled={isFieldDisabled('lastName')}
         readonly={mode === 'view'}
@@ -138,7 +138,7 @@ const FormUserCreation = ({
         label="Rut"
         placeholder="Rut"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.rut}
         disabled={isFieldDisabled('rut')}
         readonly={mode === 'view' || mode === 'edit'}
@@ -150,7 +150,7 @@ const FormUserCreation = ({
         placeholder="Correo electrónico"
         type="email"
         size="lg"
-        fullWidht={true}
+        fullWidth={true}
         error={errors.email}
         disabled={isFieldDisabled('email')}
         readonly={mode === 'view'}

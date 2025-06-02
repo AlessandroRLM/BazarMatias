@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
+
+from django.conf.global_settings import PASSWORD_RESET_TIMEOUT
 import django_mongodb_backend #type: ignore
 from decouple import config #type: ignore
 from pathlib import Path
@@ -178,3 +180,13 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Proveedor smtp de correo
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+PASSWORD_RESET_TIMEOUT = 60 * 15

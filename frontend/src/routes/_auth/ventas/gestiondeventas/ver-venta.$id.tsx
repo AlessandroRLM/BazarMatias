@@ -1,10 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import SalesView from '../../../../pages/ventas/SalesView';
+import { createFileRoute } from '@tanstack/react-router'
+import SalesDetail from '../../../../pages/ventas/SalesDetail'
 
 export const Route = createFileRoute('/_auth/ventas/gestiondeventas/ver-venta/$id')({
-  component: SalesViewPage
-});
-
-function SalesViewPage() {
-  return <SalesView/>;
-}
+  component: SalesDetail
+})

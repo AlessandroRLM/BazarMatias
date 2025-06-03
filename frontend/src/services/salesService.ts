@@ -1,7 +1,7 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 import { SaleCreationFormValues } from '../schemas/ventas/ventas/saleCreationSchema';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload } from '../types/sales.types';
+import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, Product, SaleDetail } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -146,26 +146,23 @@ export const deleteQuote = async (id: string): Promise<void> => {
 };
 
 // CRUD de Devoluciones con paginación, búsqueda y filtros
-export const fetchReturns = async ({
-  page = 1,
-  page_size = 10,
-  search = '',
-  sale_folio = '',
-  product_name = '',
-  ordering = '-created_at',
-}: {
-  page?: number;
-  page_size?: number;
-  search?: string;
-  sale_folio?: string;
-  product_name?: string;
-  ordering?: string;
-} = {}): Promise<CustomPagination<Return>> => {
-  let url = `/api/sales/returns/?page=${page}&page_size=${page_size}`;
-  if (search) url += `&search=${encodeURIComponent(search)}`;
-  if (sale_folio) url += `&sale__folio=${encodeURIComponent(sale_folio)}`;
-  if (product_name) url += `&product__name=${encodeURIComponent(product_name)}`;
-  if (ordering) url += `&ordering=${encodeURIComponent(ordering)}`;
+export const fetchReturns = async (
+  page: number,
+  pageSize: number,
+  filters?: {
+    search?: string;
+    status?: 'pending' | 'completed';
+    sale_folio?: string;
+    product_name?: string;
+  }
+): Promise<CustomPagination<Return>> => {
+  let url = `/api/sales/returns/?page=${page}&page_size=${pageSize}`;
+  
+  if (filters?.status) url += `&status=${filters.status}`;
+  if (filters?.search) url += `&search=${encodeURIComponent(filters.search)}`;
+  if (filters?.sale_folio) url += `&sale__folio=${encodeURIComponent(filters.sale_folio)}`;
+  if (filters?.product_name) url += `&product__name=${encodeURIComponent(filters.product_name)}`;
+  
   const response = await AxiosInstance.get(url);
   return response.data;
 };
@@ -175,12 +172,22 @@ export const fetchReturn = async (id: string): Promise<Return> => {
   return response.data;
 };
 
-export const createReturn = async (returnData: Omit<Return, 'id' | 'created_at'>): Promise<Return> => {
+export const createReturn = async (returnData: {
+  client: string;
+  sale: string;
+  product: string;
+  quantity: number;
+  reason: string;
+}): Promise<Return> => {
   const response = await AxiosInstance.post('/api/sales/returns/', returnData);
   return response.data;
 };
 
-export const updateReturn = async (id: string, returnData: Partial<Return>): Promise<Return> => {
+export const updateReturn = async (id: string, returnData: {
+  quantity?: number;
+  reason?: string;
+  status?: 'pending' | 'completed' | 'refused';
+}): Promise<Return> => {
   const response = await AxiosInstance.put(`/api/sales/returns/${id}/`, returnData);
   return response.data;
 };
@@ -271,3 +278,22 @@ export const fetchTopProductsData = async (): Promise<
   const response = await AxiosInstance.get('/api/sales/dashboard/top_products/');
   return response.data;
 };
+
+// Agrega estas funciones a salesService.ts
+export const fetchClientsForSelect = async (search: string): Promise<Client[]> => {
+  const response = await AxiosInstance.get(`/api/sales/clients/?search=${encodeURIComponent(search)}`);
+  return response.data.results;
+};
+
+export const fetchClientSales = async (clientId: string): Promise<Sale[]> => {
+  const response = await AxiosInstance.get(`/api/sales/sales/?client=${clientId}`);
+  return response.data.results;
+};
+
+export const fetchSaleDetails = async (saleId: string): Promise<SaleDetail[]> => {
+  const response = await AxiosInstance.get(`/api/sales/sales/${saleId}/`);
+  return response.data.details;
+};
+
+// Asegúrate de que los tipos estén exportados correctamente
+export type { Client, Sale, Product, SaleDetail };

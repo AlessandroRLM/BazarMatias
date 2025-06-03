@@ -27,12 +27,14 @@ import {
   fetchReturns, 
   deleteReturn, 
   updateReturn,
-  Return
-} from "../../services/returnService";
+} from "../../services/salesService";
+import { Return } from "../../types/sales.types";
 
 interface Filters {
   search?: string;
-  status?: string;
+  status?: 'pending' | 'completed';
+  sale_folio?: string;
+  product_name?: string;
 }
 
 interface SnackbarState {
@@ -68,7 +70,7 @@ export default function ReturnManagementPage() {
   const deleteMutation = useMutation({
     mutationFn: deleteReturn,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['return'] });
+      queryClient.invalidateQueries({ queryKey: ['returns'] });
       setSnackbar({
         open: true,
         message: 'Devolución eliminada correctamente',
@@ -89,7 +91,7 @@ export default function ReturnManagementPage() {
     mutationFn: ({ id, status }: { id: string, status: 'pending' | 'completed' }) => 
       updateReturn(id, { status }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['return'] });
+      queryClient.invalidateQueries({ queryKey: ['returns'] });
       setSnackbar({
         open: true,
         message: 'Estado actualizado',
@@ -105,11 +107,14 @@ export default function ReturnManagementPage() {
     }
   });
 
-  const handleStatusChange = (id: string, currentStatus: 'pending' | 'completed') => {
-    statusMutation.mutate({
-      id,
-      status: currentStatus === 'completed' ? 'pending' : 'completed'
-    });
+  const handleStatusChange = (id: string, currentStatus: 'pending' | 'completed' | 'refused' | null) => {
+    // Solo permitir cambiar estado si es 'pending' o 'completed'
+    if (currentStatus === 'pending' || currentStatus === 'completed') {
+      statusMutation.mutate({
+        id,
+        status: currentStatus === 'completed' ? 'pending' : 'completed'
+      });
+    }
   };
 
   const handleDeleteClick = (returnItem: Return) => {
@@ -153,44 +158,63 @@ export default function ReturnManagementPage() {
 
   // Table columns
   const columns: ColumnDef<Return>[] = [
-  {
-    accessorKey: "client",
-    header: "Cliente",
-    cell: ({ row }) => {
-      // Acceder directamente a los datos de la fila
-      const client = row.original.client;
-      return (
-        <Typography fontWeight="md">
-          {client ? `${client.first_name} ${client.last_name}` : 'Cliente no disponible'}
-        </Typography>
-      );
-    }
-  },
-  {
-    accessorKey: "product",
-    header: "Producto",
-    cell: ({ row }) => {
-      const product = row.original.product;
-      return (
-        <Stack>
-          <Typography>{product?.name || 'Producto no disponible'}</Typography>
-          {product?.sku && <Typography level="body-sm">SKU: {product.sku}</Typography>}
-        </Stack>
-      );
-    }
-  },
+    {
+      accessorKey: "client",
+      header: "Cliente",
+      cell: ({ row }) => {
+        return (
+          <Typography fontWeight="md">
+            {row.original.cliente_nombre || 'Cliente no disponible'}
+          </Typography>
+        );
+      }
+    },
+    {
+      accessorKey: "product",
+      header: "Producto",
+      cell: ({ row }) => {
+        return (
+          <Stack>
+            <Typography>{row.original.producto_nombre || 'Producto no disponible'}</Typography>
+          </Stack>
+        );
+      }
+    },
+    {
+      accessorKey: "sale",
+      header: "Venta",
+      cell: ({ row }) => {
+        return (
+          <Stack>
+            <Typography>#{row.original.sale.folio || 'N/A'}</Typography>
+            <Typography level="body-sm">
+              {row.original.fecha_venta ? dayjs(row.original.fecha_venta).format('DD/MM/YYYY') : 'Fecha no disponible'}
+            </Typography>
+          </Stack>
+        );
+      }
+    },
+    {
+      accessorKey: "quantity",
+      header: "Cantidad",
+      cell: info => info.getValue<number>()
+    },
     {
       accessorKey: "created_at",
-      header: "Fecha",
+      header: "Fecha Devolución",
       cell: info => dayjs(info.getValue<string>()).format('DD/MM/YYYY')
     },
     {
       accessorKey: "status",
       header: "Estado",
       cell: info => {
-        const status = info.getValue<'pending' | 'completed'>();
-        const color = status === 'completed' ? 'success' : 'warning';
-        return <Typography color={color}>{status === 'completed' ? 'Completado' : 'Pendiente'}</Typography>;
+        const status = info.getValue<'pending' | 'completed' | 'refused' | null>();
+        const color = status === 'completed' ? 'success' : 
+                    status === 'refused' ? 'danger' : 'warning';
+        const statusText = status === 'completed' ? 'Completado' : 
+                          status === 'refused' ? 'Rechazado' : 
+                          status === 'pending' ? 'Pendiente' : 'Sin estado';
+        return <Typography color={color}>{statusText}</Typography>;
       }
     },
     {
@@ -239,7 +263,7 @@ export default function ReturnManagementPage() {
               color={row.original.status === 'completed' ? 'success' : 'neutral'}
               variant={row.original.status === 'completed' ? 'solid' : 'outlined'}
               sx={{ ml: 1 }}
-              disabled={statusMutation.isPending}
+              disabled={statusMutation.isPending || !(row.original.status === 'pending' || row.original.status === 'completed')}
             />
           </Stack>
         );

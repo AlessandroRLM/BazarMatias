@@ -1,44 +1,48 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, ChangeEvent } from "react";
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
 import { useParams, Link } from "@tanstack/react-router";
 import { 
   Button,
   FormControl,
   FormLabel,
   Input,
+  Textarea,
   Select,
   Option,
   Stack,
   Typography,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Box
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import dayjs from "dayjs";
 import { 
-  fetchReturnDetails, 
+  fetchReturn, 
   updateReturn,
-  Return
-} from "../../services/returnService";
+} from "../../services/salesService";
+import { Return } from "../../types/sales.types";
 
 export default function ReturnEdit() {
-  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-devolucion/$id' });
+  const { id } = useParams({ from: '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id' });
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   
   // Fetch return details
-  const { data: returnData, isLoading } = useQuery<Return>({
+  const { data: returnData, isLoading } = useQuery<Return, Error>({
     queryKey: ['return', id],
-    queryFn: () => fetchReturnDetails(id),
-
-    enabled: !!id, // Solo ejecuta la query si hay un ID
-    onError: (error) => console.error('Error loading return:', error)
-  });
+    queryFn: () => fetchReturn(id),
+    enabled: !!id,
+    onError: (error: Error) => {
+      console.error('Error loading return:', error);
+      setError('Error al cargar la devolución');
+    }
+  } as UseQueryOptions<Return, Error>);
 
   const [form, setForm] = useState({
     quantity: "1",
     reason: "",
-    status: 'pending' as 'pending' | 'completed'
+    status: 'pending' as 'pending' | 'completed' | 'refused'
   });
 
   useEffect(() => {
@@ -46,20 +50,21 @@ export default function ReturnEdit() {
       setForm({
         quantity: returnData.quantity.toString(),
         reason: returnData.reason,
-        status: returnData.status
+        status: returnData.status || 'pending'
       });
     }
   }, [returnData]);
 
   // Update return mutation
   const updateMutation = useMutation({
-    mutationFn: (data: any) => updateReturn(id, data),
+    mutationFn: (data: { quantity: number; reason: string; status: 'pending' | 'completed' | 'refused' }) => 
+      updateReturn(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['return', id]);
-      queryClient.invalidateQueries(['returns']);
+      queryClient.invalidateQueries({ queryKey: ['return', id] });
+      queryClient.invalidateQueries({ queryKey: ['returns'] });
     },
-    onError: (err: any) => {
-      setError(err.response?.data?.error || 'Error al actualizar la devolución');
+    onError: (err: Error) => {
+      setError(err.message || 'Error al actualizar la devolución');
     }
   });
 
@@ -71,6 +76,11 @@ export default function ReturnEdit() {
   const handleSubmit = () => {
     if (!form.quantity || !form.reason) {
       setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    if (parseInt(form.quantity) <= 0) {
+      setError('La cantidad debe ser mayor a 0');
       return;
     }
 
@@ -107,9 +117,9 @@ export default function ReturnEdit() {
             variant="outlined" 
             color="neutral"
             component={Link}
-            to={`/ventas/gestiondedevoluciones/ver-devolucion/${id}`}
+            to="/ventas/gestiondedevoluciones/"
             fullWidth
-            disabled={updateMutation.isLoading}
+            disabled={updateMutation.isPending}
           >
             Cancelar
           </Button>
@@ -118,7 +128,7 @@ export default function ReturnEdit() {
             color="primary"
             fullWidth
             onClick={handleSubmit}
-            loading={updateMutation.isLoading}
+            loading={updateMutation.isPending}
           >
             Guardar Cambios
           </Button>
@@ -147,8 +157,8 @@ export default function ReturnEdit() {
           <Input
             value={returnData.product.name}
             readOnly
-            endDecorator={returnData.product.sku && (
-              <Typography level="body-sm">SKU: {returnData.product.sku}</Typography>
+            endDecorator={returnData.product.data?.sku && (
+              <Typography level="body-sm">SKU: {returnData.product.data.sku}</Typography>
             )}
           />
         </FormControl>
@@ -160,7 +170,7 @@ export default function ReturnEdit() {
             <Input
               type="number"
               value={form.quantity}
-              onChange={(e) => handleChange("quantity", e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange("quantity", e.target.value)}
               slotProps={{ input: { min: 1 } }}
             />
           </FormControl>
@@ -168,10 +178,11 @@ export default function ReturnEdit() {
             <FormLabel>Estado *</FormLabel>
             <Select
               value={form.status}
-              onChange={(_, value) => handleChange("status", value as string)}
+              onChange={(_, value) => value && handleChange("status", value as string)}
             >
               <Option value="pending">Pendiente</Option>
               <Option value="completed">Completado</Option>
+              <Option value="refused">Rechazado</Option>
             </Select>
           </FormControl>
         </Stack>
@@ -179,9 +190,10 @@ export default function ReturnEdit() {
         {/* Reason */}
         <FormControl>
           <FormLabel>Motivo *</FormLabel>
-          <Input
+          <Textarea
             value={form.reason}
-            onChange={(e) => handleChange("reason", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange("reason", e.target.value)}
+            minRows={3}
           />
         </FormControl>
 
@@ -198,7 +210,7 @@ export default function ReturnEdit() {
           <FormControl sx={{ width: '50%' }}>
             <FormLabel>Fecha de Venta</FormLabel>
             <Input
-              value={dayjs(returnData.sale.created_at).format('DD/MM/YYYY')}
+              value={dayjs(returnData.sale.date).format('DD/MM/YYYY')}
               readOnly
             />
           </FormControl>

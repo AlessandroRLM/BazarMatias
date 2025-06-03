@@ -246,7 +246,20 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
 
 class ReturnViewSet(viewsets.ModelViewSet):
-    queryset = Return.objects.all()
+    queryset = Return.objects.all().select_related(
+        'client', 'sale', 'product'
+    ).order_by('-created_at')
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filtrar por estado 
+        status = self.request.query_params.get('status')
+        if status in ['pending', 'completed', 'refused']:
+            queryset = queryset.filter(status=status)
+            
+        return queryset
+    
     serializer_class = ReturnSerializer
     pagination_class = CustomPagination
 

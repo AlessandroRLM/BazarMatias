@@ -12,7 +12,8 @@ import {
   Grid,
   Alert,
   CircularProgress,
-  Typography
+  Typography,
+  Textarea
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import { 
@@ -22,8 +23,8 @@ import {
   createReturn,
   Client,
   Sale,
-  Product
-} from "../../services/returnService";
+  SaleDetail
+} from "../../services/salesService";
 
 export default function ReturnCreate() {
   const navigate = useNavigate();
@@ -34,12 +35,11 @@ export default function ReturnCreate() {
     product: "",
     quantity: "1",
     reason: "",
-    returnDate: new Date().toISOString().split('T')[0]
   });
   const [error, setError] = useState<string | null>(null);
 
   // Fetch clients
-  const { data: clients = [] } = useQuery<Client[]>({
+  const { data: clients = [], isLoading: isLoadingClients } = useQuery<Client[]>({
     queryKey: ['clients'],
     queryFn: () => fetchClientsForSelect('')
   });
@@ -52,9 +52,9 @@ export default function ReturnCreate() {
   });
 
   // Fetch sale products when sale is selected
-  const { data: saleDetails, isLoading: isLoadingProducts } = useQuery({
+  const { data: saleDetails, isLoading: isLoadingProducts } = useQuery<SaleDetail[]>({
     queryKey: ['saleDetails', form.sale],
-    queryFn: () => form.sale ? fetchSaleDetails(form.sale) : null,
+    queryFn: () => form.sale ? fetchSaleDetails(form.sale) : [],
     enabled: !!form.sale,
   });
 
@@ -62,7 +62,7 @@ export default function ReturnCreate() {
   const createMutation = useMutation({
     mutationFn: createReturn,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['return'] });
+      queryClient.invalidateQueries({ queryKey: ['returns'] });
       navigate({ to: "/ventas/gestiondedevoluciones" });
     },
     onError: (err: any) => {
@@ -82,8 +82,13 @@ export default function ReturnCreate() {
   };
 
   const handleSubmit = () => {
-    if (!form.client || !form.sale || !form.product || !form.quantity) {
+    if (!form.client || !form.sale || !form.product || !form.quantity || !form.reason) {
       setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    if (parseInt(form.quantity) <= 0) {
+      setError('La cantidad debe ser mayor a 0');
       return;
     }
 
@@ -98,7 +103,7 @@ export default function ReturnCreate() {
 
   // Calculate max quantity for selected product
   const maxQuantity = saleDetails?.find(
-    (detail: any) => detail.product.id === form.product
+    (detail) => detail.product.id === form.product
   )?.quantity || 0;
 
   return (
@@ -143,6 +148,7 @@ export default function ReturnCreate() {
               <Select
                 value={form.client}
                 onChange={(_, value) => handleChange("client", value as string)}
+                loadingIndicator={isLoadingClients ? <CircularProgress size="sm" /> : undefined}
               >
                 {clients.map(client => (
                   <Option key={client.id} value={client.id}>
@@ -160,7 +166,7 @@ export default function ReturnCreate() {
                 value={form.sale}
                 onChange={(_, value) => handleChange("sale", value as string)}
                 disabled={!form.client || isLoadingSales}
-                loading={isLoadingSales}
+                loadingIndicator={isLoadingSales ? <CircularProgress size="sm" /> : undefined}
               >
                 {sales.map(sale => (
                   <Option key={sale.id} value={sale.id}>
@@ -181,9 +187,9 @@ export default function ReturnCreate() {
                 value={form.product}
                 onChange={(_, value) => handleChange("product", value as string)}
                 disabled={!form.sale || isLoadingProducts}
-                loading={isLoadingProducts}
+                loadingIndicator={isLoadingProducts ? <CircularProgress size="sm" /> : undefined}
               >
-                {saleDetails?.map((detail: any) => (
+                {saleDetails?.map((detail) => (
                   <Option key={detail.product.id} value={detail.product.id}>
                     {`${detail.product.name} (Vendidos: ${detail.quantity})`}
                   </Option>
@@ -215,28 +221,15 @@ export default function ReturnCreate() {
           </Grid>
         </Grid>
 
-        {/* Reason and Return Date */}
-        <Grid container spacing={2}>
-          <Grid xs={8}>
-            <FormControl>
-              <FormLabel>Motivo *</FormLabel>
-              <Input
-                value={form.reason}
-                onChange={(e) => handleChange("reason", e.target.value)}
-              />
-            </FormControl>
-          </Grid>
-          <Grid xs={4}>
-            <FormControl>
-              <FormLabel>Fecha de devolución</FormLabel>
-              <Input
-                type="date"
-                value={form.returnDate}
-                onChange={(e) => handleChange("returnDate", e.target.value)}
-              />
-            </FormControl>
-          </Grid>
-        </Grid>
+        {/* Reason */}
+        <FormControl>
+          <FormLabel>Motivo *</FormLabel>
+          <Textarea
+            value={form.reason}
+            onChange={(e) => handleChange("reason", e.target.value)}
+            minRows={3}
+          />
+        </FormControl>
       </Stack>
     </Information>
   );

@@ -40,20 +40,40 @@ export interface Sale {
 }
 
 export interface Return {
-  id: string
-  client: Client
+  id: string;
+  client: {
+    id: string;
+    national_id: string;
+    first_name: string;
+    last_name: string;
+    email?: string;
+    phone_number?: string;
+  };
+  cliente_nombre: string;
   sale: {
-    id: string
-    folio: number
-    created_at: string
-  }
-  product: Product
-  quantity: number
-  reason: string
-  created_at: string
-  producto_nombre?: string
-  cliente_nombre?: string
-  fecha_venta?: string
+    id: string;
+    folio: number;
+    date: string;
+  };
+  fecha_venta: string;
+  product: {
+    id: string;
+    supplier: string;
+    supplier_name: string;
+    is_below_min_stock: boolean;
+    name: string;
+    price_clp: number;
+    iva: boolean;
+    stock: number;
+    min_stock: number;
+    category: string;
+    data: any;
+  };
+  producto_nombre: string;
+  quantity: number;
+  reason: string;
+  created_at: string;
+  status: 'pending' | 'completed' | 'refused' | null;
 }
 
 export interface QuoteDetail {

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { useParams, Link } from "@tanstack/react-router";
 import {  
   Stack, 
@@ -10,18 +10,18 @@ import {
 } from "@mui/joy";
 import Information from "../../components/core/Information/Information";
 import dayjs from "dayjs";
-import { fetchReturnDetails, Return } from "../../services/returnService";
+import { fetchReturn } from "../../services/salesService";
+import { Return } from "../../types/sales.types";
 
 export default function ReturnView() {
-  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/ver-devolucion/$id' });
+  const { id } = useParams({ from: '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id' });
   
-  const { data: returnData, isLoading, error } = useQuery<Return>({
+  const { data: returnData, isLoading, error } = useQuery<Return, Error>({
     queryKey: ['return', id],
-    queryFn: () => fetchReturnDetails(id),
+    queryFn: () => fetchReturn(id),
+    onError: (err: Error) => console.error('Error fetching return:', err)
+  } as UseQueryOptions<Return, Error>);
 
-    onSuccess: (data) => console.log('Datos recibidos:', data),
-    onError: (err) => console.error('Error fetching return:', err)
-  });
   if (!id) {
     return (
       <Alert color="danger">
@@ -57,7 +57,6 @@ export default function ReturnView() {
           onClick={() => window.history.back()}
           variant="outlined"
           color="primary"
-          
         >
           Volver
         </Button>
@@ -79,9 +78,6 @@ export default function ReturnView() {
         <Stack spacing={1}>
           <Typography level="title-md">Producto</Typography>
           <Typography>{returnData.product.name}</Typography>
-          {returnData.product.sku && (
-            <Typography level="body-sm">SKU: {returnData.product.sku}</Typography>
-          )}
         </Stack>
 
         {/* Return details */}
@@ -92,8 +88,12 @@ export default function ReturnView() {
           </Stack>
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Estado</Typography>
-            <Typography color={returnData.status === 'completed' ? 'success' : 'warning'}>
-              {returnData.status === 'completed' ? 'Completado' : 'Pendiente'}
+            <Typography color={
+              returnData.status === 'completed' ? 'success' : 
+              returnData.status === 'refused' ? 'danger' : 'warning'
+            }>
+              {returnData.status === 'completed' ? 'Completado' : 
+              returnData.status === 'refused' ? 'Rechazado' : 'Pendiente'}
             </Typography>
           </Stack>
         </Stack>
@@ -120,7 +120,7 @@ export default function ReturnView() {
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Fecha de Venta</Typography>
             <Typography>
-              {dayjs(returnData.sale.created_at).format('DD/MM/YYYY HH:mm')}
+              {dayjs(returnData.sale.date).format('DD/MM/YYYY HH:mm')}
             </Typography>
           </Stack>
         </Stack>

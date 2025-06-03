@@ -26,7 +26,7 @@ import ConfirmDialog from "../../components/administracion/ConfirmDialog/Confirm
 import { 
   fetchReturns, 
   deleteReturn, 
-  updateReturn,
+  updateReturnStatus,
 } from "../../services/salesService";
 import { Return } from "../../types/sales.types";
 
@@ -89,7 +89,7 @@ export default function ReturnManagementPage() {
   // Status change mutation
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string, status: 'pending' | 'completed' }) => 
-      updateReturn(id, { status }),
+      updateReturnStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['returns'] });
       setSnackbar({

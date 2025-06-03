@@ -129,6 +129,8 @@ export default function ReturnEdit() {
             fullWidth
             onClick={handleSubmit}
             loading={updateMutation.isPending}
+            component={Link}
+            to="/ventas/gestiondedevoluciones/"
           >
             Guardar Cambios
           </Button>

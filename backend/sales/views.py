@@ -270,6 +270,23 @@ class ReturnViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_at']
     ordering = ['-created_at']
 
+    @action(detail=True, methods=['patch'], url_path='update-status')
+    def update_status(self, request, pk=None):
+        return_obj = self.get_object()
+        new_status = request.data.get('status')
+        
+        if new_status not in ['pending', 'completed', 'refused']:
+            return Response(
+                {"error": "Estado inválido. Usa 'pending', 'completed' o 'refused'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return_obj.status = new_status
+        return_obj.save()
+        
+        serializer = self.get_serializer(return_obj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class WorkOrderViewSet(viewsets.ModelViewSet):
     queryset = WorkOrder.objects.all()

@@ -192,6 +192,18 @@ export const updateReturn = async (id: string, returnData: {
   return response.data;
 };
 
+// Función específica para actualizar solo el estado de una devolución
+export const updateReturnStatus = async (
+  id: string, 
+  status: 'pending' | 'completed' | 'refused'
+): Promise<Return> => {
+  const response = await AxiosInstance.patch(
+    `/api/sales/returns/${id}/update-status/`, 
+    { status }
+  );
+  return response.data;
+};
+
 export const deleteReturn = async (id: string): Promise<void> => {
   await AxiosInstance.delete(`/api/sales/returns/${id}/`);
 };

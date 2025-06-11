@@ -1,10 +1,27 @@
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query"
-import { ArrowBack, Delete, Add, ShoppingCart } from "@mui/icons-material"
-import { Stack, IconButton, Typography, Grid, Sheet, Table, Button, Divider, Card, CardContent, Avatar, Input, FormControl, FormLabel, CircularProgress } from "@mui/joy"
+import { ArrowBack, Delete, Add, ShoppingCart, ErrorOutline } from "@mui/icons-material"
+import { 
+  Stack, 
+  IconButton, 
+  Typography, 
+  Grid, 
+  Sheet, 
+  Table, 
+  Button, 
+  Divider, 
+  Card, 
+  CardContent, 
+  Avatar, 
+  Input, 
+  FormControl, 
+  FormLabel, 
+  CircularProgress,
+  Alert
+} from "@mui/joy"
 import dayjs from "dayjs"
 
 import { SaleCreationFormValues, saleCreationSchema } from "../../schemas/ventas/ventas/saleCreationSchema"
@@ -19,7 +36,11 @@ import FormSelect from "../../components/core/FormSelect/FormSelect"
 
 const SalesCreate = () => {
   const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null) // Estado para manejar mensajes de error
 
+  /**
+   * Configuración del formulario con react-hook-form y validación con Zod
+   */
   const {
     handleSubmit,
     control,
@@ -37,12 +58,17 @@ const SalesCreate = () => {
     }
   })
 
+  /**
+   * Consulta para obtener el próximo folio disponible según el tipo de documento
+   */
   const { data: folio, isLoading: isLoadingFolio } = useQuery({
     queryKey: ['folio', watch('document_type')],
     queryFn: () => getNextSaleFolio(watch('document_type')),
   })
 
-
+  /**
+   * Consulta para obtener la lista de clientes
+   */
   const { data: clients, isLoading: isLoadingClients } = useQuery({
     queryKey: ['clients'],
     queryFn: ({ queryKey }: { queryKey: unknown[] }) => {
@@ -52,10 +78,12 @@ const SalesCreate = () => {
       }
       return fetchClientsForSelect('')
     },
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 2, // Los datos se consideran frescos por 2 minutos
   })
 
-
+  /**
+   * Convierte los clientes a opciones para el Autocomplete
+   */
   const clientsToOptions = (clients?: Client[]): SelectOption[] => {
     return (
       clients?.map((client) => ({
@@ -66,31 +94,36 @@ const SalesCreate = () => {
   }
 
   const clientsOptions = clientsToOptions(clients?.results)
-
   const selectedClient = clients?.results.find((client: Client) => client.id === watch('client_id'))
+  const details = watch('details') || []
 
+  /**
+   * Genera las iniciales para el avatar del cliente
+   */
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   }
 
-  const details = watch('details') || []
-
-
+  /**
+   * Configuración de consultas paralelas para obtener productos
+   * Se crea una consulta por cada detalle en el formulario
+   */
   const queriesForUseQueries = useMemo(() => {
     return details.map((_, index) => ({
       queryKey: ['products', index], 
       queryFn: () => fetchProducts(''), 
-      staleTime: 1000 * 60 * 2,
+      staleTime: 1000 * 60 * 2, // Los datos se consideran frescos por 2 minutos
     }))
-
   }, [details.length])
 
   const productQueries = useQueries({
-    queries: queriesForUseQueries, // Use the memoized configuration
+    queries: queriesForUseQueries,
   })
 
+  /**
+   * Busca un producto por ID en todas las consultas de productos
+   */
   const findProductById = useCallback((productId: string): Product | undefined => {
-
     for (const query of productQueries) {
       if (query.data?.results) {
         const product = query.data.results.find((product) => product.id === productId)
@@ -100,7 +133,9 @@ const SalesCreate = () => {
     return undefined
   }, [productQueries])
 
-
+  /**
+   * Efecto para actualizar precios cuando cambian los productos seleccionados
+   */
   useEffect(() => {
     details.forEach((detail, index) => {
       const unitPricePath = `details.${index}.unit_price` as const
@@ -112,62 +147,103 @@ const SalesCreate = () => {
           if (currentUnitPrice !== selectedProduct.price_clp) {
             setValue(unitPricePath, selectedProduct.price_clp)
           }
-        }
-              
-        // }
+        }              
       } else {
         if (currentUnitPrice !== 0) {
           setValue(unitPricePath, 0)
         }
       }
     })
-
   }, [details, setValue, watch, findProductById])
 
+  /**
+   * Mutación para crear una nueva venta
+   * Incluye manejo detallado de errores
+   */
   const mutation = useMutation({
     mutationFn: createSale,
     onSuccess: () => {
-      alert('venta creada con éxito!')
+      // Limpiar mensajes de error en caso de éxito
+      setErrorMessage(null)
+      alert('Venta creada con éxito!')
       navigate({ to: '/ventas/gestiondeventas' })
     },
     onError: (error) => {
-      console.error(error)
-      alert(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+      console.error('Error al crear venta:', error)
+      
+      // Manejo específico para errores de stock
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const axiosError = error as { response?: { data?: { error?: string } } }
+        const errorData = axiosError.response?.data?.error
+        
+        if (errorData?.includes("No hay suficiente stock")) {
+          // Extraer el nombre del producto del mensaje de error
+          const productNameMatch = errorData.match(/para el producto (.*?)(,|$)/)
+          const productName = productNameMatch ? productNameMatch[1] : "el producto"
+          
+          setErrorMessage(`No hay suficiente stock disponible para ${productName}. Por favor, ajuste la cantidad o seleccione otro producto.`)
+        } 
+        else if (errorData?.includes("Cliente no encontrado")) {
+          setErrorMessage('El cliente seleccionado no existe en el sistema. Por favor, seleccione otro cliente.')
+        }
+        else if (errorData?.includes("Producto no encontrado")) {
+          setErrorMessage('Uno de los productos seleccionados no existe en el sistema. Por favor, verifique los productos.')
+        }
+        else {
+          setErrorMessage('Ocurrió un error al procesar la venta. Por favor, intente nuevamente.')
+        }
+      } else if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else {
+        setErrorMessage('Error desconocido. Por favor, contacte al administrador.')
+      }
     },
   })
 
+  /**
+   * Handler para enviar el formulario
+   */
   const onSubmit: SubmitHandler<SaleCreationFormValues> = (data) => {
-    console.log(data)
+    // Limpiar mensajes de error previos al enviar
+    setErrorMessage(null)
     mutation.mutate(data)
   }
 
-  // Agregar nuevo detalle
+  /**
+   * Agrega un nuevo detalle a la venta
+   */
   const addDetail = () => {
     setValue('details', [...watch('details'), { product_id: '', quantity: 1, unit_price: 0 }])
   }
 
-  // Eliminar detalle
+  /**
+   * Elimina un detalle de la venta
+   */
   const removeDetail = (index: number) => {
     const currentDetails = [...watch('details')]
     currentDetails.splice(index, 1)
     setValue('details', currentDetails)
   }
 
-  // Manejar cambio de producto
+  /**
+   * Maneja el cambio de producto en un detalle
+   */
   const handleProductChange = (index: number, productId: string | null) => {
-    // Allow null for type safety
     if (productId) {
       const selectedProduct = findProductById(productId)
       if (selectedProduct && typeof selectedProduct.price_clp === 'number') {
         setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
       } else {
-        setValue(`details.${index}.unit_price`, 0) // Reset if product has no price
+        setValue(`details.${index}.unit_price`, 0)
       }
     } else {
-      setValue(`details.${index}.unit_price`, 0) // Reset if product is deselected
+      setValue(`details.${index}.unit_price`, 0)
     }
   }
 
+  /**
+   * Cálculos para el resumen de la venta
+   */
   const totalAmount = details.reduce((sum, item) => {
     return sum + Number(item.quantity) * Number(item.unit_price)
   }, 0)
@@ -177,6 +253,7 @@ const SalesCreate = () => {
 
   return (
     <>
+      {/* Encabezado con botón de regreso */}
       <Stack spacing={1} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
         <IconButton onClick={() => navigate({ to: '/ventas/gestiondeventas' })}>
           <ArrowBack />
@@ -184,13 +261,44 @@ const SalesCreate = () => {
         <Typography level='h4'>Nueva Venta</Typography>
       </Stack>
 
+      {/* Mensaje de error - solo se muestra si hay un error */}
+      {errorMessage && (
+        <Alert 
+          color="danger" 
+          variant="soft"
+          sx={{ 
+            mt: 2,
+            mb: 2,
+            alignItems: 'flex-start',
+            '& .JoyAlert-startDecorator': { mt: '2px' }
+          }}
+          startDecorator={<ErrorOutline />}
+        >
+          <Stack direction="column" spacing={0.5}>
+            <Typography level="title-sm" fontWeight="lg">Error en la venta</Typography>
+            <Typography level="body-sm">{errorMessage}</Typography>
+            <Button
+              variant="plain"
+              size="sm"
+              sx={{ mt: 1, alignSelf: 'flex-end' }}
+              onClick={() => setErrorMessage(null)}
+            >
+              Cerrar
+            </Button>
+          </Stack>
+        </Alert>
+      )}
+
+      {/* Formulario principal */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
+          {/* Columna izquierda - Formulario de venta */}
           <Grid xs={12} sm={8}>
             <Sheet variant='outlined' sx={{ p: 2, borderRadius: 'md', flex: 2 }}>
               <Stack spacing={3}>
+                {/* Sección de información básica */}
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <FormSelect
+                  <FormSelect
                     name='document_type'
                     control={control}
                     label='Tipo de Documento'
@@ -216,8 +324,9 @@ const SalesCreate = () => {
                       readOnly
                     />
                   </FormControl>
-
                 </Stack>
+
+                {/* Sección de cliente y método de pago */}
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                   <AutocompleteFormField
                     label='Cliente'
@@ -233,7 +342,7 @@ const SalesCreate = () => {
                   <FormSelect
                     name='payment_method'
                     control={control}
-                    label='Metodo de pago'
+                    label='Método de pago'
                     options={[
                       { value: 'EF', label: 'Efectivo' },
                       { value: 'TC', label: 'Tarjeta Crédito' },
@@ -256,10 +365,10 @@ const SalesCreate = () => {
                     error={errors?.status}
                     fullWidth={true}
                   />
-
                 </Stack>
+
+                {/* Sección de detalles de la orden */}
                 <Grid container sx={{ flexGrow: 1 }}>
-                  {/* Columna Izquierda: Detalles de la orden (Tabla) */}
                   <Grid xs={12}>
                     <Stack spacing={2}>
                       <Typography level='title-md'>Detalles de la Orden</Typography>
@@ -267,14 +376,17 @@ const SalesCreate = () => {
                         borderRadius: 'var(--joy-radius-md)',
                         height: '15.9rem',
                         overflow: 'auto',
-                      }}
-                      >
+                      }}>
                         <Table
-                          stickyHeader // Makes header sticky if table scrolls
+                          stickyHeader
                           sx={{
                             '& thead th': { fontWeight: 'lg' },
                             '& tr > *:not(:first-of-type)': { textAlign: 'right' },
-                            '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' }, // Adjust padding for FormControls
+                            '& td': { 
+                              verticalAlign: 'top', 
+                              paddingTop: '12px', 
+                              paddingBottom: '12px' 
+                            },
                           }}
                         >
                           <thead>
@@ -285,13 +397,10 @@ const SalesCreate = () => {
                               <th style={{ width: '15%', textAlign: 'center' }}>Acciones</th>
                             </tr>
                           </thead>
-                          <tbody >
+                          <tbody>
                             {details.map((_, index) => {
-                              // Obtener el estado de la consulta para este índice
                               const productQuery = productQueries[index] || {}
                               const { data: productsData, isLoading: isProductsLoading } = productQuery
-
-                              // Convertir productos a opciones para este autocomplete específico
                               const currentProductOptions = productsData?.results?.map(product => ({
                                 value: product.id,
                                 label: product.name
@@ -312,7 +421,6 @@ const SalesCreate = () => {
                                       freeSolo={false}
                                       onInputChange={(_, value) => {
                                         if (value && value.length > 2) {
-                                          // Refetch con el término de búsqueda
                                           productQueries[index].refetch()
                                         }
                                       }}
@@ -335,7 +443,7 @@ const SalesCreate = () => {
                                       type='number'
                                       error={errors.details?.[index]?.unit_price}
                                       transform={Number}
-                                      disabled={!!watch(`details.${index}.product_id`)} // Disable if product is selected
+                                      disabled={!!watch(`details.${index}.product_id`)}
                                       size='sm'
                                     />
                                   </td>
@@ -345,7 +453,7 @@ const SalesCreate = () => {
                                       color='danger'
                                       size='sm'
                                       onClick={() => removeDetail(index)}
-                                      disabled={details.length <= 1} // Disable if only one item
+                                      disabled={details.length <= 1}
                                     >
                                       <Delete />
                                     </IconButton>
@@ -377,9 +485,11 @@ const SalesCreate = () => {
               </Stack>
             </Sheet>
           </Grid>
-          <Grid xs={12} sm={4} >
+
+          {/* Columna derecha - Resumen y cliente */}
+          <Grid xs={12} sm={4}>
             <Stack spacing={2} sx={{ height: '100%' }}>
-              {/* Sheet de Resumen */}
+              {/* Resumen de la venta */}
               <Sheet
                 variant='outlined'
                 sx={{
@@ -387,7 +497,7 @@ const SalesCreate = () => {
                   borderRadius: 'md',
                   display: 'flex',
                   flexDirection: 'column',
-                  flexGrow: 1, // Permite que crezca para ocupar el espacio disponible
+                  flexGrow: 1,
                   height: '100%'
                 }}
               >
@@ -410,9 +520,7 @@ const SalesCreate = () => {
                 <Stack
                   spacing={1}
                   direction={'column'}
-                  sx={{
-                    mt: 'auto',
-                  }}
+                  sx={{ mt: 'auto' }}
                 >
                   <Button
                     type='submit'
@@ -427,6 +535,8 @@ const SalesCreate = () => {
                   </Button>
                 </Stack>
               </Sheet>
+
+              {/* Información del cliente */}
               <Sheet
                 variant='outlined'
                 sx={{ p: 2, borderRadius: 'md' }}

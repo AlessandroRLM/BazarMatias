@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('document-counter/', SaleViewSet.as_view({'get': 'document_counter'}), name='document-counter'),
     path('sales/<str:pk>/cambiar-estado/', SaleViewSet.as_view({'patch': 'cambiar_estado'}), name='cambiar-estado'),
+    path('returns/<str:pk>/update-status/', ReturnViewSet.as_view({'patch': 'update_status'}), name='update-return-status'),
 ]

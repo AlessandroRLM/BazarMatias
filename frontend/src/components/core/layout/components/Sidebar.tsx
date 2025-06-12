@@ -216,7 +216,7 @@ const SidebarSalesList = () => {
                         </SidebarLink>
                     </ListItem>
                     <ListItem>
-                        <SidebarLink to=".">
+                        <SidebarLink to="/ventas/gestiondedevoluciones">
                             Gestión de Devoluciones
                         </SidebarLink>
                     </ListItem>

@@ -134,7 +134,7 @@ class SupplyViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'category', 'stock']
     ordering = ['name']
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, JSONParser]
 
     @action(detail=False, methods=['get'], url_path='low-stock')
     def low_stock_supplies(self, request):

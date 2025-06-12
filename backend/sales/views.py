@@ -246,7 +246,20 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
 
 class ReturnViewSet(viewsets.ModelViewSet):
-    queryset = Return.objects.all()
+    queryset = Return.objects.all().select_related(
+        'client', 'sale', 'product'
+    ).order_by('-created_at')
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filtrar por estado 
+        status = self.request.query_params.get('status')
+        if status in ['pending', 'completed', 'refused']:
+            queryset = queryset.filter(status=status)
+            
+        return queryset
+    
     serializer_class = ReturnSerializer
     pagination_class = CustomPagination
 
@@ -256,6 +269,23 @@ class ReturnViewSet(viewsets.ModelViewSet):
     search_fields = ['reason', 'product__name']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
+
+    @action(detail=True, methods=['patch'], url_path='update-status')
+    def update_status(self, request, pk=None):
+        return_obj = self.get_object()
+        new_status = request.data.get('status')
+        
+        if new_status not in ['pending', 'completed', 'refused']:
+            return Response(
+                {"error": "Estado inválido. Usa 'pending', 'completed' o 'refused'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return_obj.status = new_status
+        return_obj.save()
+        
+        serializer = self.get_serializer(return_obj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class WorkOrderViewSet(viewsets.ModelViewSet):

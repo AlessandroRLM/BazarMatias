@@ -225,21 +225,12 @@ class QuoteSerializer(serializers.ModelSerializer):
 
 class ReturnSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    client = serializers.PrimaryKeyRelatedField(
-        queryset=Client.objects.all(),
-        pk_field=ObjectIdField()
-    )
-    sale = serializers.PrimaryKeyRelatedField(
-        queryset=Sale.objects.all(),
-        pk_field=ObjectIdField()
-    )
-    product = serializers.PrimaryKeyRelatedField(
-        queryset=Product.objects.all(),
-        pk_field=ObjectIdField()
-    )
+    client = ClientSerializer(read_only=True)
+    sale = serializers.SerializerMethodField()
+    product = ProductSerializer(read_only=True)
     
     producto_nombre = serializers.CharField(source='product.name', read_only=True)
-    cliente_nombre = serializers.CharField(source='client.name', read_only=True)
+    cliente_nombre = serializers.SerializerMethodField()
     fecha_venta = serializers.DateTimeField(source='sale.created_at', read_only=True)
 
     class Meta:
@@ -254,8 +245,19 @@ class ReturnSerializer(serializers.ModelSerializer):
             'producto_nombre',
             'quantity',
             'reason',
-            'created_at'
+            'created_at',
+            'status'
         ]
+
+    def get_cliente_nombre(self, obj):
+        return f"{obj.client.first_name} {obj.client.last_name}"
+
+    def get_sale(self, obj):
+        return {
+            'id': str(obj.sale.id),
+            'folio': obj.sale.folio,
+            'date': obj.sale.created_at.strftime('%Y-%m-%d')
+        }
 
     def validate(self, data):
         sale = data.get('sale') or getattr(self.instance, 'sale', None)

@@ -199,6 +199,18 @@ class Quote(models.Model):
 
 
 class Return(models.Model):
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pendiente'
+        COMPLETED = 'completed', 'Completado'
+        REJECTED = 'refused', 'Rechazado'
+    
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     sale = models.ForeignKey(Sale, on_delete=models.PROTECT, verbose_name='Venta Asociada')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)

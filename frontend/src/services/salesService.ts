@@ -177,12 +177,15 @@ export const createReturn = async (returnData: ReturnCreationPayload): Promise<R
   return response.data;
 };
 
-export const updateReturn = async (id: string, returnData: {
-  quantity?: number;
-  reason?: string;
-  status?: 'pending' | 'completed' | 'refused';
-}): Promise<Return> => {
-  const response = await AxiosInstance.put(`/api/sales/returns/${id}/`, returnData);
+export const updateReturn = async (
+  id: string,
+  returnData: {
+    quantity?: number;
+    reason?: string;
+    status?: 'pending' | 'completed' | 'refused';
+  }
+): Promise<Return> => {
+  const response = await AxiosInstance.patch(`/api/sales/returns/${id}/`, returnData);
   return response.data;
 };
 

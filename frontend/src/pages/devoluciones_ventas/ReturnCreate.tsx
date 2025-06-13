@@ -30,7 +30,7 @@ export default function ReturnCreate() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
-    client: "",
+    client_id: "",
     sale: "",
     product: "",
     quantity: "1",
@@ -46,9 +46,9 @@ export default function ReturnCreate() {
 
   // Fetch client sales when client is selected
   const { data: sales = [], isLoading: isLoadingSales } = useQuery<Sale[]>({
-    queryKey: ['sales', form.client],
-    queryFn: () => form.client ? fetchClientSales(form.client) : [],
-    enabled: !!form.client
+    queryKey: ['sales', form.client_id],
+    queryFn: () => form.client_id ? fetchClientSales(form.client_id) : [],
+    enabled: !!form.client_id
   });
 
   // Fetch sale products when sale is selected
@@ -72,8 +72,8 @@ export default function ReturnCreate() {
 
   const handleChange = (field: string, value: string) => {
     setError(null);
-    if (field === 'client') {
-      setForm(prev => ({ ...prev, client: value, sale: "", product: "" }));
+    if (field === 'client_id') {
+      setForm(prev => ({ ...prev, client_id: value, sale: "", product: "" }));
     } else if (field === 'sale') {
       setForm(prev => ({ ...prev, sale: value, product: "", quantity: "1" }));
     } else {
@@ -82,7 +82,7 @@ export default function ReturnCreate() {
   };
 
   const handleSubmit = () => {
-    if (!form.client || !form.sale || !form.product || !form.quantity || !form.reason) {
+    if (!form.client_id || !form.sale || !form.product || !form.quantity || !form.reason) {
       setError('Todos los campos son obligatorios');
       return;
     }
@@ -93,9 +93,9 @@ export default function ReturnCreate() {
     }
 
     createMutation.mutate({
-      client: form.client,
-      sale: form.sale,
-      product: form.product,
+      client_id: form.client_id,
+      sale_id: form.sale,
+      product_id: form.product,
       quantity: parseInt(form.quantity),
       reason: form.reason
     });
@@ -145,9 +145,10 @@ export default function ReturnCreate() {
           <Grid xs={12}>
             <FormControl>
               <FormLabel>Nombre del cliente *</FormLabel>
+              {/* @ts-expect-error */}
               <Select
-                value={form.client}
-                onChange={(_, value) => handleChange("client", value as string)}
+                value={form.client_id}
+                onChange={(_, value) => handleChange("client_id", value as string)}
                 loadingIndicator={isLoadingClients ? <CircularProgress size="sm" /> : undefined}
               >
                 {clients.map(client => (
@@ -162,10 +163,11 @@ export default function ReturnCreate() {
           <Grid xs={12}>
             <FormControl>
               <FormLabel>Venta asociada *</FormLabel>
+              {/* @ts-expect-error */}
               <Select
                 value={form.sale}
                 onChange={(_, value) => handleChange("sale", value as string)}
-                disabled={!form.client || isLoadingSales}
+                disabled={!form.client_id || isLoadingSales}
                 loadingIndicator={isLoadingSales ? <CircularProgress size="sm" /> : undefined}
               >
                 {sales.map(sale => (
@@ -183,6 +185,7 @@ export default function ReturnCreate() {
           <Grid xs={8}>
             <FormControl>
               <FormLabel>Producto *</FormLabel>
+              {/* @ts-expect-error */}
               <Select
                 value={form.product}
                 onChange={(_, value) => handleChange("product", value as string)}

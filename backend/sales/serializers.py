@@ -226,9 +226,24 @@ class QuoteSerializer(serializers.ModelSerializer):
 class ReturnSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     client = ClientSerializer(read_only=True)
+    client_id = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(),
+        source='client',
+        write_only=True
+    )
     sale = serializers.SerializerMethodField()
+    sale_id = serializers.PrimaryKeyRelatedField(
+        queryset=Sale.objects.all(),
+        source='sale',
+        write_only=True
+    )
     product = ProductSerializer(read_only=True)
-    
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        source='product',
+        write_only=True
+    )
+
     producto_nombre = serializers.CharField(source='product.name', read_only=True)
     cliente_nombre = serializers.SerializerMethodField()
     fecha_venta = serializers.DateTimeField(source='sale.created_at', read_only=True)
@@ -238,10 +253,13 @@ class ReturnSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'client',
+            'client_id',
             'cliente_nombre',
             'sale',
+            'sale_id',
             'fecha_venta',
             'product',
+            'product_id',
             'producto_nombre',
             'quantity',
             'reason',

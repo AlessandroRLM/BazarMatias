@@ -76,6 +76,14 @@ export interface Return {
   status: 'pending' | 'completed' | 'refused' | null;
 }
 
+export interface ReturnCreationPayload {
+  client_id: string;
+  sale_id: string;
+  product_id: string;
+  quantity: number;
+  reason: string;
+}
+
 export interface QuoteDetail {
     id: string
     product: string

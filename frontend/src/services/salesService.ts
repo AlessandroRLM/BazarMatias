@@ -1,7 +1,7 @@
 import AxiosInstance from '../helpers/AxiosInstance';
 import { SaleCreationFormValues } from '../schemas/ventas/ventas/saleCreationSchema';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, Product, SaleDetail } from '../types/sales.types';
+import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, Product, SaleDetail, ReturnCreationPayload } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -172,13 +172,7 @@ export const fetchReturn = async (id: string): Promise<Return> => {
   return response.data;
 };
 
-export const createReturn = async (returnData: {
-  client: string;
-  sale: string;
-  product: string;
-  quantity: number;
-  reason: string;
-}): Promise<Return> => {
+export const createReturn = async (returnData: ReturnCreationPayload): Promise<Return> => {
   const response = await AxiosInstance.post('/api/sales/returns/', returnData);
   return response.data;
 };

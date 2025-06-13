@@ -24,7 +24,7 @@ const UserCreation = () => {
       
       // Redirigir usando @tanstack/react-router
       navigate({
-        to: "/administracion/usuarios/",
+        to: "/administracion/usuarios",
         search: { success: "Usuario creado con éxito" },
       });
       

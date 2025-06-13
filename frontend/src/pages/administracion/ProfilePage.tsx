@@ -17,7 +17,7 @@ const ProfilePage = () => {
   const {user} = useAuth();
   const handleProfileSubmit = async (formData: any) => {
     try {
-      await AxiosInstance.put(`/api/users/${user?.national_id}/`, {
+      await AxiosInstance.put(`/api/users/users/${user?.national_id}/`, {
         first_name: formData.name,
         last_name: formData.lastName,
         national_id: formData.rut,
@@ -77,7 +77,7 @@ const ProfilePage = () => {
       {isProfile && (
         <FormUserCreation 
           mode={isEditMode ? "edit" : "view"}
-          disableRole={true}
+          disableRole={false}
           disableRut={true}
           onSubmitForm={handleProfileSubmit}
           initialValues={{

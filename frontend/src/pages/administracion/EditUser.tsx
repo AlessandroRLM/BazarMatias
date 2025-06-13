@@ -44,7 +44,7 @@ const EditUser = () => {
       
       // Redirigir después de 1.5 segundos
       setTimeout(() => {
-        navigate({ to: "/administracion/perfil" });
+        navigate({ to: "/administracion/usuarios" });
       }, 1500);
       
     } catch (error) {
@@ -76,7 +76,7 @@ const EditUser = () => {
       <FormUserCreation 
         onSubmitForm={handleSubmitForm}
         mode="edit"
-        disableRole={true}
+        disableRole={false}
         disableRut={false}
         initialValues={initialValues}
         submitSuccessExternal={submitSuccess}

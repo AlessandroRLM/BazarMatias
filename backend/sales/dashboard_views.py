@@ -36,8 +36,8 @@ class DashboardViewSet(viewsets.ViewSet):
         
         total_sales = current_month_sales.count()
         
-        paid_sales = current_month_sales.filter(status='paid').count()
-        due_sales = current_month_sales.filter(status='pending').count()
+        paid_sales = current_month_sales.filter(status='PA').count()
+        due_sales = current_month_sales.filter(status='PE').count()
         
         # Obtener datos de cotizaciones
         current_month_quotes = Quote.objects.filter(

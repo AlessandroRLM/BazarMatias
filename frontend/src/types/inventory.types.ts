@@ -1,12 +1,15 @@
 export interface Product {
     id:        string;
+    supplier:  string;
+    supplier_name: string;
+    is_below_min_stock: boolean;
     name:      string;
     price_clp: number;
     iva:       boolean;
     stock:     number;
+    min_stock: number;
     category:  string;
     data:      Data;
-    supplier:  string;
 }
 
 export interface Data {

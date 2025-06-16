@@ -26,17 +26,26 @@ import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
 import toast from "react-hot-toast";
 import { downloadSalesReportPDF } from "../../services/reportsService";
+// Importar iconos de Material-UI
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import PaymentIcon from '@mui/icons-material/Payment';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import PeopleIcon from '@mui/icons-material/People';
 
-interface DashboardStats {
-  monthlyProfit: number;
-  previousMonthProfit: number;
-  totalSales: number;
-  paidSales: number;
-  dueSales: number;
-  approvedQuotes: number;
-  pendingQuotes: number;
-  rejectedQuotes: number;
-  topClients: { name: string; value: number }[];
+export interface DashboardStats {
+  monthly_profit: number;
+  previous_month_profit: number;
+  total_sales: number;
+  paid_sales: number;
+  due_sales: number;
+  approved_quotes: number;
+  pending_quotes: number;
+  rejected_quotes: number;
+  top_clients: { name: string; value: number }[];
 }
 
 interface MonthlyProfitData {
@@ -146,7 +155,6 @@ const handleGenerateReport = async () => {
           { 
             text: "Descargar Reporte", 
             onClick: handleGenerateReport,
-            variant: "outlined"
           }
         ]}
       />
@@ -154,28 +162,28 @@ const handleGenerateReport = async () => {
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Ganancia Mensual"
-          amount={stats?.monthlyProfit || 0}
-          helperText={`${CURRENT_MONTH} vs ${PREVIOUS_MONTH}: ${stats ? (stats.monthlyProfit - stats.previousMonthProfit > 0 ? "+" : "") + 
-            formatMoney(stats.monthlyProfit - stats.previousMonthProfit) : ""}`}
-          icon={null}
+          amount={stats?.monthly_profit || 0}
+          helperText={`${CURRENT_MONTH} vs ${PREVIOUS_MONTH}: ${stats ? (stats.monthly_profit - stats.previous_month_profit > 0 ? "+" : "") + 
+            formatMoney(stats.monthly_profit - stats.previous_month_profit) : ""}`}
+          icon={<TrendingUpIcon />}
         />
         <DashboardCard
           title="Total Ventas"
-          amount={stats?.totalSales || 0}
+          amount={stats?.total_sales || 0}
           helperText="Mes actual"
-          icon={null}
+          icon={<ShoppingCartIcon />}
         />
         <DashboardCard
           title="Ventas Pagadas"
-          amount={stats?.paidSales || 0}
-          helperText={`${stats ? Math.round((stats.paidSales / stats.totalSales) * 100) : 0}% del total`}
-          icon={null}
+          amount={stats?.paid_sales || 0}
+          helperText={`${stats ? Math.round((stats.paid_sales / stats.total_sales) * 100) : 0}% del total`}
+          icon={<PaymentIcon />}
         />
         <DashboardCard
           title="Ventas Debidas"
-          amount={stats?.dueSales || 0}
-          helperText={`${stats ? Math.round((stats.dueSales / stats.totalSales) * 100) : 0}% del total`}
-          icon={null}
+          amount={stats?.due_sales || 0}
+          helperText={`${stats ? Math.round((stats.due_sales / stats.total_sales) * 100) : 0}% del total`}
+          icon={<ErrorOutlineIcon />}
         />
       </Stack>
 
@@ -245,24 +253,24 @@ const handleGenerateReport = async () => {
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           title="Cotizaciones Aprobadas"
-          amount={stats?.approvedQuotes || 0}
-          icon={null}
+          amount={stats?.approved_quotes || 0}
+          icon={<CheckCircleOutlineIcon />}
         />
         <DashboardCard
           title="Cotizaciones Pendientes"
-          amount={stats?.pendingQuotes || 0}
-          icon={null}
+          amount={stats?.pending_quotes || 0}
+          icon={<AccessTimeIcon />}
         />
         <DashboardCard
           title="Cotizaciones Rechazadas"
-          amount={stats?.rejectedQuotes || 0}
-          icon={null}
+          amount={stats?.rejected_quotes || 0}
+          icon={<CancelOutlinedIcon />}
         />
         <DashboardCard
           title="Clientes Destacados"
-          amount={stats?.topClients?.length || 0}
-          helperText={stats?.topClients?.map(c => c.name).join(", ") || ""}
-          icon={null}
+          amount={stats?.top_clients?.length || 0}
+          helperText={stats?.top_clients?.map(c => c.name).join(", ") || ""}
+          icon={<PeopleIcon />}
         />
       </Stack>
     </Stack>

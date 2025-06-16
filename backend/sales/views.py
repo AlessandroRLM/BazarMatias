@@ -62,7 +62,11 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 class SaleViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all().select_related('client')
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     serializer_class = SaleSerializer
+    search_fields = ['client__first_name', 'client__last_name',
+                     'client__national_id', 'client__email', 'client__phone_number']
     pagination_class = CustomPagination
 
     def create(self, request, *args, **kwargs):

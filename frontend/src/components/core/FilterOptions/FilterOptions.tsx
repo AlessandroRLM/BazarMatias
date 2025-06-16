@@ -8,7 +8,7 @@ import { Filters } from "../../../types/core.types"
 
 
 export type SelectOption = {
-    value: string | number | null
+    value: string | number | boolean | null
     label: string
 }
 

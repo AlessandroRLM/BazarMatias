@@ -145,11 +145,10 @@ export default function ReturnCreate() {
           <Grid xs={12}>
             <FormControl>
               <FormLabel>Nombre del cliente *</FormLabel>
-              {/* @ts-expect-error */}
               <Select
                 value={form.client_id}
                 onChange={(_, value) => handleChange("client_id", value as string)}
-                loadingIndicator={isLoadingClients ? <CircularProgress size="sm" /> : undefined}
+                endDecorator={isLoadingClients ? <CircularProgress size="sm" /> : undefined}
               >
                 {clients.map(client => (
                   <Option key={client.id} value={client.id}>

@@ -1,4 +1,5 @@
 import AxiosInstance from '../helpers/AxiosInstance';
+import { DashboardStats } from '../pages/ventas/DashboardSalesPage';
 import { SaleCreationFormValues } from '../schemas/ventas/ventas/saleCreationSchema';
 import { CustomPagination } from '../types/core.types';
 import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, Product, SaleDetail, ReturnCreationPayload } from '../types/sales.types';
@@ -259,17 +260,7 @@ export const getNextSaleFolio = async (documentType: 'FAC' | 'BOL'): Promise<num
 };
 
 // Métodos para el dashboard
-export const fetchDashboardStats = async (): Promise<{
-  monthlyProfit: number;
-  previousMonthProfit: number;
-  totalSales: number;
-  paidSales: number;
-  dueSales: number;
-  approvedQuotes: number;
-  pendingQuotes: number;
-  rejectedQuotes: number;
-  topClients: { name: string; value: number }[];
-}> => {
+export const fetchDashboardStats = async (): Promise<DashboardStats> => {
   const response = await AxiosInstance.get('/api/sales/dashboard/stats/');
   return response.data;
 };
@@ -291,6 +282,7 @@ export const fetchTopProductsData = async (): Promise<
 // Agrega estas funciones a salesService.ts
 export const fetchClientsForSelect = async (search: string): Promise<Client[]> => {
   const response = await AxiosInstance.get(`/api/sales/clients/?search=${encodeURIComponent(search)}`);
+  console.log(response.data.results)
   return response.data.results;
 };
 

@@ -1,42 +1,39 @@
-import { useState, useEffect } from "react";
-import { ColumnDef, PaginationState, SortingState } from "@tanstack/react-table";
+import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import { Button, Stack, Typography, Box } from "@mui/joy";
 import CustomTable from "../../components/core/CustomTable/CustomTable";
 import Header from "../../components/core/layout/components/Header";
 import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions/FilterOptions";
-import { Link as RouterLink } from '@tanstack/react-router';
+import { Link as RouterLink, useLoaderDeps } from '@tanstack/react-router';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
-import { fetchProducts, deleteProduct } from "../../services/inventoryService";
+import { deleteProduct } from "../../services/inventoryService";
 import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
+import useFilters from "../../hooks/core/useFilters";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { tablePaginationAdapter } from "../../utils/core/tablePaginationAdapter";
+import { sortByToState, stateToSortBy } from "../../utils/core/tableSortMapper";
+import { queryClient } from "../../App";
+import { productsQueryOptions } from "../../utils/inventory/inventoryQueryOptions";
+import { Product } from "../../types/inventory.types";
 
-interface InventoryItem {
-  id: string;
-  nombre: string;
-  categoria: string;
-  stock: number;
-  precio: number;
-  lastUpdated?: string;
-}
 
-interface Filters {
-  search?: string;
-  category?: string;
-  stockStatus?: string;
-}
 
 export default function InventoryManagementPage() {
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [filters, setFilters] = useState<Filters>({});
-  const [data, setData] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshFlag, setRefreshFlag] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<{ id: string; nombre: string } | null>(null);
+  const { filters, setFilters } = useFilters('/_auth/inventario/productos/')
+  const loaderDeps = useLoaderDeps({ from: '/_auth/inventario/productos/' })
+  const productsQuery = useSuspenseQuery(productsQueryOptions(loaderDeps))
+  const productsResponse = productsQuery?.data
+  const sortingState = sortByToState(filters?.ordering)
+  const paginationState = tablePaginationAdapter.apiToTable({
+    current_page: productsResponse?.data?.info.current_page ?? 1,
+    page_size: loaderDeps?.page_size
+  })
 
   // Configuración de los selects de filtro
   const selectConfigs: SelectConfig[] = [
@@ -47,80 +44,35 @@ export default function InventoryManagementPage() {
         { value: "", label: "Todas" },
         { value: "Electrónicos", label: "Electrónicos" },
         { value: "Accesorios", label: "Accesorios" },
+        { value: "Ropa", label: "Ropa" },
+        { value: "Oficina", label: "Oficina" },
+        { value: "utiles", label: "utiles" },
+        { value: "otros", label: "otros" },
       ],
     },
     {
-      id: "stockStatus",
-      placeholder: "Estado stock",
+      id: "status_stock",
+      placeholder: "Stock",
       options: [
-        { value: "", label: "Todos" },
-        { value: "high", label: "Alto (>20)" },
-        { value: "medium", label: "Medio (1-20)" },
-        { value: "low", label: "Agotado (0)" },
+        { value: '', label: "Todos" },
+        { value: 'normal', label: "Stock Normal" },
+        { value: 'low', label: "Bajo Stock" },
+        { value: 'out', label: "Sin Stock" },
       ],
     },
   ];
 
-  useEffect(() => {
-    setLoading(true);
-    fetchProducts()
-      .then(apiData => setData(
-        (apiData.results || []).map(item => ({
-          id: item.id,
-          nombre: item.name,
-          categoria: item.category,
-          stock: item.stock,
-          precio: item.price_clp,
-          lastUpdated: item.lastUpdated,
-        }))
-      ))
-      .finally(() => setLoading(false));
-  }, [refreshFlag]);
-
-  // Filtros locales (puedes mejorarlo para que sean por backend)
-  const filteredData = data.filter(item => {
-    let match = true;
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      match = match && (
-        item.nombre.toLowerCase().includes(searchTerm) ||
-        item.categoria.toLowerCase().includes(searchTerm)
-      );
+  const deleteMutation = useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setDeleteDialogOpen(false);
     }
-    if (filters.category) {
-      match = match && item.categoria === filters.category;
-    }
-    if (filters.stockStatus) {
-      switch (filters.stockStatus) {
-        case "high":
-          match = match && item.stock > 20;
-          break;
-        case "medium":
-          match = match && item.stock > 0 && item.stock <= 20;
-          break;
-        case "low":
-          match = match && item.stock === 0;
-          break;
-      }
-    }
-    return match;
   });
-
-  const handleFilterChange = (newFilters: Partial<Filters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  };
 
   const handleConfirmDelete = async () => {
     if (productToDelete) {
-      try {
-        await deleteProduct(productToDelete.id);
-        setRefreshFlag(f => !f);
-      } catch (error) {
-        alert('Error al eliminar producto');
-      } finally {
-        setDeleteDialogOpen(false);
-        setProductToDelete(null);
-      }
+      deleteMutation.mutate(productToDelete.id);
     }
   };
 
@@ -129,32 +81,42 @@ export default function InventoryManagementPage() {
     setProductToDelete(null);
   };
 
-  const columns: ColumnDef<InventoryItem>[] = [
-    { 
-      accessorKey: "nombre", 
-      header: "Producto", 
-      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography> 
+  const columns: ColumnDef<Product>[] = [
+    {
+      accessorKey: "name",
+      header: "Producto",
+      cell: info => <Typography fontWeight="md">{info.getValue<string>()}</Typography>
     },
-    { 
-      accessorKey: "categoria", 
-      header: "Categoría" 
+    {
+      accessorKey: "category",
+      header: "Categoría",
+      enableSorting: false
     },
-    { 
-      accessorKey: "precio", 
-      header: "Precio", 
-      cell: info => `$${info.getValue<number>()}` 
+    {
+      accessorKey: "price_clp",
+      header: "Precio",
+      cell: info => `$${info.getValue<number>()}`
     },
-    { 
-      accessorKey: "stock", 
-      header: "Stock", 
+    {
+      accessorKey: "stock",
+      header: "Stock",
       cell: info => {
+        const product = info.row.original; // Obtener el objeto completo del producto
         const stock = info.getValue<number>();
+        const isLowStock = product.is_below_min_stock;
+
         return (
-          <Typography color={stock > 20 ? 'success' : stock > 0 ? 'warning' : 'danger'}>
+          <Typography
+            color={
+              stock === 0 ? 'danger' :
+                isLowStock === true ? 'warning' :
+                  'success'
+            }
+          >
             {stock} unidades
           </Typography>
         );
-      } 
+      }
     },
     {
       id: "actions",
@@ -187,7 +149,7 @@ export default function InventoryManagementPage() {
             size="sm"
             aria-label="Delete"
             onClick={() => {
-              setProductToDelete({ id: row.original.id, nombre: row.original.nombre });
+              setProductToDelete({ id: row.original.id, nombre: row.original.name });
               setDeleteDialogOpen(true);
             }}
           >
@@ -209,51 +171,65 @@ export default function InventoryManagementPage() {
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
-        <Box component="main" sx={{ 
-          flex: 1, 
-          p: 3, 
-          pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 }, 
-          maxWidth: '1600px', 
-          mx: 'auto', 
-          width: '100%' 
+        <Box component="main" sx={{
+          flex: 1,
+          p: 3,
+          pt: { xs: 'calc(var(--Header-height) + 16px)', md: 3 },
+          maxWidth: '1600px',
+          mx: 'auto',
+          width: '100%'
         }}>
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Typography level="h2">Gestión de Productos</Typography>
               <Stack direction="row" justifyContent="flex-end" spacing={2}>
-              <Button 
-                component={Link}
-                to="/inventario/productos/carga-masiva-productos"
-                variant="solid" 
-                color="primary"
-              >
-                Carga masiva
-              </Button>
-              <Button 
-                component={Link}
-                to="/inventario/productos/crear-producto"
-                variant="solid" 
-                color="primary"
-              >
-                Añadir Producto
-              </Button>
+                <Button
+                  component={Link}
+                  to="/inventario/productos/carga-masiva-productos"
+                  variant="solid"
+                  color="primary"
+                >
+                  Carga masiva
+                </Button>
+                <Button
+                  component={Link}
+                  to="/inventario/productos/crear-producto"
+                  variant="solid"
+                  color="primary"
+                >
+                  Añadir Producto
+                </Button>
               </Stack>
             </Stack>
-            <FilterOptions<Filters>
-              onChangeFilters={handleFilterChange}
+            <FilterOptions
+              onChangeFilters={(filters) => setFilters(filters)}
               selects={selectConfigs}
             />
-            <CustomTable<InventoryItem>
-              data={filteredData}
+            <CustomTable
+              data={productsResponse?.data?.results ?? []}
               columns={columns}
-              pagination={pagination}
-              paginationOptions={{ 
-                onPaginationChange: setPagination, 
-                rowCount: filteredData.length 
+              pagination={paginationState}
+              paginationOptions={{
+                onPaginationChange: (pagination) => {
+                  const newPaginationState = typeof pagination === 'function'
+                    ? pagination(paginationState)
+                    : pagination;
+
+                  const mappedPagination = tablePaginationAdapter.tableToApi(newPaginationState)
+
+                  setFilters({
+                    ...mappedPagination
+                  })
+                },
+                rowCount: productsResponse?.data?.info.count ?? 0
               }}
-              sorting={sorting}
-              onSortingChange={setSorting}
-              isLoading={loading}
+              sorting={sortingState}
+              onSortingChange={(sorting) => {
+                const newSortingState = typeof sorting === 'function'
+                  ? sorting(sortingState)
+                  : sortingState
+                return setFilters({ ordering: stateToSortBy(newSortingState) })
+              }}
             />
           </Stack>
         </Box>

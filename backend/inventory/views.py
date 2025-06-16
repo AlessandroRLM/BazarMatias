@@ -21,6 +21,7 @@ from .serializers import (
     ReturnSupplierSerializer
 )
 from users.pagination import CustomPagination
+from .filters import ProductFilter
 
 
 # -------------------------------
@@ -31,7 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category', 'supplier']
+    filterset_class = ProductFilter
     search_fields = ['name', 'category']
     ordering_fields = ['name', 'price_clp', 'stock']
     ordering = ['name']
@@ -121,6 +122,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = 'attachment; filename=plantilla_productos.xlsx'
         wb.save(response)
         return response
+
 
 # -------------------------------
 # INSUMOS

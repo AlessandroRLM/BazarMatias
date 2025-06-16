@@ -83,7 +83,8 @@ export const updateProduct = async (id: string, product: any) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  await AxiosInstance.delete(`/api/inventory/products/${id}/`);
+  const response = await AxiosInstance.delete(`/api/inventory/products/${id}/`);
+  return response.data;
 };
 
 export const fetchLowStockProducts = async () => {

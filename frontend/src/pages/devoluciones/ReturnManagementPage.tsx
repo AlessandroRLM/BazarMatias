@@ -33,7 +33,6 @@ export default function ReturnManagementPage() {
   const [filters, setFilters] = useState<Filters>({});
   const [filteredData, setFilteredData] = useState<Return[]>([]);
   const [data, setData] = useState<Return[]>([]);
-  const [loading, setLoading] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(false);

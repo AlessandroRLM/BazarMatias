@@ -1,4 +1,3 @@
-# app/filters.py
 import django_filters
 from django.contrib.contenttypes.models import ContentType
 from .models import UserActivity

@@ -17,10 +17,8 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthProveedoresIndexImport } from './routes/_auth/proveedores/index'
 import { Route as AuthHomeIndexImport } from './routes/_auth/home/index'
-import { Route as AuthProveedoresOrdenesDeCompraImport } from './routes/_auth/proveedores/ordenes-de-compra'
 import { Route as AuthProveedoresDashboardImport } from './routes/_auth/proveedores/dashboard'
 import { Route as AuthProveedoresCrearProveedorImport } from './routes/_auth/proveedores/crear-proveedor'
-import { Route as AuthProveedoresCrearOrdenesDeCompraImport } from './routes/_auth/proveedores/crear-ordenes-de-compra'
 import { Route as AuthInventarioDashboardImport } from './routes/_auth/inventario/dashboard'
 import { Route as AuthAdministracionDashboardImport } from './routes/_auth/administracion/dashboard'
 import { Route as AuthVentasOrdenesdetrabajoIndexImport } from './routes/_auth/ventas/ordenesdetrabajo/index'
@@ -29,6 +27,7 @@ import { Route as AuthVentasGestiondedevolucionesIndexImport } from './routes/_a
 import { Route as AuthVentasGestiondeclientesIndexImport } from './routes/_auth/ventas/gestiondeclientes/index'
 import { Route as AuthVentasDashboardIndexImport } from './routes/_auth/ventas/dashboard/index'
 import { Route as AuthVentasCotizacionesIndexImport } from './routes/_auth/ventas/cotizaciones/index'
+import { Route as AuthProveedoresOrdenesDeCompraIndexImport } from './routes/_auth/proveedores/ordenes-de-compra/index'
 import { Route as AuthProveedoresDevolucionesIndexImport } from './routes/_auth/proveedores/devoluciones/index'
 import { Route as AuthInventarioProductosIndexImport } from './routes/_auth/inventario/productos/index'
 import { Route as AuthInventarioMermasIndexImport } from './routes/_auth/inventario/mermas/index'
@@ -41,10 +40,9 @@ import { Route as AuthVentasGestiondedevolucionesAadirDevolucionImport } from '.
 import { Route as AuthVentasGestiondeclientesAadirClienteImport } from './routes/_auth/ventas/gestiondeclientes/añadir-cliente'
 import { Route as AuthVentasCotizacionesCrearCotizacionImport } from './routes/_auth/ventas/cotizaciones/crear-cotizacion'
 import { Route as AuthProveedoresVerProveedorIdImport } from './routes/_auth/proveedores/ver-proveedor.$id'
-import { Route as AuthProveedoresVerOrdenesDeCompraIdImport } from './routes/_auth/proveedores/ver-ordenes-de-compra.$id'
+import { Route as AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraImport } from './routes/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
 import { Route as AuthProveedoresEliminarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/eliminar-ordenes-de-compra.$id'
 import { Route as AuthProveedoresEditarProveedorIdImport } from './routes/_auth/proveedores/editar-proveedor.$id'
-import { Route as AuthProveedoresEditarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/editar-ordenes-de-compra.$id'
 import { Route as AuthProveedoresDevolucionesCrearDevolucionImport } from './routes/_auth/proveedores/devoluciones/crear-devolucion'
 import { Route as AuthInventarioProductosCrearProductoImport } from './routes/_auth/inventario/productos/crear-producto'
 import { Route as AuthInventarioProductosCargaMasivaProductosImport } from './routes/_auth/inventario/productos/carga-masiva-productos'
@@ -65,6 +63,8 @@ import { Route as AuthVentasGestiondeclientesVerClienteIdImport } from './routes
 import { Route as AuthVentasGestiondeclientesEditarClienteIdImport } from './routes/_auth/ventas/gestiondeclientes/editar-cliente.$id'
 import { Route as AuthVentasCotizacionesVerCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/ver-cotizacion.$id'
 import { Route as AuthVentasCotizacionesEditarCotizacionIdImport } from './routes/_auth/ventas/cotizaciones/editar-cotizacion.$id'
+import { Route as AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdImport } from './routes/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra.$id'
+import { Route as AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdImport } from './routes/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra.$id'
 import { Route as AuthProveedoresDevolucionesVerDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/ver-devolucion.$id'
 import { Route as AuthProveedoresDevolucionesEditarDevolucionIdImport } from './routes/_auth/proveedores/devoluciones/editar-devolucion.$id'
 import { Route as AuthInventarioProductosVerProductoIdImport } from './routes/_auth/inventario/productos/ver-producto.$id'
@@ -114,13 +114,6 @@ const AuthHomeIndexRoute = AuthHomeIndexImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthProveedoresOrdenesDeCompraRoute =
-  AuthProveedoresOrdenesDeCompraImport.update({
-    id: '/proveedores/ordenes-de-compra',
-    path: '/proveedores/ordenes-de-compra',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
 const AuthProveedoresDashboardRoute = AuthProveedoresDashboardImport.update({
   id: '/proveedores/dashboard',
   path: '/proveedores/dashboard',
@@ -131,13 +124,6 @@ const AuthProveedoresCrearProveedorRoute =
   AuthProveedoresCrearProveedorImport.update({
     id: '/proveedores/crear-proveedor',
     path: '/proveedores/crear-proveedor',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthProveedoresCrearOrdenesDeCompraRoute =
-  AuthProveedoresCrearOrdenesDeCompraImport.update({
-    id: '/proveedores/crear-ordenes-de-compra',
-    path: '/proveedores/crear-ordenes-de-compra',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -192,6 +178,13 @@ const AuthVentasCotizacionesIndexRoute =
   AuthVentasCotizacionesIndexImport.update({
     id: '/ventas/cotizaciones/',
     path: '/ventas/cotizaciones/',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresOrdenesDeCompraIndexRoute =
+  AuthProveedoresOrdenesDeCompraIndexImport.update({
+    id: '/proveedores/ordenes-de-compra/',
+    path: '/proveedores/ordenes-de-compra/',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -279,10 +272,10 @@ const AuthProveedoresVerProveedorIdRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
-const AuthProveedoresVerOrdenesDeCompraIdRoute =
-  AuthProveedoresVerOrdenesDeCompraIdImport.update({
-    id: '/proveedores/ver-ordenes-de-compra/$id',
-    path: '/proveedores/ver-ordenes-de-compra/$id',
+const AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute =
+  AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraImport.update({
+    id: '/proveedores/ordenes-de-compra/crear-ordenes-de-compra',
+    path: '/proveedores/ordenes-de-compra/crear-ordenes-de-compra',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -297,13 +290,6 @@ const AuthProveedoresEditarProveedorIdRoute =
   AuthProveedoresEditarProveedorIdImport.update({
     id: '/proveedores/editar-proveedor/$id',
     path: '/proveedores/editar-proveedor/$id',
-    getParentRoute: () => AuthRoute,
-  } as any)
-
-const AuthProveedoresEditarOrdenesDeCompraIdRoute =
-  AuthProveedoresEditarOrdenesDeCompraIdImport.update({
-    id: '/proveedores/editar-ordenes-de-compra/$id',
-    path: '/proveedores/editar-ordenes-de-compra/$id',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -447,6 +433,20 @@ const AuthVentasCotizacionesEditarCotizacionIdRoute =
     getParentRoute: () => AuthRoute,
   } as any)
 
+const AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute =
+  AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdImport.update({
+    id: '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id',
+    path: '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
+const AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute =
+  AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdImport.update({
+    id: '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id',
+    path: '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id',
+    getParentRoute: () => AuthRoute,
+  } as any)
+
 const AuthProveedoresDevolucionesVerDevolucionIdRoute =
   AuthProveedoresDevolucionesVerDevolucionIdImport.update({
     id: '/proveedores/devoluciones/ver-devolucion/$id',
@@ -570,13 +570,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInventarioDashboardImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/proveedores/crear-ordenes-de-compra': {
-      id: '/_auth/proveedores/crear-ordenes-de-compra'
-      path: '/proveedores/crear-ordenes-de-compra'
-      fullPath: '/proveedores/crear-ordenes-de-compra'
-      preLoaderRoute: typeof AuthProveedoresCrearOrdenesDeCompraImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/proveedores/crear-proveedor': {
       id: '/_auth/proveedores/crear-proveedor'
       path: '/proveedores/crear-proveedor'
@@ -589,13 +582,6 @@ declare module '@tanstack/react-router' {
       path: '/proveedores/dashboard'
       fullPath: '/proveedores/dashboard'
       preLoaderRoute: typeof AuthProveedoresDashboardImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/proveedores/ordenes-de-compra': {
-      id: '/_auth/proveedores/ordenes-de-compra'
-      path: '/proveedores/ordenes-de-compra'
-      fullPath: '/proveedores/ordenes-de-compra'
-      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraImport
       parentRoute: typeof AuthImport
     }
     '/_auth/home/': {
@@ -682,13 +668,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProveedoresDevolucionesCrearDevolucionImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/proveedores/editar-ordenes-de-compra/$id': {
-      id: '/_auth/proveedores/editar-ordenes-de-compra/$id'
-      path: '/proveedores/editar-ordenes-de-compra/$id'
-      fullPath: '/proveedores/editar-ordenes-de-compra/$id'
-      preLoaderRoute: typeof AuthProveedoresEditarOrdenesDeCompraIdImport
-      parentRoute: typeof AuthImport
-    }
     '/_auth/proveedores/editar-proveedor/$id': {
       id: '/_auth/proveedores/editar-proveedor/$id'
       path: '/proveedores/editar-proveedor/$id'
@@ -703,11 +682,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProveedoresEliminarOrdenesDeCompraIdImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/proveedores/ver-ordenes-de-compra/$id': {
-      id: '/_auth/proveedores/ver-ordenes-de-compra/$id'
-      path: '/proveedores/ver-ordenes-de-compra/$id'
-      fullPath: '/proveedores/ver-ordenes-de-compra/$id'
-      preLoaderRoute: typeof AuthProveedoresVerOrdenesDeCompraIdImport
+    '/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra': {
+      id: '/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
+      path: '/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
+      fullPath: '/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
+      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraImport
       parentRoute: typeof AuthImport
     }
     '/_auth/proveedores/ver-proveedor/$id': {
@@ -792,6 +771,13 @@ declare module '@tanstack/react-router' {
       path: '/proveedores/devoluciones'
       fullPath: '/proveedores/devoluciones'
       preLoaderRoute: typeof AuthProveedoresDevolucionesIndexImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/ordenes-de-compra/': {
+      id: '/_auth/proveedores/ordenes-de-compra/'
+      path: '/proveedores/ordenes-de-compra'
+      fullPath: '/proveedores/ordenes-de-compra'
+      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraIndexImport
       parentRoute: typeof AuthImport
     }
     '/_auth/ventas/cotizaciones/': {
@@ -913,6 +899,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProveedoresDevolucionesVerDevolucionIdImport
       parentRoute: typeof AuthImport
     }
+    '/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id': {
+      id: '/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+      path: '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+      fullPath: '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id': {
+      id: '/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
+      path: '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
+      fullPath: '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
+      preLoaderRoute: typeof AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdImport
+      parentRoute: typeof AuthImport
+    }
     '/_auth/ventas/cotizaciones/editar-cotizacion/$id': {
       id: '/_auth/ventas/cotizaciones/editar-cotizacion/$id'
       path: '/ventas/cotizaciones/editar-cotizacion/$id'
@@ -991,10 +991,8 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthAdministracionDashboardRoute: typeof AuthAdministracionDashboardRoute
   AuthInventarioDashboardRoute: typeof AuthInventarioDashboardRoute
-  AuthProveedoresCrearOrdenesDeCompraRoute: typeof AuthProveedoresCrearOrdenesDeCompraRoute
   AuthProveedoresCrearProveedorRoute: typeof AuthProveedoresCrearProveedorRoute
   AuthProveedoresDashboardRoute: typeof AuthProveedoresDashboardRoute
-  AuthProveedoresOrdenesDeCompraRoute: typeof AuthProveedoresOrdenesDeCompraRoute
   AuthHomeIndexRoute: typeof AuthHomeIndexRoute
   AuthProveedoresIndexRoute: typeof AuthProveedoresIndexRoute
   AuthAdministracionUsuariosActividadDeUsuariosRoute: typeof AuthAdministracionUsuariosActividadDeUsuariosRoute
@@ -1006,10 +1004,9 @@ interface AuthRouteChildren {
   AuthInventarioProductosCargaMasivaProductosRoute: typeof AuthInventarioProductosCargaMasivaProductosRoute
   AuthInventarioProductosCrearProductoRoute: typeof AuthInventarioProductosCrearProductoRoute
   AuthProveedoresDevolucionesCrearDevolucionRoute: typeof AuthProveedoresDevolucionesCrearDevolucionRoute
-  AuthProveedoresEditarOrdenesDeCompraIdRoute: typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   AuthProveedoresEditarProveedorIdRoute: typeof AuthProveedoresEditarProveedorIdRoute
   AuthProveedoresEliminarOrdenesDeCompraIdRoute: typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
-  AuthProveedoresVerOrdenesDeCompraIdRoute: typeof AuthProveedoresVerOrdenesDeCompraIdRoute
+  AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute: typeof AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute
   AuthProveedoresVerProveedorIdRoute: typeof AuthProveedoresVerProveedorIdRoute
   AuthVentasCotizacionesCrearCotizacionRoute: typeof AuthVentasCotizacionesCrearCotizacionRoute
   AuthVentasGestiondeclientesAadirClienteRoute: typeof AuthVentasGestiondeclientesAadirClienteRoute
@@ -1022,6 +1019,7 @@ interface AuthRouteChildren {
   AuthInventarioMermasIndexRoute: typeof AuthInventarioMermasIndexRoute
   AuthInventarioProductosIndexRoute: typeof AuthInventarioProductosIndexRoute
   AuthProveedoresDevolucionesIndexRoute: typeof AuthProveedoresDevolucionesIndexRoute
+  AuthProveedoresOrdenesDeCompraIndexRoute: typeof AuthProveedoresOrdenesDeCompraIndexRoute
   AuthVentasCotizacionesIndexRoute: typeof AuthVentasCotizacionesIndexRoute
   AuthVentasDashboardIndexRoute: typeof AuthVentasDashboardIndexRoute
   AuthVentasGestiondeclientesIndexRoute: typeof AuthVentasGestiondeclientesIndexRoute
@@ -1039,6 +1037,8 @@ interface AuthRouteChildren {
   AuthInventarioProductosVerProductoIdRoute: typeof AuthInventarioProductosVerProductoIdRoute
   AuthProveedoresDevolucionesEditarDevolucionIdRoute: typeof AuthProveedoresDevolucionesEditarDevolucionIdRoute
   AuthProveedoresDevolucionesVerDevolucionIdRoute: typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
+  AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute: typeof AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute
+  AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute: typeof AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute
   AuthVentasCotizacionesEditarCotizacionIdRoute: typeof AuthVentasCotizacionesEditarCotizacionIdRoute
   AuthVentasCotizacionesVerCotizacionIdRoute: typeof AuthVentasCotizacionesVerCotizacionIdRoute
   AuthVentasGestiondeclientesEditarClienteIdRoute: typeof AuthVentasGestiondeclientesEditarClienteIdRoute
@@ -1054,11 +1054,8 @@ interface AuthRouteChildren {
 const AuthRouteChildren: AuthRouteChildren = {
   AuthAdministracionDashboardRoute: AuthAdministracionDashboardRoute,
   AuthInventarioDashboardRoute: AuthInventarioDashboardRoute,
-  AuthProveedoresCrearOrdenesDeCompraRoute:
-    AuthProveedoresCrearOrdenesDeCompraRoute,
   AuthProveedoresCrearProveedorRoute: AuthProveedoresCrearProveedorRoute,
   AuthProveedoresDashboardRoute: AuthProveedoresDashboardRoute,
-  AuthProveedoresOrdenesDeCompraRoute: AuthProveedoresOrdenesDeCompraRoute,
   AuthHomeIndexRoute: AuthHomeIndexRoute,
   AuthProveedoresIndexRoute: AuthProveedoresIndexRoute,
   AuthAdministracionUsuariosActividadDeUsuariosRoute:
@@ -1077,13 +1074,11 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthInventarioProductosCrearProductoRoute,
   AuthProveedoresDevolucionesCrearDevolucionRoute:
     AuthProveedoresDevolucionesCrearDevolucionRoute,
-  AuthProveedoresEditarOrdenesDeCompraIdRoute:
-    AuthProveedoresEditarOrdenesDeCompraIdRoute,
   AuthProveedoresEditarProveedorIdRoute: AuthProveedoresEditarProveedorIdRoute,
   AuthProveedoresEliminarOrdenesDeCompraIdRoute:
     AuthProveedoresEliminarOrdenesDeCompraIdRoute,
-  AuthProveedoresVerOrdenesDeCompraIdRoute:
-    AuthProveedoresVerOrdenesDeCompraIdRoute,
+  AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute:
+    AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute,
   AuthProveedoresVerProveedorIdRoute: AuthProveedoresVerProveedorIdRoute,
   AuthVentasCotizacionesCrearCotizacionRoute:
     AuthVentasCotizacionesCrearCotizacionRoute,
@@ -1101,6 +1096,8 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthInventarioMermasIndexRoute: AuthInventarioMermasIndexRoute,
   AuthInventarioProductosIndexRoute: AuthInventarioProductosIndexRoute,
   AuthProveedoresDevolucionesIndexRoute: AuthProveedoresDevolucionesIndexRoute,
+  AuthProveedoresOrdenesDeCompraIndexRoute:
+    AuthProveedoresOrdenesDeCompraIndexRoute,
   AuthVentasCotizacionesIndexRoute: AuthVentasCotizacionesIndexRoute,
   AuthVentasDashboardIndexRoute: AuthVentasDashboardIndexRoute,
   AuthVentasGestiondeclientesIndexRoute: AuthVentasGestiondeclientesIndexRoute,
@@ -1128,6 +1125,10 @@ const AuthRouteChildren: AuthRouteChildren = {
     AuthProveedoresDevolucionesEditarDevolucionIdRoute,
   AuthProveedoresDevolucionesVerDevolucionIdRoute:
     AuthProveedoresDevolucionesVerDevolucionIdRoute,
+  AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute:
+    AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute,
+  AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute:
+    AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute,
   AuthVentasCotizacionesEditarCotizacionIdRoute:
     AuthVentasCotizacionesEditarCotizacionIdRoute,
   AuthVentasCotizacionesVerCotizacionIdRoute:
@@ -1159,10 +1160,8 @@ export interface FileRoutesByFullPath {
   '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/inventario/dashboard': typeof AuthInventarioDashboardRoute
-  '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/proveedores/dashboard': typeof AuthProveedoresDashboardRoute
-  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/confirmar-contrasena/$uid/$token': typeof ConfirmarContrasenaUidTokenRoute
@@ -1175,10 +1174,9 @@ export interface FileRoutesByFullPath {
   '/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
-  '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
-  '/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
+  '/proveedores/ordenes-de-compra/crear-ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
@@ -1191,6 +1189,7 @@ export interface FileRoutesByFullPath {
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
+  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraIndexRoute
   '/ventas/cotizaciones': typeof AuthVentasCotizacionesIndexRoute
   '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
@@ -1208,6 +1207,8 @@ export interface FileRoutesByFullPath {
   '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
   '/proveedores/devoluciones/editar-devolucion/$id': typeof AuthProveedoresDevolucionesEditarDevolucionIdRoute
   '/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
+  '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute
+  '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute
   '/ventas/cotizaciones/editar-cotizacion/$id': typeof AuthVentasCotizacionesEditarCotizacionIdRoute
   '/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
@@ -1227,10 +1228,8 @@ export interface FileRoutesByTo {
   '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/inventario/dashboard': typeof AuthInventarioDashboardRoute
-  '/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/proveedores/dashboard': typeof AuthProveedoresDashboardRoute
-  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/home': typeof AuthHomeIndexRoute
   '/proveedores': typeof AuthProveedoresIndexRoute
   '/confirmar-contrasena/$uid/$token': typeof ConfirmarContrasenaUidTokenRoute
@@ -1243,10 +1242,9 @@ export interface FileRoutesByTo {
   '/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
-  '/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
-  '/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
+  '/proveedores/ordenes-de-compra/crear-ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute
   '/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
@@ -1259,6 +1257,7 @@ export interface FileRoutesByTo {
   '/inventario/mermas': typeof AuthInventarioMermasIndexRoute
   '/inventario/productos': typeof AuthInventarioProductosIndexRoute
   '/proveedores/devoluciones': typeof AuthProveedoresDevolucionesIndexRoute
+  '/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraIndexRoute
   '/ventas/cotizaciones': typeof AuthVentasCotizacionesIndexRoute
   '/ventas/dashboard': typeof AuthVentasDashboardIndexRoute
   '/ventas/gestiondeclientes': typeof AuthVentasGestiondeclientesIndexRoute
@@ -1276,6 +1275,8 @@ export interface FileRoutesByTo {
   '/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
   '/proveedores/devoluciones/editar-devolucion/$id': typeof AuthProveedoresDevolucionesEditarDevolucionIdRoute
   '/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
+  '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute
+  '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute
   '/ventas/cotizaciones/editar-cotizacion/$id': typeof AuthVentasCotizacionesEditarCotizacionIdRoute
   '/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
@@ -1296,10 +1297,8 @@ export interface FileRoutesById {
   '/restablecer-contrasena': typeof RestablecerContrasenaRoute
   '/_auth/administracion/dashboard': typeof AuthAdministracionDashboardRoute
   '/_auth/inventario/dashboard': typeof AuthInventarioDashboardRoute
-  '/_auth/proveedores/crear-ordenes-de-compra': typeof AuthProveedoresCrearOrdenesDeCompraRoute
   '/_auth/proveedores/crear-proveedor': typeof AuthProveedoresCrearProveedorRoute
   '/_auth/proveedores/dashboard': typeof AuthProveedoresDashboardRoute
-  '/_auth/proveedores/ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraRoute
   '/_auth/home/': typeof AuthHomeIndexRoute
   '/_auth/proveedores/': typeof AuthProveedoresIndexRoute
   '/confirmar-contrasena/$uid/$token/': typeof ConfirmarContrasenaUidTokenRoute
@@ -1312,10 +1311,9 @@ export interface FileRoutesById {
   '/_auth/inventario/productos/carga-masiva-productos': typeof AuthInventarioProductosCargaMasivaProductosRoute
   '/_auth/inventario/productos/crear-producto': typeof AuthInventarioProductosCrearProductoRoute
   '/_auth/proveedores/devoluciones/crear-devolucion': typeof AuthProveedoresDevolucionesCrearDevolucionRoute
-  '/_auth/proveedores/editar-ordenes-de-compra/$id': typeof AuthProveedoresEditarOrdenesDeCompraIdRoute
   '/_auth/proveedores/editar-proveedor/$id': typeof AuthProveedoresEditarProveedorIdRoute
   '/_auth/proveedores/eliminar-ordenes-de-compra/$id': typeof AuthProveedoresEliminarOrdenesDeCompraIdRoute
-  '/_auth/proveedores/ver-ordenes-de-compra/$id': typeof AuthProveedoresVerOrdenesDeCompraIdRoute
+  '/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra': typeof AuthProveedoresOrdenesDeCompraCrearOrdenesDeCompraRoute
   '/_auth/proveedores/ver-proveedor/$id': typeof AuthProveedoresVerProveedorIdRoute
   '/_auth/ventas/cotizaciones/crear-cotizacion': typeof AuthVentasCotizacionesCrearCotizacionRoute
   '/_auth/ventas/gestiondeclientes/añadir-cliente': typeof AuthVentasGestiondeclientesAadirClienteRoute
@@ -1328,6 +1326,7 @@ export interface FileRoutesById {
   '/_auth/inventario/mermas/': typeof AuthInventarioMermasIndexRoute
   '/_auth/inventario/productos/': typeof AuthInventarioProductosIndexRoute
   '/_auth/proveedores/devoluciones/': typeof AuthProveedoresDevolucionesIndexRoute
+  '/_auth/proveedores/ordenes-de-compra/': typeof AuthProveedoresOrdenesDeCompraIndexRoute
   '/_auth/ventas/cotizaciones/': typeof AuthVentasCotizacionesIndexRoute
   '/_auth/ventas/dashboard/': typeof AuthVentasDashboardIndexRoute
   '/_auth/ventas/gestiondeclientes/': typeof AuthVentasGestiondeclientesIndexRoute
@@ -1345,6 +1344,8 @@ export interface FileRoutesById {
   '/_auth/inventario/productos/ver-producto/$id': typeof AuthInventarioProductosVerProductoIdRoute
   '/_auth/proveedores/devoluciones/editar-devolucion/$id': typeof AuthProveedoresDevolucionesEditarDevolucionIdRoute
   '/_auth/proveedores/devoluciones/ver-devolucion/$id': typeof AuthProveedoresDevolucionesVerDevolucionIdRoute
+  '/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraEditarOrdenesDeCompraIdRoute
+  '/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id': typeof AuthProveedoresOrdenesDeCompraVerOrdenesDeCompraIdRoute
   '/_auth/ventas/cotizaciones/editar-cotizacion/$id': typeof AuthVentasCotizacionesEditarCotizacionIdRoute
   '/_auth/ventas/cotizaciones/ver-cotizacion/$id': typeof AuthVentasCotizacionesVerCotizacionIdRoute
   '/_auth/ventas/gestiondeclientes/editar-cliente/$id': typeof AuthVentasGestiondeclientesEditarClienteIdRoute
@@ -1366,10 +1367,8 @@ export interface FileRouteTypes {
     | '/restablecer-contrasena'
     | '/administracion/dashboard'
     | '/inventario/dashboard'
-    | '/proveedores/crear-ordenes-de-compra'
     | '/proveedores/crear-proveedor'
     | '/proveedores/dashboard'
-    | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
     | '/confirmar-contrasena/$uid/$token'
@@ -1382,10 +1381,9 @@ export interface FileRouteTypes {
     | '/inventario/productos/carga-masiva-productos'
     | '/inventario/productos/crear-producto'
     | '/proveedores/devoluciones/crear-devolucion'
-    | '/proveedores/editar-ordenes-de-compra/$id'
     | '/proveedores/editar-proveedor/$id'
     | '/proveedores/eliminar-ordenes-de-compra/$id'
-    | '/proveedores/ver-ordenes-de-compra/$id'
+    | '/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/cotizaciones/crear-cotizacion'
     | '/ventas/gestiondeclientes/añadir-cliente'
@@ -1398,6 +1396,7 @@ export interface FileRouteTypes {
     | '/inventario/mermas'
     | '/inventario/productos'
     | '/proveedores/devoluciones'
+    | '/proveedores/ordenes-de-compra'
     | '/ventas/cotizaciones'
     | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
@@ -1415,6 +1414,8 @@ export interface FileRouteTypes {
     | '/inventario/productos/ver-producto/$id'
     | '/proveedores/devoluciones/editar-devolucion/$id'
     | '/proveedores/devoluciones/ver-devolucion/$id'
+    | '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+    | '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
     | '/ventas/cotizaciones/editar-cotizacion/$id'
     | '/ventas/cotizaciones/ver-cotizacion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
@@ -1433,10 +1434,8 @@ export interface FileRouteTypes {
     | '/restablecer-contrasena'
     | '/administracion/dashboard'
     | '/inventario/dashboard'
-    | '/proveedores/crear-ordenes-de-compra'
     | '/proveedores/crear-proveedor'
     | '/proveedores/dashboard'
-    | '/proveedores/ordenes-de-compra'
     | '/home'
     | '/proveedores'
     | '/confirmar-contrasena/$uid/$token'
@@ -1449,10 +1448,9 @@ export interface FileRouteTypes {
     | '/inventario/productos/carga-masiva-productos'
     | '/inventario/productos/crear-producto'
     | '/proveedores/devoluciones/crear-devolucion'
-    | '/proveedores/editar-ordenes-de-compra/$id'
     | '/proveedores/editar-proveedor/$id'
     | '/proveedores/eliminar-ordenes-de-compra/$id'
-    | '/proveedores/ver-ordenes-de-compra/$id'
+    | '/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
     | '/proveedores/ver-proveedor/$id'
     | '/ventas/cotizaciones/crear-cotizacion'
     | '/ventas/gestiondeclientes/añadir-cliente'
@@ -1465,6 +1463,7 @@ export interface FileRouteTypes {
     | '/inventario/mermas'
     | '/inventario/productos'
     | '/proveedores/devoluciones'
+    | '/proveedores/ordenes-de-compra'
     | '/ventas/cotizaciones'
     | '/ventas/dashboard'
     | '/ventas/gestiondeclientes'
@@ -1482,6 +1481,8 @@ export interface FileRouteTypes {
     | '/inventario/productos/ver-producto/$id'
     | '/proveedores/devoluciones/editar-devolucion/$id'
     | '/proveedores/devoluciones/ver-devolucion/$id'
+    | '/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+    | '/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
     | '/ventas/cotizaciones/editar-cotizacion/$id'
     | '/ventas/cotizaciones/ver-cotizacion/$id'
     | '/ventas/gestiondeclientes/editar-cliente/$id'
@@ -1500,10 +1501,8 @@ export interface FileRouteTypes {
     | '/restablecer-contrasena'
     | '/_auth/administracion/dashboard'
     | '/_auth/inventario/dashboard'
-    | '/_auth/proveedores/crear-ordenes-de-compra'
     | '/_auth/proveedores/crear-proveedor'
     | '/_auth/proveedores/dashboard'
-    | '/_auth/proveedores/ordenes-de-compra'
     | '/_auth/home/'
     | '/_auth/proveedores/'
     | '/confirmar-contrasena/$uid/$token/'
@@ -1516,10 +1515,9 @@ export interface FileRouteTypes {
     | '/_auth/inventario/productos/carga-masiva-productos'
     | '/_auth/inventario/productos/crear-producto'
     | '/_auth/proveedores/devoluciones/crear-devolucion'
-    | '/_auth/proveedores/editar-ordenes-de-compra/$id'
     | '/_auth/proveedores/editar-proveedor/$id'
     | '/_auth/proveedores/eliminar-ordenes-de-compra/$id'
-    | '/_auth/proveedores/ver-ordenes-de-compra/$id'
+    | '/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra'
     | '/_auth/proveedores/ver-proveedor/$id'
     | '/_auth/ventas/cotizaciones/crear-cotizacion'
     | '/_auth/ventas/gestiondeclientes/añadir-cliente'
@@ -1532,6 +1530,7 @@ export interface FileRouteTypes {
     | '/_auth/inventario/mermas/'
     | '/_auth/inventario/productos/'
     | '/_auth/proveedores/devoluciones/'
+    | '/_auth/proveedores/ordenes-de-compra/'
     | '/_auth/ventas/cotizaciones/'
     | '/_auth/ventas/dashboard/'
     | '/_auth/ventas/gestiondeclientes/'
@@ -1549,6 +1548,8 @@ export interface FileRouteTypes {
     | '/_auth/inventario/productos/ver-producto/$id'
     | '/_auth/proveedores/devoluciones/editar-devolucion/$id'
     | '/_auth/proveedores/devoluciones/ver-devolucion/$id'
+    | '/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id'
+    | '/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id'
     | '/_auth/ventas/cotizaciones/editar-cotizacion/$id'
     | '/_auth/ventas/cotizaciones/ver-cotizacion/$id'
     | '/_auth/ventas/gestiondeclientes/editar-cliente/$id'
@@ -1603,10 +1604,8 @@ export const routeTree = rootRoute
       "children": [
         "/_auth/administracion/dashboard",
         "/_auth/inventario/dashboard",
-        "/_auth/proveedores/crear-ordenes-de-compra",
         "/_auth/proveedores/crear-proveedor",
         "/_auth/proveedores/dashboard",
-        "/_auth/proveedores/ordenes-de-compra",
         "/_auth/home/",
         "/_auth/proveedores/",
         "/_auth/administracion/usuarios/actividad-de-usuarios",
@@ -1618,10 +1617,9 @@ export const routeTree = rootRoute
         "/_auth/inventario/productos/carga-masiva-productos",
         "/_auth/inventario/productos/crear-producto",
         "/_auth/proveedores/devoluciones/crear-devolucion",
-        "/_auth/proveedores/editar-ordenes-de-compra/$id",
         "/_auth/proveedores/editar-proveedor/$id",
         "/_auth/proveedores/eliminar-ordenes-de-compra/$id",
-        "/_auth/proveedores/ver-ordenes-de-compra/$id",
+        "/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra",
         "/_auth/proveedores/ver-proveedor/$id",
         "/_auth/ventas/cotizaciones/crear-cotizacion",
         "/_auth/ventas/gestiondeclientes/añadir-cliente",
@@ -1634,6 +1632,7 @@ export const routeTree = rootRoute
         "/_auth/inventario/mermas/",
         "/_auth/inventario/productos/",
         "/_auth/proveedores/devoluciones/",
+        "/_auth/proveedores/ordenes-de-compra/",
         "/_auth/ventas/cotizaciones/",
         "/_auth/ventas/dashboard/",
         "/_auth/ventas/gestiondeclientes/",
@@ -1651,6 +1650,8 @@ export const routeTree = rootRoute
         "/_auth/inventario/productos/ver-producto/$id",
         "/_auth/proveedores/devoluciones/editar-devolucion/$id",
         "/_auth/proveedores/devoluciones/ver-devolucion/$id",
+        "/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id",
+        "/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id",
         "/_auth/ventas/cotizaciones/editar-cotizacion/$id",
         "/_auth/ventas/cotizaciones/ver-cotizacion/$id",
         "/_auth/ventas/gestiondeclientes/editar-cliente/$id",
@@ -1677,20 +1678,12 @@ export const routeTree = rootRoute
       "filePath": "_auth/inventario/dashboard.tsx",
       "parent": "/_auth"
     },
-    "/_auth/proveedores/crear-ordenes-de-compra": {
-      "filePath": "_auth/proveedores/crear-ordenes-de-compra.tsx",
-      "parent": "/_auth"
-    },
     "/_auth/proveedores/crear-proveedor": {
       "filePath": "_auth/proveedores/crear-proveedor.tsx",
       "parent": "/_auth"
     },
     "/_auth/proveedores/dashboard": {
       "filePath": "_auth/proveedores/dashboard.tsx",
-      "parent": "/_auth"
-    },
-    "/_auth/proveedores/ordenes-de-compra": {
-      "filePath": "_auth/proveedores/ordenes-de-compra.tsx",
       "parent": "/_auth"
     },
     "/_auth/home/": {
@@ -1740,10 +1733,6 @@ export const routeTree = rootRoute
       "filePath": "_auth/proveedores/devoluciones/crear-devolucion.tsx",
       "parent": "/_auth"
     },
-    "/_auth/proveedores/editar-ordenes-de-compra/$id": {
-      "filePath": "_auth/proveedores/editar-ordenes-de-compra.$id.tsx",
-      "parent": "/_auth"
-    },
     "/_auth/proveedores/editar-proveedor/$id": {
       "filePath": "_auth/proveedores/editar-proveedor.$id.tsx",
       "parent": "/_auth"
@@ -1752,8 +1741,8 @@ export const routeTree = rootRoute
       "filePath": "_auth/proveedores/eliminar-ordenes-de-compra.$id.tsx",
       "parent": "/_auth"
     },
-    "/_auth/proveedores/ver-ordenes-de-compra/$id": {
-      "filePath": "_auth/proveedores/ver-ordenes-de-compra.$id.tsx",
+    "/_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra": {
+      "filePath": "_auth/proveedores/ordenes-de-compra/crear-ordenes-de-compra.tsx",
       "parent": "/_auth"
     },
     "/_auth/proveedores/ver-proveedor/$id": {
@@ -1802,6 +1791,10 @@ export const routeTree = rootRoute
     },
     "/_auth/proveedores/devoluciones/": {
       "filePath": "_auth/proveedores/devoluciones/index.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ordenes-de-compra/": {
+      "filePath": "_auth/proveedores/ordenes-de-compra/index.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/cotizaciones/": {
@@ -1870,6 +1863,14 @@ export const routeTree = rootRoute
     },
     "/_auth/proveedores/devoluciones/ver-devolucion/$id": {
       "filePath": "_auth/proveedores/devoluciones/ver-devolucion.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id": {
+      "filePath": "_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra.$id.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id": {
+      "filePath": "_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra.$id.tsx",
       "parent": "/_auth"
     },
     "/_auth/ventas/cotizaciones/editar-cotizacion/$id": {

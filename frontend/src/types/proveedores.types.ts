@@ -33,3 +33,14 @@ export interface BuyOrdersParams {
   search?: string;
   ordering?: string;
 }
+
+export interface ReturnSupplierList {
+    id:              string;
+    status:          string;
+    status_display:  string;
+    supplier_name:   string;
+    purchase_number: string;
+    return_date:     Date;
+    total_items:     number;
+    total_products:  number;
+}

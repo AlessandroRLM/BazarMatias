@@ -5,13 +5,6 @@ from django.db import models
 
 class ProductFilter(django_filters.FilterSet):
 
-    # Filtro personalizado para productos con stock bajo (usando el método)
-    below_min_stock = django_filters.BooleanFilter(
-        method='filter_below_min_stock')
-
-    # Filtro para productos sin stock
-    out_of_stock = django_filters.BooleanFilter(method='filter_out_of_stock')
-
     status_stock = django_filters.ChoiceFilter(
         method='filter_status_stock',
         choices=[

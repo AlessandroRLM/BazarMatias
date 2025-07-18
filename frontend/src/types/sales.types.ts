@@ -2,6 +2,7 @@ import { User } from "./auth.types"
 import { Product } from "./inventory.types"
 
 
+
 export interface Client {
   id: string
   national_id: string
@@ -9,7 +10,6 @@ export interface Client {
   last_name: string
   email?: string
   phone_number?: string
-  formatted_rut?: string
 }
 
 export interface SaleDetail {
@@ -39,7 +39,7 @@ export interface Sale {
   total_amount: number
 }
 
-export interface Return {
+export interface ClientsReturn {
   id: string;
   client: {
     id: string;
@@ -153,15 +153,3 @@ export interface WorkOrderFilters {
   ordering?: string
 }
 
-export interface CustomPagination<T> {
-  info: {
-    count: number;
-    pages: number;
-    current_page: number;
-    next: number | null;
-    previous: number | null;
-  };
-  results: T[];
-}
-
-export type { Product };

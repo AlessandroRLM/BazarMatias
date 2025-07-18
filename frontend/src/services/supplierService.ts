@@ -5,12 +5,13 @@ import { Product } from "../types/inventory.types";
 import { BuyOrder, Supplier, BuyOrdersParams } from "../types/proveedores.types";
 import { BuyOrderCreationFormValues } from "../schemas/proveedores/buyOrderSchema";
 
-//para formulario de ordenes de compra
+//para formulario de ordenes de compra y ventas
 export const fetchProducts = async (search: String) => {
     if (!search){
         const response: AxiosResponse<CustomPagination<Product>> = await AxiosInstance.get(`/api/inventory/products/?page_size=20`);
         return response.data;
     }
+    // Aseguramos que la búsqueda se realice correctamente en el backend
     const response: AxiosResponse<CustomPagination<Product>> = await AxiosInstance.get(`/api/inventory/products/?page_size=20&${search}`);
     return response.data;
 };

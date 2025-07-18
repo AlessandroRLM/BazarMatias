@@ -119,9 +119,17 @@ paths:
         schema:
           type: string
       - in: query
-        name: supplier
+        name: status_stock
         schema:
           type: string
+          enum:
+          - low
+          - normal
+          - out
+        description: |-
+          * `normal` - Stock Normal
+          * `low` - Stock Bajo
+          * `out` - Sin Stock
       tags:
       - inventory
       security:
@@ -299,224 +307,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
-          description: ''
-  /api/inventory/return-suppliers/:
-    get:
-      operationId: inventory_return_suppliers_list
-      parameters:
-      - in: query
-        name: end_date
-        schema:
-          type: string
-          format: date
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - in: query
-        name: product
-        schema:
-          type: integer
-      - name: search
-        required: false
-        in: query
-        description: A search term.
-        schema:
-          type: string
-      - in: query
-        name: start_date
-        schema:
-          type: string
-          format: date
-      - in: query
-        name: status
-        schema:
-          type: string
-      - in: query
-        name: supplier
-        schema:
-          type: integer
-      tags:
-      - inventory
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedReturnSupplierList'
-          description: ''
-    post:
-      operationId: inventory_return_suppliers_create
-      tags:
-      - inventory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-        required: true
-      security:
-      - knoxApiToken: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReturnSupplier'
-          description: ''
-  /api/inventory/return-suppliers/{id}/:
-    get:
-      operationId: inventory_return_suppliers_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this return supplier.
-        required: true
-      tags:
-      - inventory
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReturnSupplier'
-          description: ''
-    put:
-      operationId: inventory_return_suppliers_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this return supplier.
-        required: true
-      tags:
-      - inventory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ReturnSupplier'
-        required: true
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReturnSupplier'
-          description: ''
-    patch:
-      operationId: inventory_return_suppliers_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this return supplier.
-        required: true
-      tags:
-      - inventory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReturnSupplier'
-          description: ''
-    delete:
-      operationId: inventory_return_suppliers_destroy
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this return supplier.
-        required: true
-      tags:
-      - inventory
-      security:
-      - knoxApiToken: []
-      responses:
-        '204':
-          description: No response body
-  /api/inventory/return-suppliers/{id}/resolve/:
-    patch:
-      operationId: inventory_return_suppliers_resolve_partial_update
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this return supplier.
-        required: true
-      tags:
-      - inventory
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedReturnSupplier'
-      security:
-      - knoxApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReturnSupplier'
           description: ''
   /api/inventory/shrinkages/:
     get:
@@ -766,6 +556,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Supply'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
         required: true
       security:
       - knoxApiToken: []
@@ -813,6 +606,9 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Supply'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
         required: true
       security:
       - knoxApiToken: []
@@ -837,6 +633,9 @@ paths:
       requestBody:
         content:
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupply'
+          application/json:
             schema:
               $ref: '#/components/schemas/PatchedSupply'
       security:
@@ -872,6 +671,9 @@ paths:
       requestBody:
         content:
           multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supply'
+          application/json:
             schema:
               $ref: '#/components/schemas/Supply'
         required: true
@@ -1539,10 +1341,48 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sales/returns/{id}/update-status/:
+    patch:
+      operationId: sales_returns_update_status_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Devolución.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturn'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+          description: ''
   /api/sales/sales/:
     get:
       operationId: sales_sales_list
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - name: page
         required: false
         in: query
@@ -1555,6 +1395,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - sales
       security:
@@ -2096,6 +1942,228 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/suppliers/return_suppliers/:
+    get:
+      operationId: suppliers_return_suppliers_list
+      parameters:
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - AP
+          - PE
+          - RE
+        description: |-
+          * `RE` - Rechazada
+          * `PE` - Pendiente
+          * `AP` - Aprobado
+      - in: query
+        name: supplier
+        schema:
+          type: integer
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReturnSupplierList'
+          description: ''
+    post:
+      operationId: suppliers_return_suppliers_create
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+  /api/suppliers/return_suppliers/{id}/:
+    get:
+      operationId: suppliers_return_suppliers_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    put:
+      operationId: suppliers_return_suppliers_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReturnSupplier'
+        required: true
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    patch:
+      operationId: suppliers_return_suppliers_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
+    delete:
+      operationId: suppliers_return_suppliers_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - suppliers
+      security:
+      - knoxApiToken: []
+      responses:
+        '204':
+          description: No response body
+  /api/suppliers/return_suppliers/{id}/resolve/:
+    patch:
+      operationId: suppliers_return_suppliers_resolve_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this return supplier.
+        required: true
+      tags:
+      - suppliers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReturnSupplier'
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSupplier'
+          description: ''
   /api/suppliers/suppliers/:
     get:
       operationId: suppliers_suppliers_list
@@ -3107,18 +3175,32 @@ components:
           type: string
           readOnly: true
         client:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: integer
+          writeOnly: true
         cliente_nombre:
           type: string
           readOnly: true
         sale:
           type: string
+          readOnly: true
+        sale_id:
+          type: integer
+          writeOnly: true
         fecha_venta:
           type: string
           format: date-time
           readOnly: true
         product:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        product_id:
+          type: integer
+          writeOnly: true
         producto_nombre:
           type: string
           readOnly: true
@@ -3133,42 +3215,43 @@ components:
           type: string
           format: date-time
           readOnly: true
+        status:
+          $ref: '#/components/schemas/ReturnStatusEnum'
     PatchedReturnSupplier:
       type: object
       properties:
         id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ReturnSupplierStatusEnum'
+        status_display:
           type: string
           readOnly: true
         supplier:
           type: integer
-        product:
-          type: integer
-        quantity:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
-        product_condition:
+        supplier_name:
           type: string
-          maxLength: 100
-        reason:
-          type: string
+          readOnly: true
         purchase_number:
           type: string
           maxLength: 50
         purchase_date:
           type: string
           format: date
+        reason:
+          type: string
         return_date:
           type: string
           format: date
-        status:
-          type: string
-          maxLength: 50
-        supplier_name:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReturnSupplierDetail'
+        total_items:
           type: string
           readOnly: true
-        product_name:
+        total_products:
           type: string
           readOnly: true
     PatchedSale:
@@ -3427,7 +3510,6 @@ components:
       - is_below_min_stock
       - name
       - price_clp
-      - stock
       - supplier_name
     Quote:
       type: object
@@ -3493,18 +3575,32 @@ components:
           type: string
           readOnly: true
         client:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: integer
+          writeOnly: true
         cliente_nombre:
           type: string
           readOnly: true
         sale:
           type: string
+          readOnly: true
+        sale_id:
+          type: integer
+          writeOnly: true
         fecha_venta:
           type: string
           format: date-time
           readOnly: true
         product:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        product_id:
+          type: integer
+          writeOnly: true
         producto_nombre:
           type: string
           readOnly: true
@@ -3519,67 +3615,132 @@ components:
           type: string
           format: date-time
           readOnly: true
+        status:
+          $ref: '#/components/schemas/ReturnStatusEnum'
       required:
       - client
+      - client_id
       - cliente_nombre
       - created_at
       - fecha_venta
       - id
       - product
+      - product_id
       - producto_nombre
       - quantity
       - reason
       - sale
+      - sale_id
+    ReturnStatusEnum:
+      enum:
+      - pending
+      - completed
+      - refused
+      type: string
+      description: |-
+        * `pending` - Pendiente
+        * `completed` - Completado
+        * `refused` - Rechazado
     ReturnSupplier:
       type: object
       properties:
         id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ReturnSupplierStatusEnum'
+        status_display:
           type: string
           readOnly: true
         supplier:
           type: integer
-        product:
-          type: integer
-        quantity:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
-        product_condition:
+        supplier_name:
           type: string
-          maxLength: 100
-        reason:
-          type: string
+          readOnly: true
         purchase_number:
           type: string
           maxLength: 50
         purchase_date:
           type: string
           format: date
+        reason:
+          type: string
         return_date:
           type: string
           format: date
-        status:
-          type: string
-          maxLength: 50
-        supplier_name:
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReturnSupplierDetail'
+        total_items:
           type: string
           readOnly: true
-        product_name:
+        total_products:
           type: string
           readOnly: true
       required:
       - id
-      - product
-      - product_condition
-      - product_name
       - purchase_date
       - purchase_number
-      - quantity
       - reason
       - return_date
+      - status_display
       - supplier
       - supplier_name
+      - total_items
+      - total_products
+    ReturnSupplierDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        product_name:
+          type: string
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        quantity_received:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Cantidad Recibida por Proveedor
+        unit_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Precio Unitario
+        total_amount:
+          type: string
+          readOnly: true
+        is_fully_received:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - is_fully_received
+      - product
+      - product_name
+      - quantity
+      - total_amount
+    ReturnSupplierStatusEnum:
+      enum:
+      - RE
+      - PE
+      - AP
+      type: string
+      description: |-
+        * `RE` - Rechazada
+        * `PE` - Pendiente
+        * `AP` - Aprobado
     Sale:
       type: object
       properties:

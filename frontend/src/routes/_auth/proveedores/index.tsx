@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import SuppliersManagementPage  from '../../../pages/proveedores/SuppliersManagementPage'
+import SuppliersManagementPage  from '../../../pages/proveedores/supplier/SuppliersManagementPage'
 
 export const Route = createFileRoute('/_auth/proveedores/')({
   

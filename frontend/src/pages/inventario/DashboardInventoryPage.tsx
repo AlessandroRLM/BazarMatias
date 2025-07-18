@@ -7,7 +7,7 @@ import {
   WarningAmberOutlined,
 } from "@mui/icons-material"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { inventoryMetricsQueryOptions } from "../../utils/inventory/inventoryQueryOptions"
+import { inventoryMetricsQueryOptions } from "../../utils/inventario/inventoryQueryOptions"
 import LowStockProductsChart from "../../components/inventory/LowStockProductsChart"
 import RecentShrinkagesTable from "../../components/inventory/RecentShrinkagesTable"
 import { downloadInventoryReportPDF } from "../../services/reportsService";

@@ -183,7 +183,7 @@ class Quote(models.Model):
     class StatusQuote(models.TextChoices):
         REJECTED = 'RE', 'Rechazado'
         PENDING = 'PE', 'Pendiente'
-        APROVED = 'AP', 'Aprobado'
+        APPROVED = 'AP', 'Aprobado'
         
     status = models.CharField(
         max_length=2,

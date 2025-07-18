@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import SalesEdit from '../../../../pages/ventas/SalesEdit';
+import SalesEdit from '../../../../pages/ventas/sales/SalesEdit';
 
 export const Route = createFileRoute('/_auth/ventas/gestiondeventas/editar-venta/$id')({
   component: SalesEditPage

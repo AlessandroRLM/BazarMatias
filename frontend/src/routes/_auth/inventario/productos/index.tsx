@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import InventoryManagementPage from '../../../../pages/inventario/InventoryManagementPage'
+import InventoryManagementPage from '../../../../pages/inventario/inventory/InventoryManagementPage'
 import { zodValidator } from '@tanstack/zod-adapter'
 import { productsSearchSchema } from '../../../../schemas/inventario/productsSearchSchema'
 import { queryClient } from '../../../../App'
-import { productsQueryOptions } from '../../../../utils/inventory/inventoryQueryOptions'
+import { productsQueryOptions } from '../../../../utils/inventario/inventoryQueryOptions'
 
 export const Route = createFileRoute('/_auth/inventario/productos/')({
   validateSearch: zodValidator(productsSearchSchema),

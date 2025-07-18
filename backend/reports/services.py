@@ -1,7 +1,7 @@
 from django.db.models import Count, Sum, F
 from users.models import User, UserActivity
-from inventory.models import Product, Supply, ReturnSupplier, Shrinkage
-from suppliers.models import Supplier, BuyOrder
+from inventory.models import Product, Supply, Shrinkage
+from suppliers.models import Supplier, BuyOrder, ReturnSupplier
 
 def get_user_report_data():
     users = User.objects.all()

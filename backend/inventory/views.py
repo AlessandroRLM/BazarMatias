@@ -7,18 +7,17 @@ from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 import openpyxl
 from openpyxl import Workbook
 
-from .models import Product, Supply, Shrinkage, ReturnSupplier
+from .models import Product, Supply, Shrinkage
 from suppliers.models import Supplier
 from .serializers import (
     ProductSerializer,
     SupplySerializer,
     ShrinkageSerializer,
-    ReturnSupplierSerializer
 )
 from users.pagination import CustomPagination
 from .filters import ProductFilter
@@ -289,42 +288,6 @@ class ShrinkageViewSet(viewsets.ModelViewSet):
         wb.save(response)
         return response
 
-# -----------------------
-# Devoluciones a proveedores
-# -----------------------
-
-class ReturnSupplierFilter(FilterSet):
-    start_date = DateFilter(field_name="return_date", lookup_expr='gte')
-    end_date = DateFilter(field_name="return_date", lookup_expr='lte')
-
-    class Meta:
-        model = ReturnSupplier
-        fields = ['supplier', 'product', 'status', 'start_date', 'end_date']
-
-class ReturnSupplierViewSet(viewsets.ModelViewSet):
-    queryset = ReturnSupplier.objects.all()
-    serializer_class = ReturnSupplierSerializer
-    pagination_class = CustomPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_class = ReturnSupplierFilter
-    search_fields = ['reason', 'purchase_number']
-    ordering_fields = ['return_date', 'purchase_date', 'quantity']
-    ordering = ['-return_date']
-
-    @action(detail=True, methods=["patch"], url_path="resolve")
-    def mark_as_resolved(self, request, pk=None):
-        instance = self.get_object()
-        if instance.status == "Resuelto":
-            return Response(
-                {"message": "Esta devolución ya está marcada como Resuelto."},
-                status=drf_status.HTTP_400_BAD_REQUEST
-            )
-        instance.status = "Resuelto"
-        instance.save()
-        return Response(
-            {"message": "Devolución marcada como Resuelto."},
-            status=drf_status.HTTP_200_OK
-        )
 
 # -----------------------
 # Metricas para Dashboard inventario

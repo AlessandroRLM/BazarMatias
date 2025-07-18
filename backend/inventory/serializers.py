@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Supply, Shrinkage, ReturnSupplier
+from .models import Product, Supply, Shrinkage
 from suppliers.models import Supplier
 from bson import ObjectId
 import re
@@ -92,57 +92,3 @@ class ShrinkageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ReturnSupplierSerializer(serializers.ModelSerializer):
-    id = ObjectIdField(read_only=True)
-    supplier = serializers.PrimaryKeyRelatedField(
-        queryset=Supplier.objects.all())
-    product = serializers.PrimaryKeyRelatedField(
-        queryset=Product.objects.all())
-    supplier_name = serializers.SerializerMethodField()
-    product_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ReturnSupplier
-        fields = [
-            'id',
-            'supplier',
-            'product',
-            'quantity',
-            'product_condition',
-            'reason',
-            'purchase_number',
-            'purchase_date',
-            'return_date',
-            'status',
-            'supplier_name',
-            'product_name'
-        ]
-
-    def get_supplier_name(self, obj):
-        return getattr(obj.supplier, 'name', None)
-
-    def get_product_name(self, obj):
-        try:
-            return obj.product.name if obj.product else 'Producto eliminado'
-        except Product.DoesNotExist:
-            return 'Producto eliminado'
-
-    def update(self, instance, validated_data):
-        if "status" in validated_data:
-            if instance.status == "Resuelto" and validated_data["status"] == "Pendiente":
-                raise serializers.ValidationError(
-                    "No se puede cambiar el estado de 'Resuelto' a 'Pendiente'")
-        return super().update(instance, validated_data)
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-
-        # Forzar conversión segura de todos los ObjectId potenciales
-        for key, value in rep.items():
-            if isinstance(value, ObjectId):
-                rep[key] = str(value)
-
-        if hasattr(instance, 'id') and isinstance(instance.id, ObjectId):
-            rep['id'] = str(instance.id)
-
-        return rep

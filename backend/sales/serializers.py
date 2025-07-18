@@ -106,6 +106,10 @@ class SaleSerializer(serializers.ModelSerializer):
                         f"No hay suficiente stock para el producto {product.name}"
                     )
                 
+                # Restar cantidad vendida al stock del producto
+                product.stock -= detail_data['quantity']
+                product.save()
+
                 # Crear el detalle
                 detail = SaleDetail.objects.create(**detail_data)
                 sale.details.add(detail)

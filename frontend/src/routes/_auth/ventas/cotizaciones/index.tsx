@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-adapter'
 
-import QuoteManagementPage from '../../../../pages/cotizaciones/QuoteManagementPage'
+import QuoteManagementPage from '../../../../pages/ventas/quotes/QuoteManagementPage'
 import { quoteSearchSchema } from '../../../../schemas/ventas/cotizaciones/quoteSearchSchema'
 import { quotesQueryOptions } from '../../../../utils/ventas/salesQueryOptions'
 import { queryClient } from '../../../../App'

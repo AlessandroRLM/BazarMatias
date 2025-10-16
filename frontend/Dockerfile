@@ -5,9 +5,7 @@ FROM oven/bun:1.2.8-alpine
 WORKDIR /frontend
 
 # Copia los archivos de configuración y dependencias
-COPY package.json ./
-COPY bun.lock ./
-COPY src ./
+COPY package*.json ./
 RUN bun install
 
 # Copia el resto del código
@@ -17,4 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # Comando para correr el servidor de desarrollo
-CMD ["bun", "run", "dev", "--host"]
+CMD ["bun", "run", "dev"]

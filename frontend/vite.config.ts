@@ -9,7 +9,12 @@ export default defineConfig({
     TanStackRouterVite({ target: 'react', autoCodeSplitting: true }),
     react()
   ],
+  // Server configuration
   server: {
     port: 3000,
+    host: true,
+    watch: {
+      usePolling: true,
+    },
   },
 })

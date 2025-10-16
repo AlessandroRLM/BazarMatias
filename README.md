@@ -30,7 +30,7 @@ BazarMatias es un sistema integral de gestión para tiendas minoristas que permi
 - **React 19**: Biblioteca JavaScript para construir interfaces de usuario
 - **TypeScript**: Superset tipado de JavaScript
 - **Vite**: Herramienta de construcción rápida para desarrollo moderno
-- **TanStack Router**: Enrutamiento tipo-seguro para React
+- **TanStack Router**: Enrutamiento type-safety para React
 - **TanStack Query**: Gestión de estado del servidor y caché
 - **TanStack Table**: Tablas potentes y flexibles
 - **Joy UI (JUI)**: Biblioteca de componentes de UI

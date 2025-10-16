@@ -121,7 +121,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Crear superusuario
-python manage.py createsuperuser
+python manage.py createcustomsuperuser
 ```
 
 #### Frontend
@@ -130,7 +130,7 @@ python manage.py createsuperuser
 docker exec -it frontend sh
 
 # Instalar nuevas dependencias
-bun install nombre-paquete
+bun add nombre-paquete
 
 # Ejecutar linter
 bun run lint

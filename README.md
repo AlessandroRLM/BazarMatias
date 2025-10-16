@@ -47,8 +47,8 @@ BazarMatias es un sistema integral de gestión para tiendas minoristas que permi
 El proyecto sigue una arquitectura de tres capas con los siguientes componentes:
 
 - **Capa de presentación**: Aplicación React con TypeScript
-- **Capa de aplicación**: API REST con Django y MongoDB
-- **Capa de datos**: MongoDB para almacenamiento persistente
+- **Capa de aplicación**: API REST con Django REST Framework
+- **Capa de datos**: MongoDB para almacenamiento
 
 ## 📦 Instalación y Configuración
 

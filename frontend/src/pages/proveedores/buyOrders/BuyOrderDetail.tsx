@@ -9,7 +9,7 @@ import { fetchProduct } from '../../../services/inventoryService'
 import { Product } from '../../../types/inventory.types'
 
 const BuyOrderDetail = () => {
-  const { id } = useParams({ from: '/_auth/proveedores/ver-ordenes-de-compra/$id' })
+  const { id } = useParams({ from: '/_auth/proveedores/ordenes-de-compra/ver-ordenes-de-compra/$id' })
   const navigate = useNavigate()
 
   const { data: buyOrder, isError } = useQuery<BuyOrder>({

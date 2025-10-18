@@ -65,3 +65,9 @@ export const fetchBuyOrders = async (params: BuyOrdersParams = {}) => {
   );
   return response.data;
 };
+
+
+export const deleteReturnSupplier = async (returnId: string) => {
+    const response = await AxiosInstance.delete(`/api/suppliers/return_suppliers/${returnId}/`);
+    return response.data;
+};

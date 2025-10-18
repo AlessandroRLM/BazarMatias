@@ -18,7 +18,8 @@ const LoginPage = () => {
                     sx={{
                         width: '100%',
                         minHeight: '100dvh',
-                        px: 2,
+                        px: 4,
+                        py: 2,
                         display: 'flex',
                         flexDirection: 'column',
                     }}

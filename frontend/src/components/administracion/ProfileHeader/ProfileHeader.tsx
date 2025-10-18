@@ -1,7 +1,6 @@
 import { Typography, Box, IconButton, Dropdown, Menu, MenuButton, MenuItem } from "@mui/joy";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Añadir esta importación
-import Header from "../../../components/core/layout/components/Header"
 
 interface HeaderUserCreationProps {
   title?: React.ReactNode;
@@ -11,131 +10,79 @@ interface HeaderUserCreationProps {
   menuItems?: { label: string; onClick: () => void }[];
 }
 
-const HeaderUserCreation = ({ 
-  title, 
-  subtitle, 
-  onBack, 
-  showMenu = false, 
-  menuItems = [] 
+const HeaderUserCreation = ({
+  title,
+  subtitle,
+  onBack,
+  showMenu = false,
+  menuItems = []
 }: HeaderUserCreationProps) => {
   return (
-    <>
-      {/* Header móvil - usando el Header general con flecha de retroceso */}
-      <Header showBackButton onBack={onBack}>
-        {/* Título centrado */}
-        <Typography 
-          level="h4" 
-          component="h1" 
-          sx={{ 
-            flex: 1,
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            px: 1,
-            mx: 'auto',
-            maxWidth: 'calc(100% - 160px)'
-          }}
-        >
-          {title}
-        </Typography>
-        
-        {/* Contenedor derecho */}
-        <Box sx={{ 
-          display: 'flex',
-          flex: '0 0 auto',
-          width: '34px',
-          justifyContent: 'flex-end'
-        }}>
-          {showMenu && (
-            <Dropdown>
-              <MenuButton
-                slots={{ root: IconButton }}
-                slotProps={{ root: { 
-                  variant: 'outlined', 
-                  color: 'neutral', 
-                  size: 'sm' 
-                } }}
-              >
-                <SettingsIcon />
-              </MenuButton>
-              <Menu>
-                {menuItems.map((item, index) => (
-                  <MenuItem key={index} onClick={item.onClick}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Dropdown>
-          )}
-        </Box>
-      </Header>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '8px 16px',
+        borderBottom: '1px solid var(--joy-palette-divider)',
+        marginBottom: 2,
+        position: 'relative',
+      }}
+    >
+      <IconButton
+        onClick={onBack || (() => window.history.back())}
+        variant="plain"
+        color="neutral"
+        size="lg"
+        sx={{ zIndex: 1 }}
+      >
+        <ArrowBackIcon />
+      </IconButton>
 
-      {/* Header desktop (se mantiene igual) */}
       <Box
         sx={{
-          display: { xs: 'none', md: 'flex' },
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 16px',
-          borderBottom: '1px solid var(--joy-palette-divider)',
-          marginBottom: 2,
-          position: 'relative',
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          textAlign: 'center',
         }}
       >
-        <IconButton
-          onClick={onBack || (() => window.history.back())}
-          variant="plain"
-          color="neutral"
-          size="lg"
-          sx={{ zIndex: 1 }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-
-        <Box
-          sx={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
-          }}
-        >
-          <Typography level="h4" component="h1">
-            {title}
+        <Typography level="h4" component="h1">
+          {title}
+        </Typography>
+        {subtitle && (
+          <Typography level="h2" sx={{ color: 'text.secondary' }}>
+            {subtitle}
           </Typography>
-          {subtitle && (
-            <Typography level="h2" sx={{ color: 'text.secondary' }}>
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
-
-        {showMenu && (
-          <Dropdown>
-            <MenuButton
-              slots={{ root: IconButton }}
-              slotProps={{ root: { 
-                variant: 'plain', 
-                color: 'neutral', 
-                size: 'lg', 
-                sx: { zIndex: 1 } 
-              } }}
-            >
-              <SettingsIcon />
-            </MenuButton>
-            <Menu>
-              {menuItems.map((item, index) => (
-                <MenuItem key={index} onClick={item.onClick}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Dropdown>
         )}
       </Box>
-    </>
+
+      {showMenu && (
+        <Dropdown>
+          <MenuButton
+            slots={{ root: IconButton }}
+            slotProps={{
+              root: {
+                variant: 'plain',
+                color: 'neutral',
+                size: 'lg',
+                sx: { zIndex: 1 }
+              }
+            }}
+          >
+            <SettingsIcon />
+          </MenuButton>
+          <Menu>
+            {menuItems.map((item, index) => (
+              <MenuItem key={index} onClick={item.onClick}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Dropdown>
+      )}
+    </Box>
   );
 };
 

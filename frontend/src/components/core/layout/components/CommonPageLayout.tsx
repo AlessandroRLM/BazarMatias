@@ -31,7 +31,6 @@ const CommonPageLayout = ({ children }: CommonPageLayoutProps) => {
           position: 'relative',
           width: '100%',
           height: 'auto',
-          backgroundColor: '#ffffff',
           borderRadius: 'var(--joy-radius-md)',
           overflow: 'visible',
           gap: 2,

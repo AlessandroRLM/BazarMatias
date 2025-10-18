@@ -2,15 +2,13 @@ import { Sheet, GlobalStyles, IconButton, Box } from "@mui/joy";
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { toggleSidebar } from "../../../../utils/sidebar.utils";
-import { ReactNode } from "react";
 
 interface HeaderProps {
-  children?: ReactNode;
   showBackButton?: boolean;
   onBack?: () => void;
 }
 
-const Header = ({ children, showBackButton = false, onBack }: HeaderProps) => {
+const Header = ({ showBackButton = false, onBack }: HeaderProps) => {
     return (
         <Sheet
             sx={{
@@ -19,9 +17,7 @@ const Header = ({ children, showBackButton = false, onBack }: HeaderProps) => {
                 justifyContent: 'space-between',
                 position: 'fixed',
                 top: 0,
-                left: 0, 
-                right: 0, 
-                width: '100%',
+                width: '100vw',
                 height: 'var(--Header-height)',
                 zIndex: 995,
                 p: 2,
@@ -66,8 +62,6 @@ const Header = ({ children, showBackButton = false, onBack }: HeaderProps) => {
                     </IconButton>
                 )}
             </Box>
-
-            {children}
         </Sheet>
     )
 }

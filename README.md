@@ -30,7 +30,7 @@ BazarMatias es un sistema integral de gestión para tiendas minoristas que permi
 - **React 19**: Biblioteca JavaScript para construir interfaces de usuario
 - **TypeScript**: Superset tipado de JavaScript
 - **Vite**: Herramienta de construcción rápida para desarrollo moderno
-- **TanStack Router**: Enrutamiento tipo-seguro para React
+- **TanStack Router**: Enrutamiento type-safety para React
 - **TanStack Query**: Gestión de estado del servidor y caché
 - **TanStack Table**: Tablas potentes y flexibles
 - **Joy UI (JUI)**: Biblioteca de componentes de UI
@@ -47,8 +47,8 @@ BazarMatias es un sistema integral de gestión para tiendas minoristas que permi
 El proyecto sigue una arquitectura de tres capas con los siguientes componentes:
 
 - **Capa de presentación**: Aplicación React con TypeScript
-- **Capa de aplicación**: API REST con Django y MongoDB
-- **Capa de datos**: MongoDB para almacenamiento persistente
+- **Capa de aplicación**: API REST con Django REST Framework
+- **Capa de datos**: MongoDB para almacenamiento
 
 ## 📦 Instalación y Configuración
 
@@ -121,7 +121,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Crear superusuario
-python manage.py createsuperuser
+python manage.py createcustomsuperuser
 ```
 
 #### Frontend
@@ -130,7 +130,7 @@ python manage.py createsuperuser
 docker exec -it frontend sh
 
 # Instalar nuevas dependencias
-bun install nombre-paquete
+bun add nombre-paquete
 
 # Ejecutar linter
 bun run lint

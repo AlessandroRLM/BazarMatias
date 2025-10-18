@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import CreateReturn from '../../../../pages/devoluciones/CreateReturn'
+import CreateReturn from '../../../../pages/proveedores/returnSuppliers/CreateReturn'
 
 export const Route = createFileRoute('/_auth/proveedores/devoluciones/crear-devolucion')({
   component: CreateReturnPage

@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table"
-import { UserActivity } from "../../types/administracion.types"
+import { UserActivity } from "../../types/administration.types"
 import { Chip } from "@mui/joy"
 import { ReactNode } from "@tanstack/react-router"
 import { Check, Error, RemoveRedEye } from "@mui/icons-material"

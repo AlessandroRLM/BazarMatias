@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios"
 import AxiosInstance from "../../helpers/AxiosInstance"
 import { BuyOrderSearchType } from "../../schemas/proveedores/buyOrderSearchSchema"
 import { CustomPagination } from "../../types/core.types"
-import { BuyOrder, ReturnSupplierList } from "../../types/proveedores.types"
+import { BuyOrder, ReturnSupplierList } from "../../types/suppliers.types"
 import { ReturnSupplierSearchType } from "../../schemas/proveedores/returnSupplierSearchSchema"
 
 export const buyOrderQueryOptions = (opts: BuyOrderSearchType) => {

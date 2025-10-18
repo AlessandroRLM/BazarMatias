@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ProfilePage from '../../../../pages/administracion/ProfilePage'
+import ProfilePage from '../../../../pages/administracion/profile/ProfilePage'
 import UserProfileFormProvider from '../../../../providers/administracion/UserProfileFormProvider'
 
 export const Route = createFileRoute('/_auth/administracion/perfil/')({

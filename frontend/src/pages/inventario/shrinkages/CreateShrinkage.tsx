@@ -9,9 +9,9 @@ import {
   Stack,
   Textarea
 } from "@mui/joy";
-import Information from "../../components/core/Information/Information";
+import Information from "../../../components/core/Information/Information";
 import { useNavigate } from "@tanstack/react-router";
-import { createShrinkage, fetchProducts } from "../../services/inventoryService";
+import { createShrinkage, fetchProducts } from "../../../services/inventoryService";
 
 export default function RegistrarMerma() {
   const navigate = useNavigate();

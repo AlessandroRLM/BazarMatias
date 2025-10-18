@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { userActivitySearchType } from "../../schemas/administracion/userActivitySearchSchema";
 import AxiosInstance from "../../helpers/AxiosInstance";
 import { CustomPagination } from "../../types/core.types";
-import { administrationMetrics, UserActivity } from "../../types/administracion.types";
+import { administrationMetrics, UserActivity } from "../../types/administration.types";
 import { AxiosResponse } from "axios";
 import { User } from "../../types/auth.types";
 

@@ -15,13 +15,13 @@ import {
   CircularProgress,
   Box
 } from "@mui/joy";
-import Information from "../../components/core/Information/Information";
+import Information from "../../../components/core/Information/Information";
 import dayjs from "dayjs";
 import { 
   fetchReturn, 
   updateReturn,
-} from "../../services/salesService";
-import { Return } from "../../types/sales.types";
+} from "../../../services/salesService";
+import { Return } from "../../../types/sales.types";
 
 export default function ReturnEdit() {
   const { id } = useParams({ from: '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id' });

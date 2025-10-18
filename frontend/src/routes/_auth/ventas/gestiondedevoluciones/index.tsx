@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ReturnManagementPage from '../../../../pages/devoluciones_ventas/ReturnManagementPage'
+import ReturnManagementPage from '../../../../pages/ventas/returnSales/ReturnManagementPage'
 
 export const Route = createFileRoute('/_auth/ventas/gestiondedevoluciones/')({
   component: ReturnPage

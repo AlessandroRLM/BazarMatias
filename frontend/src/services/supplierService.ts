@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import AxiosInstance from "../helpers/AxiosInstance";
 import { CustomPagination } from "../types/core.types";
 import { Product } from "../types/inventory.types";
-import { BuyOrder, Supplier, BuyOrdersParams } from "../types/proveedores.types";
+import { BuyOrder, Supplier, BuyOrdersParams } from "../types/suppliers.types";
 import { BuyOrderCreationFormValues } from "../schemas/proveedores/buyOrderSchema";
 
 //para formulario de ordenes de compra y ventas

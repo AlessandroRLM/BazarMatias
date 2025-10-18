@@ -73,6 +73,8 @@ class SaleDetail(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.PositiveIntegerField()
     discount = models.PositiveIntegerField(default=0)
+    sale = models.ForeignKey(
+        'Sale', on_delete=models.CASCADE, related_name='details')
 
     @property
     def net_price(self):
@@ -122,7 +124,6 @@ class Sale(models.Model):
         verbose_name='Client'
     )
 
-    details = models.ManyToManyField(SaleDetail)
 
     net_amount = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
@@ -178,6 +179,8 @@ class QuoteDetail(models.Model):
     quantity = models.PositiveIntegerField()
     unit_price = models.PositiveIntegerField()
     discount = models.PositiveIntegerField(default=0)
+    quote = models.ForeignKey(
+        'Quote', on_delete=models.CASCADE, related_name='details')
 
 class Quote(models.Model):
     class StatusQuote(models.TextChoices):
@@ -194,7 +197,6 @@ class Quote(models.Model):
         
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
-    details = models.ManyToManyField(QuoteDetail)
     total = models.PositiveIntegerField()
 
 

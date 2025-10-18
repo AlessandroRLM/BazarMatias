@@ -3,7 +3,7 @@ import { Chip, IconButton, Stack, Typography, Table, CircularProgress, Sheet, Di
 import { useQuery, useQueries } from '@tanstack/react-query'
 import { fetchBuyOrderById } from '../../../services/supplierService'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { BuyOrder } from '../../../types/proveedores.types'
+import { BuyOrder } from '../../../types/suppliers.types'
 import dayjs from 'dayjs'
 import { fetchProduct } from '../../../services/inventoryService'
 import { Product } from '../../../types/inventory.types'

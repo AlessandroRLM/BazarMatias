@@ -8,9 +8,9 @@ import {
   Textarea,
   Typography
 } from "@mui/joy";
-import Information from "../../components/core/Information/Information";
+import Information from "../../../components/core/Information/Information";
 import { useParams } from "@tanstack/react-router";
-import { fetchShrinkage } from "../../services/inventoryService";
+import { fetchShrinkage } from "../../../services/inventoryService";
 
 export default function VerMerma() {
   const { id } = useParams({ strict: false });

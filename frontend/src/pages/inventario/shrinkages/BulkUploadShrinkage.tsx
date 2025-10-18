@@ -15,7 +15,7 @@ import { CloudUpload, Delete, FileDownload } from "@mui/icons-material";
 import {
   uploadShrinkageExcel,
   downloadShrinkageTemplate
-} from "../../services/inventoryService";
+} from "../../../services/inventoryService";
 
 const BulkUploadShrinkage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

@@ -11,11 +11,11 @@ import {
   Stack,
   CircularProgress
 } from "@mui/joy";
-import CustomTable from "../../components/core/CustomTable/CustomTable";
+import CustomTable from "../../../components/core/CustomTable/CustomTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { fetchReturnSupplier, updateReturnSupplier, fetchSuppliers, fetchSupplier, fetchProducts } from "../../services/inventoryService";
+import { fetchReturnSupplier, updateReturnSupplier, fetchSuppliers, fetchSupplier, fetchProducts } from "../../../services/inventoryService";
 import { useParams, useNavigate } from "@tanstack/react-router";
 
 interface ReturnProduct {
@@ -201,7 +201,7 @@ export default function ReturnEdit() {
       cell: ({ row }) => (
         <Select
           value={row.original.productStatus}
-          onChange={(e, value) => handleProductChange(row.original.id, 'productStatus', value as string)}
+          onChange={(_, value) => handleProductChange(row.original.id, 'productStatus', value as string)}
         >
           <Option value="Nuevo">Nuevo</Option>
           <Option value="Usado">Usado</Option>
@@ -227,7 +227,7 @@ export default function ReturnEdit() {
       cell: ({ row }) => (
         <Select
           value={row.original.status}
-          onChange={(e, value) => handleProductChange(row.original.id, 'status', value as string)}
+          onChange={(_, value) => handleProductChange(row.original.id, 'status', value as string)}
         >
           <Option value="Pendiente">Pendiente</Option>
           <Option value="Resuelto">Resuelto</Option>
@@ -356,7 +356,6 @@ export default function ReturnEdit() {
               }}
               sorting={[]}
               onSortingChange={() => {}}
-              manualPagination={false}
             />
           ) : (
             <Typography>No hay productos en esta devolución</Typography>

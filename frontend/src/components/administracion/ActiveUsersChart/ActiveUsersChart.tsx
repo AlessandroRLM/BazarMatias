@@ -1,6 +1,6 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import DashboardBox from "../../core/DashboardBox/DashboardBox"
-import { administrationMetrics } from '../../../types/administracion.types';
+import { administrationMetrics } from '../../../types/administration.types';
 import { Typography } from '@mui/joy';
 
 type Props = {

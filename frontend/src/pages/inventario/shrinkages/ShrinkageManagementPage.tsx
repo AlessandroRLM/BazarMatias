@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { ColumnDef, PaginationState, SortingState } from "@tanstack/react-table";
 import { Button, Stack, Typography, Box } from "@mui/joy";
-import CustomTable from "../../components/core/CustomTable/CustomTable";
-import Header from "../../components/core/layout/components/Header";
-import FilterOptions, { SelectConfig } from "../../components/core/FilterOptions/FilterOptions";
+import CustomTable from "../../../components/core/CustomTable/CustomTable";
+import Header from "../../../components/core/layout/components/Header";
+import FilterOptions, { SelectConfig } from "../../../components/core/FilterOptions/FilterOptions";
 import { Link as RouterLink } from '@tanstack/react-router';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
-import { fetchShrinkages, deleteShrinkage } from "../../services/inventoryService";
-import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
+import { fetchShrinkages, deleteShrinkage } from "../../../services/inventoryService";
+import ConfirmDialog from "../../../components/administracion/ConfirmDialog/ConfirmDialog";
 
 interface ShrinkageItem {
   id: string;

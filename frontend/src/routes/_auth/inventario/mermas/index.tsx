@@ -1,6 +1,6 @@
 // src/routes/_auth/inventario/mermas/route.tsx
 import { createFileRoute } from '@tanstack/react-router'
-import ShrinkageManagementPage from '../../../../pages/mermas/ShrinkageManagementPage'
+import ShrinkageManagementPage from '../../../../pages/inventario/shrinkages/ShrinkageManagementPage'
 
 export const Route = createFileRoute('/_auth/inventario/mermas/')({
   component: MermasRouteComponent

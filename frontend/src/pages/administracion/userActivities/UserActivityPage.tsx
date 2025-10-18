@@ -10,7 +10,7 @@ import FilterOptions from "../../../components/core/FilterOptions/FilterOptions"
 import { USER_ACTIVITY_COLUMNS } from "../../../utils/administracion/usersActivityColumns"
 import { useMemo } from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { UserActivity } from "../../../types/administracion.types"
+import { UserActivity } from "../../../types/administration.types"
 
 
 const UserActivityPage = () => {

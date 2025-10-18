@@ -12,9 +12,9 @@ import {
   Alert,
   ColorPaletteProp
 } from "@mui/joy";
-import CustomTable from "../../components/core/CustomTable/CustomTable";
-import Header from "../../components/core/layout/components/Header";
-import FilterOptions, { SelectConfig, SelectOption } from "../../components/core/FilterOptions/FilterOptions";
+import CustomTable from "../../../components/core/CustomTable/CustomTable";
+import Header from "../../../components/core/layout/components/Header";
+import FilterOptions, { SelectConfig, SelectOption } from "../../../components/core/FilterOptions/FilterOptions";
 import { Link } from "@tanstack/react-router";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,13 +22,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import ConfirmDialog from "../../components/administracion/ConfirmDialog/ConfirmDialog";
+import ConfirmDialog from "../../../components/administracion/ConfirmDialog/ConfirmDialog";
 import { 
   fetchReturns, 
   deleteReturn, 
   updateReturnStatus,
-} from "../../services/salesService";
-import { Return } from "../../types/sales.types";
+} from "../../../services/salesService";
+import { ClientsReturn } from "../../../types/sales.types";
 
 interface Filters {
   search?: string;
@@ -54,7 +54,7 @@ export default function ReturnManagementPage() {
     color: 'neutral'
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [returnToDelete, setReturnToDelete] = useState<Return | null>(null);
+  const [returnToDelete, setReturnToDelete] = useState<ClientsReturn | null>(null);
 
   // Fetch returns data
   const { data: returnsData, isLoading } = useQuery({
@@ -117,7 +117,7 @@ export default function ReturnManagementPage() {
     }
   };
 
-  const handleDeleteClick = (returnItem: Return) => {
+  const handleDeleteClick = (returnItem: ClientsReturn) => {
     setReturnToDelete(returnItem);
     setDeleteDialogOpen(true);
   };
@@ -157,7 +157,7 @@ export default function ReturnManagementPage() {
   };
 
   // Table columns
-  const columns: ColumnDef<Return>[] = [
+  const columns: ColumnDef<ClientsReturn>[] = [
     {
       accessorKey: "client",
       header: "Cliente",
@@ -303,7 +303,7 @@ export default function ReturnManagementPage() {
             selects={selectConfigs}
           />
 
-          <CustomTable<Return>
+          <CustomTable<ClientsReturn>
             data={returnsData?.results || []}
             columns={columns}
             pagination={pagination}

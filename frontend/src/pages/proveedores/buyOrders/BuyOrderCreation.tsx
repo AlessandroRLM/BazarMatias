@@ -8,7 +8,7 @@ import { createBuyOrder, fetchProducts, fetchSuppliers } from "../../../services
 import AutocompleteFormField, {
   type SelectOption,
 } from "../../../components/core/AutocompleteFormField/AutocompleteFormField"
-import type { Supplier } from "../../../types/proveedores.types"
+import type { Supplier } from "../../../types/suppliers.types"
 import FormField from "../../../components/core/FormField/FormField"
 import type { Product } from "../../../types/inventory.types"
 import { useNavigate } from "@tanstack/react-router"

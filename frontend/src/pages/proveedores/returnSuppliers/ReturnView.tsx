@@ -7,9 +7,9 @@ import {
   Grid,
   Stack
 } from "@mui/joy";
-import CustomTable from "../../components/core/CustomTable/CustomTable";
+import CustomTable from "../../../components/core/CustomTable/CustomTable";
 import { ColumnDef } from "@tanstack/react-table";
-import { fetchReturnSupplier, fetchSupplier } from "../../services/inventoryService";
+import { fetchReturnSupplier, fetchSupplier } from "../../../services/inventoryService";
 import { useParams } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
@@ -172,7 +172,6 @@ export default function ReturnView() {
             }}
             sorting={[]}
             onSortingChange={() => {}}
-            manualPagination={false}
           />
         </Box>
       </Box>

@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/table-core";
-import { BuyOrder } from "../../types/proveedores.types";
+import { BuyOrder } from "../../types/suppliers.types";
 import { Check, Delete, Edit, Error, RemoveRedEye, WarningOutlined } from "@mui/icons-material";
 import { Chip, IconButton, Stack } from "@mui/joy";
 import { ReactNode } from "react";

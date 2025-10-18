@@ -6,6 +6,7 @@ from inventory.serializers import ProductSerializer
 from users.models import User
 from .models import SaleDetail, Sale, Client, Quote, QuoteDetail, Return, WorkOrder, DocumentCounter
 
+
 class ObjectIdField(serializers.Field):
     def to_representation(self, value):
         return str(value)
@@ -16,20 +17,18 @@ class ObjectIdField(serializers.Field):
         except:
             raise serializers.ValidationError("Invalid ObjectId")
 
+
 class ClientSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    
+
     class Meta:
         model = Client
         fields = '__all__'
 
+
 class SaleDetailSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-
-    # Para lectura: devuelve el producto como objeto expandido
     product = ProductSerializer(read_only=True)
-
-    # Para escritura: se usa solo el ID del producto
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
         pk_field=ObjectIdField(),
@@ -39,7 +38,9 @@ class SaleDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SaleDetail
-        fields = ['id', 'product', 'product_id', 'quantity', 'unit_price', 'discount']
+        fields = ['id', 'product', 'product_id',
+                  'quantity', 'unit_price', 'discount']
+
 
 class SaleSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
@@ -57,100 +58,102 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = '__all__'
-        read_only_fields = ['folio', 'created_at', 'net_amount', 'iva', 'total_amount', 'client']
+        read_only_fields = ['folio', 'created_at',
+                            'net_amount', 'iva', 'total_amount']
 
     def validate(self, data):
-        if 'client' not in data and 'client_id' not in data:
-            if data.get('document_type') == Sale.DocType.INVOICE:
-                raise serializers.ValidationError(
-                    "Facturas requieren un cliente asociado"
-                )
+        document_type = data.get('document_type', getattr(
+            self.instance, 'document_type', None))
+        client = data.get('client', getattr(self.instance, 'client', None))
+
+        if document_type == Sale.DocType.INVOICE and not client:
+            raise serializers.ValidationError(
+                "Facturas requieren un cliente asociado.")
         return data
 
     def to_internal_value(self, data):
+        # Permite recibir 'client' como string y convertirlo
         if 'client' in data and isinstance(data['client'], str):
             data['client_id'] = data.pop('client')
         return super().to_internal_value(data)
 
     def create(self, validated_data):
-        try:
-            details_data = validated_data.pop('details', [])
-            
-            # Validar que haya al menos un detalle
-            if not details_data:
-                raise serializers.ValidationError("Debe incluir al menos un producto en la venta")
+        details_data = validated_data.pop('details', [])
+        if not details_data:
+            raise serializers.ValidationError(
+                "Debe incluir al menos un producto en la venta.")
 
-            # Obtener el próximo folio
-            next_folio = DocumentCounter.get_next(
-                document_type=validated_data['document_type']
-            )
-            
-            # Crear la venta sin los montos primero
-            sale = Sale.objects.create(
-                **validated_data,
-                folio=next_folio,
-                net_amount=0,  # Valores temporales
-                iva=0,
-                total_amount=0
-            )
-            
-            # Procesar cada detalle
+        # Obtener folio siguiente
+        next_folio = DocumentCounter.get_next(
+            document_type=validated_data['document_type'])
+
+        sale = Sale.objects.create(
+            **validated_data,
+            folio=next_folio,
+            net_amount=0,
+            iva=0,
+            total_amount=0
+        )
+
+        total_net = 0
+        total_iva = 0
+
+        for detail_data in details_data:
+            product = detail_data['product']
+
+            # Validar stock
+            if product.stock < detail_data['quantity']:
+                raise serializers.ValidationError(
+                    f"No hay suficiente stock para el producto {product.name}"
+                )
+
+            # Crear detalle vinculado a la venta
+            detail = SaleDetail.objects.create(sale=sale, **detail_data)
+
+            # Actualizar stock
+            product.stock -= detail.quantity
+            product.save()
+
+            # Calcular montos
+            net_price = detail.net_price * detail.quantity
+            total_net += net_price
+            total_iva += detail.iva_amount * detail.quantity
+
+        sale.net_amount = total_net
+        sale.iva = total_iva
+        sale.total_amount = total_net + total_iva
+        sale.save()
+
+        return sale
+
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details', None)
+
+        # Actualiza campos de la venta
+        instance = super().update(instance, validated_data)
+
+        if details_data is not None:
+            # Eliminar detalles anteriores y restaurar stock
+            for old_detail in instance.details.all():
+                old_detail.product.stock += old_detail.quantity
+                old_detail.product.save()
+            instance.details.all().delete()
+
             total_net = 0
             total_iva = 0
-            
+
             for detail_data in details_data:
-                # Validar que el producto existe y tiene stock
                 product = detail_data['product']
+
                 if product.stock < detail_data['quantity']:
                     raise serializers.ValidationError(
                         f"No hay suficiente stock para el producto {product.name}"
                     )
-                
-                # Restar cantidad vendida al stock del producto
-                product.stock -= detail_data['quantity']
+
+                detail = SaleDetail.objects.create(
+                    sale=instance, **detail_data)
+                product.stock -= detail.quantity
                 product.save()
-
-                # Crear el detalle
-                detail = SaleDetail.objects.create(**detail_data)
-                sale.details.add(detail)
-                
-                # Calcular montos
-                net_price = detail.net_price * detail.quantity
-                total_net += net_price
-                total_iva += detail.iva_amount * detail.quantity
-            
-            # Actualizar montos totales
-            sale.net_amount = total_net
-            sale.iva = total_iva
-            sale.total_amount = total_net + total_iva
-            sale.save()
-            
-            # Actualizar stock de productos
-            for detail in sale.details.all():
-                detail.product.stock -= detail.quantity
-                detail.product.save()
-            
-            return sale
-
-        except Exception as e:
-            raise serializers.ValidationError(str(e))
-        
-    def update(self, instance, validated_data):
-        details_data = validated_data.pop('details', None)
-
-        # Actualiza los campos normales
-        instance = super().update(instance, validated_data)
-
-        # Solo actualizar detalles si vienen en la petición
-        if details_data is not None:
-            instance.details.clear()
-
-            total_net = 0
-            total_iva = 0
-
-            for detail_data in details_data:
-                detail = SaleDetail.objects.create(**detail_data)
-                instance.details.add(detail)
 
                 net_price = detail.net_price * detail.quantity
                 total_net += net_price
@@ -163,22 +166,31 @@ class SaleSerializer(serializers.ModelSerializer):
 
         return instance
 
+
 class QuoteDetailSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
-        pk_field=ObjectIdField()
+        source='product',
+        pk_field=ObjectIdField(),
+        write_only=True
     )
 
     class Meta:
         model = QuoteDetail
-        fields = ['id', 'product', 'quantity', 'unit_price', 'discount']
+        fields = ['id', 'product', 'product_id',
+                  'quantity', 'unit_price', 'discount']
+
 
 class QuoteSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    client = serializers.PrimaryKeyRelatedField(
+    client = ClientSerializer(read_only=True)
+    client_id = serializers.PrimaryKeyRelatedField(
         queryset=Client.objects.all(),
-        pk_field=ObjectIdField()
+        source='client',
+        pk_field=ObjectIdField(),
+        write_only=True
     )
     details = QuoteDetailSerializer(many=True)
 
@@ -188,44 +200,45 @@ class QuoteSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'total']
 
     def create(self, validated_data):
-        details_data = validated_data.pop('details')
-        
-        # Calcular el total basado en los detalles
+        details_data = validated_data.pop('details', [])
+        if not details_data:
+            raise serializers.ValidationError(
+                "Debe incluir al menos un producto en la cotización.")
+
         total = sum(
-            detail['unit_price'] * detail['quantity'] * (1 - detail.get('discount', 0) / 100)
+            detail['unit_price'] * detail['quantity'] *
+            (1 - detail.get('discount', 0) / 100)
             for detail in details_data
         )
-        
-        # Crear la cotización con el total calculado
-        quote = Quote.objects.create(**validated_data, total=total)
-        
-        # Crear los detalles de cotización
+
+        quote = Quote.objects.create(**validated_data, total=int(total))
+
         for detail_data in details_data:
-            product = detail_data.pop('product')
-            detail = QuoteDetail.objects.create(product=product, **detail_data)
-            quote.details.add(detail)
-        
+            QuoteDetail.objects.create(quote=quote, **detail_data)
+
         return quote
-    
+
     def update(self, instance, validated_data):
-        details_data = validated_data.pop('details')
-        
+        details_data = validated_data.pop('details', None)
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        
-        instance.total = sum(detail['unit_price'] * detail['quantity'] for detail in details_data)
-        
-        # Eliminar los detalles existentes
-        instance.details.all().delete()
-        
-        for detail_data in details_data:
-            product = detail_data.pop('product')
-            detail = QuoteDetail.objects.create(product=product, **detail_data)
-            instance.details.add(detail)
-        
+
+        if details_data is not None:
+            instance.details.all().delete()
+
+            total = 0
+            for detail_data in details_data:
+                QuoteDetail.objects.create(quote=instance, **detail_data)
+                subtotal = detail_data['unit_price'] * detail_data['quantity'] * (
+                    1 - detail_data.get('discount', 0) / 100)
+                total += subtotal
+
+            instance.total = int(total)
+
         instance.save()
-        
         return instance
+
 
 class ReturnSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
@@ -248,9 +261,11 @@ class ReturnSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    producto_nombre = serializers.CharField(source='product.name', read_only=True)
+    producto_nombre = serializers.CharField(
+        source='product.name', read_only=True)
     cliente_nombre = serializers.SerializerMethodField()
-    fecha_venta = serializers.DateTimeField(source='sale.created_at', read_only=True)
+    fecha_venta = serializers.DateTimeField(
+        source='sale.created_at', read_only=True)
 
     class Meta:
         model = Return
@@ -283,7 +298,8 @@ class ReturnSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         sale = data.get('sale') or getattr(self.instance, 'sale', None)
-        product = data.get('product') or getattr(self.instance, 'product', None)
+        product = data.get('product') or getattr(
+            self.instance, 'product', None)
         quantity = data.get('quantity')
 
         if not sale or not product:
@@ -299,9 +315,9 @@ class ReturnSerializer(serializers.ModelSerializer):
         total_sold = sale.details.filter(product=product).aggregate(
             total=Sum('quantity')
         )['total'] or 0
-        
+
         total_returned = Return.objects.filter(
-            sale=sale, 
+            sale=sale,
             product=product
         ).exclude(
             pk=getattr(self.instance, 'pk', None)
@@ -317,16 +333,20 @@ class ReturnSerializer(serializers.ModelSerializer):
 
         return data
 
+
 class WorkOrderSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
     trabajador = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
         pk_field=ObjectIdField()
     )
-    
-    trabajador_nombre = serializers.CharField(source='trabajador.get_full_name', read_only=True)
-    trabajador_rut = serializers.CharField(source='trabajador.formatted_rut', read_only=True)
-    trabajador_cargo = serializers.CharField(source='trabajador.position', read_only=True)
+
+    trabajador_nombre = serializers.CharField(
+        source='trabajador.get_full_name', read_only=True)
+    trabajador_rut = serializers.CharField(
+        source='trabajador.formatted_rut', read_only=True)
+    trabajador_cargo = serializers.CharField(
+        source='trabajador.position', read_only=True)
 
     class Meta:
         model = WorkOrder
@@ -347,15 +367,17 @@ class WorkOrderSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'numero_orden': {'read_only': True}
         }
-    
+
     def create(self, validated_data):
         # Generate order number (example format: WO-YYYYMMDD-XXXX)
         from datetime import datetime
         last_order = WorkOrder.objects.order_by('-created_at').first()
-        sequence_num = 1 if last_order is None else int(last_order.numero_orden.split('-')[-1]) + 1
+        sequence_num = 1 if last_order is None else int(
+            last_order.numero_orden.split('-')[-1]) + 1
         validated_data['numero_orden'] = f"WO-{datetime.now().strftime('%Y%m%d')}-{sequence_num:04d}"
-        
+
         return super().create(validated_data)
+
 
 class DashboardStatsSerializer(serializers.Serializer):
     monthly_profit = serializers.IntegerField()

@@ -21,6 +21,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name', 'last_name',
+                     'national_id', 'email',]
+    ordering_fields = ['first_name', 'last_name',
+                       'national_id', 'email', 'phone_number']
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -216,7 +222,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
                 tmp_path = tmp.name
             
             
-            subject = f'Cotización - Bazar Matias'
+            subject = 'Cotización - Bazar Matias'
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = client.email
             

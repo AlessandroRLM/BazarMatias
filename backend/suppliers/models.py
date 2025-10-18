@@ -14,12 +14,6 @@ class Supplier(models.Model):
         return self.name
 
 
-class BuyOrderDetail(models.Model):
-    product = models.CharField(max_length=100)
-    quantity = models.PositiveIntegerField(default=1)
-    unit_price = models.PositiveIntegerField()
-
-
 class BuyOrder(models.Model):
     class StatusBuyOrder(models.TextChoices):
         REJECTED = 'RE', 'Rechazado'
@@ -35,7 +29,6 @@ class BuyOrder(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     supplier = models.CharField(max_length=100)
-    details = models.ManyToManyField(BuyOrderDetail)
     net_amount = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
         verbose_name='Net Amount'
@@ -44,11 +37,19 @@ class BuyOrder(models.Model):
     total_amount = models.PositiveIntegerField(verbose_name='Total Amount')
 
 
+class BuyOrderDetail(models.Model):
+    product = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.PositiveIntegerField()
+    buy_order = models.ForeignKey(
+        BuyOrder, on_delete=models.CASCADE, related_name='details')
+
+
 class ReturnSupplierDetail(models.Model):
     product = models.ForeignKey("inventory.Product", on_delete=models.CASCADE)
     return_supplier = models.ForeignKey(
         "ReturnSupplier", on_delete=models.CASCADE, related_name='details')
-    
+
     quantity = models.PositiveIntegerField()
     quantity_received = models.PositiveIntegerField(
         default=0,
@@ -71,7 +72,6 @@ class ReturnSupplierDetail(models.Model):
     def is_fully_received(self):
         """Verifica si el proveedor ha recibido toda la cantidad"""
         return self.quantity_received >= self.quantity
-    
 
 
 class ReturnSupplier(models.Model):

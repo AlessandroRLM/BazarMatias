@@ -9,13 +9,13 @@ import {
   Stack,
   Textarea
 } from "@mui/joy";
-import Information from "../../components/core/Information/Information";
+import Information from "../../../components/core/Information/Information";
 import { useParams, useNavigate } from "@tanstack/react-router";
 import {
   fetchShrinkage,
   updateShrinkage,
   fetchProducts
-} from "../../services/inventoryService";
+} from "../../../services/inventoryService";
 
 export default function EditarMerma() {
   const { id } = useParams({ strict: false });

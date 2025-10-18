@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { userProfileFormContextType } from "../../types/administracion.types";
+import { userProfileFormContextType } from "../../types/administration.types";
 
 const UserProfileFormContext = createContext<userProfileFormContextType | null>(null)
 

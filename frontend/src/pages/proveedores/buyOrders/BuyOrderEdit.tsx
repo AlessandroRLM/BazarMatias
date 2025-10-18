@@ -6,7 +6,7 @@ import { BuyOrderCreationFormValues, buyOrderCreationSchema } from '../../../sch
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query'
 import { fetchBuyOrderById, editBuyOrder, fetchProducts, fetchSuppliers } from '../../../services/supplierService'
 import AutocompleteFormField, { SelectOption } from '../../../components/core/AutocompleteFormField/AutocompleteFormField'
-import { Supplier } from '../../../types/proveedores.types'
+import { Supplier } from '../../../types/suppliers.types'
 import FormField from '../../../components/core/FormField/FormField'
 import { Product } from '../../../types/inventory.types'
 import { useNavigate, useParams } from '@tanstack/react-router'

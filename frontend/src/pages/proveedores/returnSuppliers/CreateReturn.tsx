@@ -10,7 +10,7 @@ import {
   Grid
 } from "@mui/joy";
 import { useEffect, useState } from "react";
-import { createReturnSupplier, fetchSuppliers, fetchProducts } from "../../services/inventoryService";
+import { createReturnSupplier, fetchSuppliers, fetchProducts } from "../../../services/inventoryService";
 import { useNavigate } from "@tanstack/react-router";
 
 export default function ReturnCreate() {
@@ -71,7 +71,7 @@ export default function ReturnCreate() {
             value={supplier}
             onChange={(_, value) => setSupplier(value ?? "")}
             placeholder="Seleccione proveedor"
-            fullWidth
+            sx={{width: '100%'}}
             required
           >
             {suppliers.map(s => (
@@ -86,7 +86,7 @@ export default function ReturnCreate() {
             value={product}
             onChange={(_, value) => setProduct(value ?? "")}
             placeholder="Seleccione producto"
-            fullWidth
+            sx={{width: '100%'}}
             required
           >
             {products.map(p => (
@@ -130,8 +130,6 @@ export default function ReturnCreate() {
               <FormLabel>Motivo</FormLabel>
               <Input 
                 placeholder="Describa el motivo de la devolución" 
-                multiline 
-                minRows={3} 
                 value={reason}
                 onChange={e => setReason(e.target.value)}
               />

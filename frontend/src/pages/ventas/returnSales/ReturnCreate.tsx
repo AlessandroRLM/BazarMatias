@@ -15,7 +15,7 @@ import {
   Typography,
   Textarea
 } from "@mui/joy";
-import Information from "../../components/core/Information/Information";
+import Information from "../../../components/core/Information/Information";
 import { 
   fetchClientsForSelect, 
   fetchClientSales,
@@ -24,7 +24,7 @@ import {
   Client,
   Sale,
   SaleDetail
-} from "../../services/salesService";
+} from "../../../services/salesService";
 
 export default function ReturnCreate() {
   const navigate = useNavigate();

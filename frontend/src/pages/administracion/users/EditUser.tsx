@@ -6,6 +6,7 @@ import HeaderUserCreation from "../../../components/administracion/ProfileHeader
 import FormUserCreation from "../../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../../components/core/layout/components/CommonPageLayout";
 import { Typography, Box, Avatar } from "@mui/joy";
+import { useSnackbar } from '../../../hooks/core/useSnackbar';
 
 const EditUser = () => {
   const { rut } = Route.useParams();
@@ -13,6 +14,7 @@ const EditUser = () => {
   const [loading, setLoading] = useState(true);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar()
 
   useEffect(() => {
     AxiosInstance.get(`/api/users/users/${rut}/`)
@@ -46,9 +48,10 @@ const EditUser = () => {
       setTimeout(() => {
         navigate({ to: "/administracion/usuarios" });
       }, 1500);
-      
+
+      showSnackbar('Usuario actualizado exitosamente.', 'success')
     } catch (error) {
-      console.error("Error al actualizar usuario:", error);
+      showSnackbar(`No se pudo actualizar el usuario.`, 'danger')
       throw error;
     }
   };

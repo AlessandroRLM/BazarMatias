@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { createReturnSupplier, fetchSuppliers, fetchProducts } from "../../../services/inventoryService";
 import { useNavigate } from "@tanstack/react-router";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 export default function ReturnCreate() {
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -25,7 +26,8 @@ export default function ReturnCreate() {
   const [purchaseDate, setPurchaseDate] = useState("");
   const [returnDate, setReturnDate] = useState(new Date().toISOString().split('T')[0]);
   const navigate = useNavigate();
-
+  const { showSnackbar } = useSnackbar()
+  
   useEffect(() => {
     fetchSuppliers().then(data => setSuppliers(data.results || []));
     fetchProducts().then(data => setProducts(data.results || []));
@@ -45,10 +47,10 @@ export default function ReturnCreate() {
 
     try {
       await createReturnSupplier(returnData);
-      alert("Devolución creada exitosamente");
+      showSnackbar('Devolución creada exitosamente.', 'success')
       navigate({ to: "/proveedores/devoluciones" });
     } catch (error) {
-      alert("Error al crear la devolución");
+      showSnackbar('Error al crear la devolución.', 'danger')
     }
   };
 

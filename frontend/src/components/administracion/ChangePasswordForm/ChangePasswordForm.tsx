@@ -4,12 +4,15 @@ import FormField from '../../core/FormField/FormField';
 import { Button, Box, Stack } from '@mui/joy';
 import { changePasswordFormSchema, ChangePasswordFormValues, defaultValues } from '../../../schemas/administracion/changePasswordFormSchema'
 import AxiosInstance from "../../../helpers/AxiosInstance";
+import { useSnackbar } from '../../../hooks/core/useSnackbar';
 
 interface ChangePasswordFormProps {
   onSuccess: () => void;
 }
 
 const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) => {
+  const { showSnackbar } = useSnackbar();
+  
   const { 
     control, 
     handleSubmit, 
@@ -23,15 +26,16 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) =>
 
   const onSubmit: SubmitHandler<ChangePasswordFormValues> = async (data) => {
     try {
-      await AxiosInstance.post("/api/users/change-password/", {
-        password: data.password,
-        confirmPassword: data.confirmPassword,
+      await AxiosInstance.post("/api/auth/change-password/", {
+        old_password: data.oldPassword,
+        new_password: data.newPassword,
+        confirm_password: data.confirmPassword,
       });
-      alert("Contraseña cambiada con éxito!");
+      showSnackbar('Contraseña cambiada con éxito!', 'success');
       reset();
       onSuccess();
     } catch (error) {
-      alert("Error al cambiar la contraseña");
+      showSnackbar('Error al cambiar la contraseña', 'danger');
     }
   };
 
@@ -49,13 +53,22 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess }) =>
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormField
-          name='password'
+          name='oldPassword'
+          control={control}
+          label='Contraseña Actual'
+          placeholder='Contraseña Actual'
+          type='password'
+          fullWidth={true}
+          error={errors.oldPassword}
+        />
+        <FormField
+          name='newPassword'
           control={control}
           label='Contraseña'
           placeholder='Contraseña'
           type='password'
           fullWidth={true}
-          error={errors.password}
+          error={errors.newPassword}
         />
         <FormField
           name='confirmPassword'

@@ -2,7 +2,7 @@ import AxiosInstance from '../helpers/AxiosInstance';
 import { DashboardStats } from '../pages/ventas/DashboardSalesPage';
 import { SaleCreationFormValues } from '../schemas/ventas/ventas/saleCreationSchema';
 import { CustomPagination } from '../types/core.types';
-import { Client, Sale, Quote, Return, WorkOrder, WorkOrderUpdatePayload, Product, SaleDetail, ReturnCreationPayload } from '../types/sales.types';
+import { Client, Sale, Quote, WorkOrder, WorkOrderUpdatePayload, SaleDetail, ReturnCreationPayload, ClientsReturn } from '../types/sales.types';
 
 // CRUD de Clientes con paginación, búsqueda y filtros
 export const fetchClients = async ({
@@ -156,7 +156,7 @@ export const fetchReturns = async (
     sale_folio?: string;
     product_name?: string;
   }
-): Promise<CustomPagination<Return>> => {
+): Promise<CustomPagination<ClientsReturn>> => {
   let url = `/api/sales/returns/?page=${page}&page_size=${pageSize}`;
   
   if (filters?.status) url += `&status=${filters.status}`;
@@ -168,12 +168,12 @@ export const fetchReturns = async (
   return response.data;
 };
 
-export const fetchReturn = async (id: string): Promise<Return> => {
+export const fetchReturn = async (id: string): Promise<ClientsReturn> => {
   const response = await AxiosInstance.get(`/api/sales/returns/${id}/`);
   return response.data;
 };
 
-export const createReturn = async (returnData: ReturnCreationPayload): Promise<Return> => {
+export const createReturn = async (returnData: ReturnCreationPayload): Promise<ClientsReturn> => {
   const response = await AxiosInstance.post('/api/sales/returns/', returnData);
   return response.data;
 };
@@ -185,7 +185,7 @@ export const updateReturn = async (
     reason?: string;
     status?: 'pending' | 'completed' | 'refused';
   }
-): Promise<Return> => {
+): Promise<ClientsReturn> => {
   const response = await AxiosInstance.patch(`/api/sales/returns/${id}/`, returnData);
   return response.data;
 };
@@ -194,7 +194,7 @@ export const updateReturn = async (
 export const updateReturnStatus = async (
   id: string, 
   status: 'pending' | 'completed' | 'refused'
-): Promise<Return> => {
+): Promise<ClientsReturn> => {
   const response = await AxiosInstance.patch(
     `/api/sales/returns/${id}/update-status/`, 
     { status }
@@ -236,7 +236,7 @@ export const fetchWorkOrder = async (id: string): Promise<WorkOrder> => {
   return response.data;
 };
 
-export const createWorkOrder = async (workOrder: Omit<WorkOrder, 'id' | 'created_at'>): Promise<WorkOrder> => {
+export const createWorkOrder = async (workOrder: Omit<WorkOrder, 'id' | 'created_at' | 'numero_orden'>): Promise<WorkOrder> => {
   const response = await AxiosInstance.post('/api/sales/work-orders/', workOrder);
   return response.data;
 };
@@ -282,7 +282,6 @@ export const fetchTopProductsData = async (): Promise<
 // Agrega estas funciones a salesService.ts
 export const fetchClientsForSelect = async (search: string): Promise<Client[]> => {
   const response = await AxiosInstance.get(`/api/sales/clients/?search=${encodeURIComponent(search)}`);
-  console.log(response.data.results)
   return response.data.results;
 };
 
@@ -297,4 +296,4 @@ export const fetchSaleDetails = async (saleId: string): Promise<SaleDetail[]> =>
 };
 
 // Asegúrate de que los tipos estén exportados correctamente
-export type { Client, Sale, Product, SaleDetail };
+export type { Client, Sale, SaleDetail };

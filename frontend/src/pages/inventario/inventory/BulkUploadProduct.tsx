@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Box,
   Typography,
@@ -34,26 +34,26 @@ const BulkUploadProducts: React.FC = () => {
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
+  const handleUpload = useCallback(
+    async () => {
+      if (!selectedFile) return;
+      setLoading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
 
-      await uploadProductExcel(formData);
-      setSnackbarMessage("Productos cargados exitosamente.");
-      setSnackbarColor("success");
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error al subir el archivo:", error);
-      setSnackbarMessage("Error al subir el archivo. Verifica el formato o los datos.");
-      setSnackbarColor("danger");
-    } finally {
-      setSnackbarOpen(true);
-      setLoading(false);
-    }
-  };
+        await uploadProductExcel(formData);
+        setSnackbarMessage("Productos cargados exitosamente.");
+        setSnackbarColor("success");
+        setSelectedFile(null);
+      } catch (error) {
+        setSnackbarMessage("Error al subir el archivo. Verifica el formato o los datos.");
+        setSnackbarColor("danger");
+      } finally {
+        setSnackbarOpen(true);
+        setLoading(false);
+      }
+    }, []);
 
   const handleDownloadTemplate = async () => {
     try {
@@ -67,7 +67,6 @@ const BulkUploadProducts: React.FC = () => {
       link.click();
       link.remove();
     } catch (error) {
-      console.error("Error al descargar la plantilla:", error);
       setSnackbarMessage("No se pudo descargar la plantilla.");
       setSnackbarColor("danger");
       setSnackbarOpen(true);

@@ -5,13 +5,14 @@ import {
   Input,
   Select,
   Option,
-  Stack,
-  Alert
+  Stack
 } from "@mui/joy";
 import Information from "../../../components/core/Information/Information";
 import { useEffect, useState } from "react";
 import { fetchProduct, updateProduct, fetchSuppliers, fetchSupplier } from "../../../services/inventoryService";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
+import { Supplier } from "../../../types/suppliers.types";
 
 export default function EditarProducto() {
   const { id } = useParams({ strict: false });
@@ -21,10 +22,11 @@ export default function EditarProducto() {
   const [minStock, setMinStock] = useState(""); // Nuevo estado
   const [categoria, setCategoria] = useState("");
   const [proveedor, setProveedor] = useState<string | null>(null);
-  const [proveedorNombre, setProveedorNombre] = useState(""); // Nombre del proveedor actual
-  const [proveedores, setProveedores] = useState([]); // Lista de proveedores
+  const [proveedores, setProveedores] = useState<Supplier[]>([]); // Lista de proveedores
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar()
+
 
   useEffect(() => {
     if (!id) return;
@@ -41,7 +43,7 @@ export default function EditarProducto() {
       // Si hay un supplier, obtener el nombre del proveedor
       if (producto.supplier) {
         fetchSupplier(producto.supplier).then(supplier => {
-          setProveedorNombre(supplier.name);
+          setProveedor(supplier.name);
         });
       }
     });
@@ -64,8 +66,9 @@ export default function EditarProducto() {
         supplier: proveedor, // Now properly sends ID or null
       });
       navigate({ to: "/inventario/productos" });
+      showSnackbar('Producto actualizado exitosamente.', 'success')
     } catch (e) {
-      alert("Error al actualizar producto");
+      showSnackbar('Error al actualizar producto.', 'danger')
     } finally {
       setLoading(false);
     }

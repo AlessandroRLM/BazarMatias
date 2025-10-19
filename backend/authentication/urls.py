@@ -1,11 +1,12 @@
 from knox import views as knox_views
-from .views import LoginApiView, ResetPasswordView, PasswordResetConfirmView
+from .views import LoginApiView, ResetPasswordView, PasswordResetConfirmView, ChangePasswordView
 from django.urls import path
 
 urlpatterns = [
      path('login/', LoginApiView.as_view(), name='knox_login'),
      path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
      path('logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
+     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
      path('reset-password/', ResetPasswordView.as_view(), name='reset_password'),
      path('reset-password-confirm/', PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
 ]

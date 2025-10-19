@@ -24,7 +24,7 @@ import {
 } from "../../services/salesService";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
-import toast from "react-hot-toast";
+import { useSnackbar } from "../../hooks/core/useSnackbar";
 import { downloadSalesReportPDF } from "../../services/reportsService";
 // Importar iconos de Material-UI
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -112,6 +112,8 @@ const DashboardSalesPage = () => {
     });
   }, [queryClient, currentMonthStart, currentMonthEnd]);
 
+const { showSnackbar } = useSnackbar();
+
 const handleGenerateReport = async () => {
   try {
     const blob = await downloadSalesReportPDF();
@@ -121,10 +123,9 @@ const handleGenerateReport = async () => {
     a.download = `Reporte-Ventas-${new Date().toISOString().split('T')[0]}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Reporte de ventas descargado correctamente');
+    showSnackbar('Reporte de ventas descargado correctamente', 'success');
   } catch (error) {
-    console.error('Error al descargar el reporte de ventas:', error);
-    toast.error('Hubo un error al generar el reporte de ventas');
+    showSnackbar('Hubo un error al generar el reporte de ventas', 'danger');
   }
 };
 

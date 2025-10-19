@@ -11,23 +11,32 @@ import { inventoryMetricsQueryOptions } from "../../utils/inventario/inventoryQu
 import LowStockProductsChart from "../../components/inventory/LowStockProductsChart"
 import RecentShrinkagesTable from "../../components/inventory/RecentShrinkagesTable"
 import { downloadInventoryReportPDF } from "../../services/reportsService";
+import { useSnackbar } from "../../hooks/core/useSnackbar"
+import { useCallback } from "react"
 
-const handleDownloadInventoryReport = async () => {
-  try {
-    const blob = await downloadInventoryReportPDF();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Reporte-Inventario.pdf";
-    a.click();
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Error al descargar el reporte de inventario:", error);
-  }
-};
+
 
 const DashboardInventoryPage = () => {
   const { data } = useSuspenseQuery(inventoryMetricsQueryOptions())
+  const { showSnackbar } = useSnackbar()
+
+  const handleDownloadInventoryReport = useCallback(
+    async () => {
+      try {
+        const blob = await downloadInventoryReportPDF();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Reporte-Inventario.pdf";
+        a.click();
+        URL.revokeObjectURL(url);
+        showSnackbar("Reporte de inventario descargado exitosamente.", 'success')
+      } catch (error) {
+        showSnackbar("Error al descargar el reporte de inventario.", 'danger')
+      }
+    }, [],
+  )
+
 
   return (
     <>
@@ -85,4 +94,5 @@ const DashboardInventoryPage = () => {
     </>
   )
 }
+
 export default DashboardInventoryPage

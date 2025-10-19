@@ -37,7 +37,6 @@ const BuyOrderDetail = () => {
     });
 
     if (foundIndex !== -1 && productQueries[foundIndex]?.data) {
-      console.log(`productQueries[${foundIndex}].data`, productQueries[foundIndex].data)
       return productQueries[foundIndex].data
     }
 

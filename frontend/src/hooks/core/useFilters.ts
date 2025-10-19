@@ -14,7 +14,6 @@ export default function useFilters<
     const filters = routeApi.useSearch()
 
     const setFilters = (partialFilters: Partial<TsearchParams>) => {
-        console.log('setFilters', {filters, partialFilters})
         navigate({
             search: cleanEmptyParams({ ...filters, ...partialFilters, }) as TsearchParams,
         })}

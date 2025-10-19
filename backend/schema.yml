@@ -4,6 +4,16 @@ info:
   version: 1.0.0
   description: no description
 paths:
+  /api/auth/change-password/:
+    post:
+      operationId: auth_change_password_create
+      tags:
+      - auth
+      security:
+      - knoxApiToken: []
+      responses:
+        '200':
+          description: No response body
   /api/auth/login/:
     post:
       operationId: auth_login_create
@@ -758,6 +768,12 @@ paths:
     get:
       operationId: sales_clients_list
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - name: page
         required: false
         in: query
@@ -770,6 +786,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - sales
       security:
@@ -1947,7 +1969,12 @@ paths:
       operationId: suppliers_return_suppliers_list
       parameters:
       - in: query
-        name: end_date
+        name: date__range_after
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: date__range_before
         schema:
           type: string
           format: date
@@ -1969,17 +1996,25 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: return_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: return_date__year__gt
+        schema:
+          type: number
+      - in: query
+        name: return_date__year__lt
+        schema:
+          type: number
       - name: search
         required: false
         in: query
         description: A search term.
         schema:
           type: string
-      - in: query
-        name: start_date
-        schema:
-          type: string
-          format: date
       - in: query
         name: status
         schema:
@@ -2005,7 +2040,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedReturnSupplierList'
+                $ref: '#/components/schemas/PaginatedReturnSupplierListList'
           description: ''
     post:
       operationId: suppliers_return_suppliers_create
@@ -2337,6 +2372,10 @@ paths:
       operationId: users_users_list
       description: Lista usuarios con paginación, búsqueda y filtros
       parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
       - name: ordering
         required: false
         in: query
@@ -2716,7 +2755,9 @@ components:
           readOnly: true
         product:
           type: string
-          maxLength: 100
+        product_name:
+          type: string
+          readOnly: true
         quantity:
           type: integer
           maximum: 9223372036854775807
@@ -2730,6 +2771,7 @@ components:
       required:
       - id
       - product
+      - product_name
       - unit_price
     Client:
       type: object
@@ -2893,7 +2935,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Return'
-    PaginatedReturnSupplierList:
+    PaginatedReturnSupplierListList:
       type: object
       required:
       - count
@@ -2915,7 +2957,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/ReturnSupplier'
+            $ref: '#/components/schemas/ReturnSupplierList'
     PaginatedSaleList:
       type: object
       required:
@@ -3152,7 +3194,12 @@ components:
           type: string
           readOnly: true
         client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
           type: string
+          writeOnly: true
         details:
           type: array
           items:
@@ -3221,15 +3268,15 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
           readOnly: true
         status:
-          $ref: '#/components/schemas/ReturnSupplierStatusEnum'
+          $ref: '#/components/schemas/StatusEccEnum'
         status_display:
           type: string
           readOnly: true
         supplier:
-          type: integer
+          type: string
         supplier_name:
           type: string
           readOnly: true
@@ -3518,7 +3565,12 @@ components:
           type: string
           readOnly: true
         client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
           type: string
+          writeOnly: true
         details:
           type: array
           items:
@@ -3536,6 +3588,7 @@ components:
           readOnly: true
       required:
       - client
+      - client_id
       - created_at
       - details
       - id
@@ -3547,7 +3600,12 @@ components:
           type: string
           readOnly: true
         product:
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        product_id:
           type: string
+          writeOnly: true
         quantity:
           type: integer
           maximum: 9223372036854775807
@@ -3566,6 +3624,7 @@ components:
       required:
       - id
       - product
+      - product_id
       - quantity
       - unit_price
     Return:
@@ -3645,15 +3704,15 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
           readOnly: true
         status:
-          $ref: '#/components/schemas/ReturnSupplierStatusEnum'
+          $ref: '#/components/schemas/StatusEccEnum'
         status_display:
           type: string
           readOnly: true
         supplier:
-          type: integer
+          type: string
         supplier_name:
           type: string
           readOnly: true
@@ -3693,10 +3752,10 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
           readOnly: true
         product:
-          type: integer
+          type: string
         product_name:
           type: string
           readOnly: true
@@ -3731,16 +3790,40 @@ components:
       - product_name
       - quantity
       - total_amount
-    ReturnSupplierStatusEnum:
-      enum:
-      - RE
-      - PE
-      - AP
-      type: string
-      description: |-
-        * `RE` - Rechazada
-        * `PE` - Pendiente
-        * `AP` - Aprobado
+    ReturnSupplierList:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEccEnum'
+        status_display:
+          type: string
+          readOnly: true
+        supplier_name:
+          type: string
+          readOnly: true
+        purchase_number:
+          type: string
+          maxLength: 50
+        return_date:
+          type: string
+          format: date
+        total_items:
+          type: string
+          readOnly: true
+        total_products:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - purchase_number
+      - return_date
+      - status_display
+      - supplier_name
+      - total_items
+      - total_products
     Sale:
       type: object
       properties:
@@ -3876,6 +3959,16 @@ components:
       type: string
       description: |-
         * `RE` - Rechazado
+        * `PE` - Pendiente
+        * `AP` - Aprobado
+    StatusEccEnum:
+      enum:
+      - RE
+      - PE
+      - AP
+      type: string
+      description: |-
+        * `RE` - Rechazada
         * `PE` - Pendiente
         * `AP` - Aprobado
     Supplier:

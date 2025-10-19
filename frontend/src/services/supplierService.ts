@@ -17,7 +17,6 @@ export const fetchProducts = async (search: String) => {
 };
 
 export const fetchSuppliers = async () => {
-    
     const response: AxiosResponse<CustomPagination<Supplier>> = await AxiosInstance.get(`/api/suppliers/suppliers/?page_size=20`);
     return response.data;
 };

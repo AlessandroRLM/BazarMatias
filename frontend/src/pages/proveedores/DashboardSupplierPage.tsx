@@ -13,7 +13,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from "recharts";
 import { downloadSupplierReportPDF } from "../../services/reportsService";
-import { toast } from 'react-hot-toast';
+import { useSnackbar } from "../../hooks/core/useSnackbar";
 
 const DashboardSupplierPage = () => {
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,8 @@ const DashboardSupplierPage = () => {
     totalPendingReturns: 0,
     totalCompletedOrders: 0,
   });
+
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,15 +66,14 @@ const DashboardSupplierPage = () => {
           totalCompletedOrders,
         });
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        toast.error("Error al cargar los datos del dashboard");
+        showSnackbar("Error al cargar los datos del dashboard", "danger");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [showSnackbar]);
 
   const handleGenerateReport = async () => {
     try {
@@ -80,13 +81,14 @@ const DashboardSupplierPage = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Reporte-Proveedores.pdf';
+      a.download = 'reporte-proveedores.pdf';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Reporte descargado correctamente');
+      showSnackbar('Reporte descargado correctamente', 'success');
     } catch (error) {
-      console.error('Error al descargar el reporte de proveedores:', error);
-      toast.error('Hubo un error al generar el reporte');
+      showSnackbar('Hubo un error al generar el reporte', 'danger');
     }
   };
 

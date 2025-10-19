@@ -16,9 +16,11 @@ import { fetchProducts } from "../../../services/supplierService"
 import { fetchSaleById, updateSale } from "../../../services/salesService" 
 import FormField from "../../../components/core/FormField/FormField"
 import FormSelect from "../../../components/core/FormSelect/FormSelect"
+import { useSnackbar } from "../../../hooks/core/useSnackbar"
 
 const SalesEdit = () => {
   const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
   const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' }) 
 
   const {
@@ -182,17 +184,15 @@ const SalesEdit = () => {
       return updateSale(id as string, payload as any); // Use 'as any' if payload type is complex or use a specific update type
     },
     onSuccess: () => {
-      alert('Venta actualizada con éxito!')
+      showSnackbar('Venta actualizada con éxito!', 'success')
       navigate({ to: '/ventas/gestiondeventas' }) // Or to the specific sale view page
     },
-    onError: (error) => {
-      console.error(error)
-      alert(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error al actualizar'}`)
+    onError: (_) => {
+      showSnackbar('Ocurrió un error al actualizar la venta', 'danger')
     },
   })
 
   const onSubmit: SubmitHandler<SaleCreationFormValues> = (data) => {
-    console.log('Updating sale:', data)
     mutation.mutate(data)
   }
 

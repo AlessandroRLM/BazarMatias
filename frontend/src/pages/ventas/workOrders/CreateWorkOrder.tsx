@@ -14,10 +14,10 @@ import {
 import { useEffect, useState } from "react";
 import { createWorkOrder } from "../../../services/salesService";
 import { WorkOrder, WorkOrderPriority } from "../../../types/sales.types";
-import { getUsers } from "../../../services/userService";
 import { User } from "../../../types/auth.types";
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import AxiosInstance from "../../../helpers/AxiosInstance";
 
 export default function CreateOrder() {
     const [workers, setWorkers] = useState<User[]>([]);
@@ -50,7 +50,6 @@ export default function CreateOrder() {
 
                 setWorkers(users);
             } catch (error) {
-                console.error("Error loading workers:", error);
                 setErrorMessage("Error al cargar los trabajadores");
                 setOpenErrorSnackbar(true);
                 setWorkers([]);
@@ -88,7 +87,7 @@ export default function CreateOrder() {
             setSubmitting(true);
             await createWorkOrder({
                 ...workOrderData,
-                trabajador: workOrderData.trabajador.id
+                trabajador: workOrderData.trabajador
             });
             
             setOpenSuccessSnackbar(true);
@@ -99,7 +98,6 @@ export default function CreateOrder() {
             }, 1500);
             
         } catch (error) {
-            console.error("Error creating work order:", error);
             setErrorMessage("Error al crear la orden de trabajo");
             setOpenErrorSnackbar(true);
         } finally {
@@ -205,9 +203,7 @@ export default function CreateOrder() {
                                 <FormControl>
                                     <FormLabel>Detalle</FormLabel>
                                     <Input 
-                                        placeholder="Descripción detallada del trabajo" 
-                                        multiline 
-                                        minRows={3} 
+                                        placeholder="Descripción detallada del trabajo"  
                                         fullWidth 
                                         value={workOrderData.descripcion}
                                         onChange={(e) => handleInputChange('descripcion', e.target.value)}
@@ -345,4 +341,8 @@ export default function CreateOrder() {
             </Snackbar>
         </Box>
     );
+}
+
+function getUsers() {
+    return AxiosInstance.get('/api/users/users')
 }

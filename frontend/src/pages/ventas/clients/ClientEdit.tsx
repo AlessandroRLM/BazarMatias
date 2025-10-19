@@ -7,6 +7,7 @@ import { useNavigate } from '@tanstack/react-router';
 import FormClientCreation from '../../../components/clientes/FormClientCreation';
 import { fetchClient, updateClient } from '../../../services/salesService';
 import { Client } from '../../../types/sales.types';
+import { useSnackbar } from '../../../hooks/core/useSnackbar';
 
 const ClientEdit = () => {
   const params = Route.useParams();
@@ -15,6 +16,7 @@ const ClientEdit = () => {
   const [loading, setLoading] = useState(true);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const loadClient = async () => {
@@ -22,7 +24,7 @@ const ClientEdit = () => {
         const clientData = await fetchClient(id);
         setClient(clientData);
       } catch (error) {
-        console.error("Error loading client:", error);
+        showSnackbar(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error al cargar el cliente'}`, 'danger');
         setClient(null);
       } finally {
         setLoading(false);
@@ -44,13 +46,14 @@ const ClientEdit = () => {
       
       setSubmitSuccess(true);
       
+      showSnackbar('Cliente actualizado con éxito.', 'success');
+      
       setTimeout(() => {
         navigate({ to: `/ventas/gestiondeclientes` });
       }, 1500);
       
     } catch (error) {
-      console.error("Error al actualizar cliente:", error);
-      throw error;
+      showSnackbar('Ocurrió un error al actualizar el cliente', 'danger');
     }
   };
 

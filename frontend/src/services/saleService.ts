@@ -42,7 +42,6 @@ export const sendQuoteEmail = async (quoteId: string) => {
         const response = await AxiosInstance.post(`/api/sales/quotes/${quoteId}/send-email/`);
         return response.data;
     } catch (error) {
-        console.error('Error sending quote email:', error);
         throw error;
     }
 };

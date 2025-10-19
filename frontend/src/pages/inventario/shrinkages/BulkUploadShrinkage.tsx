@@ -46,7 +46,6 @@ const BulkUploadShrinkage: React.FC = () => {
       setSnackbarColor("success");
       setSelectedFile(null);
     } catch (error) {
-      console.error("Error al subir el archivo:", error);
       setSnackbarMessage("Error al subir el archivo. Verifica el formato o los datos.");
       setSnackbarColor("danger");
     } finally {
@@ -67,7 +66,6 @@ const BulkUploadShrinkage: React.FC = () => {
       link.click();
       link.remove();
     } catch (error) {
-      console.error("Error al descargar la plantilla:", error);
       setSnackbarMessage("No se pudo descargar la plantilla.");
       setSnackbarColor("danger");
       setSnackbarOpen(true);

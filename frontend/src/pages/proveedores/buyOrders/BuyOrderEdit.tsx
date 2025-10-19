@@ -11,10 +11,11 @@ import FormField from '../../../components/core/FormField/FormField'
 import { Product } from '../../../types/inventory.types'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { useSnackbar } from '../../../hooks/core/useSnackbar'
 
 const BuyOrderEdit = () => {
   const navigate = useNavigate()
-  const { id } = useParams({ from: '/_auth/proveedores/editar-ordenes-de-compra/$id' })
+  const { id } = useParams({ from: '/_auth/proveedores/ordenes-de-compra/editar-ordenes-de-compra/$id' })
 
   // Obtener datos de la orden de compra
   const { data: buyOrder, isLoading: isLoadingOrder, isError: isErrorOrder } = useQuery({
@@ -128,20 +129,20 @@ const BuyOrderEdit = () => {
     })
   }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
 
+  const { showSnackbar } = useSnackbar()
+
   const mutation = useMutation({
     mutationFn: (data: BuyOrderCreationFormValues) => editBuyOrder(id, data),
     onSuccess: () => {
-      alert('Orden actualizada con éxito!')
+      showSnackbar('Orden actualizada con éxito!', 'success')
       navigate({to:'/proveedores/ordenes-de-compra'})
     },
     onError: (error) => {
-      console.error(error)
-      alert(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+      showSnackbar(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error'}`, 'danger')
     }
   })
 
   const onSubmit: SubmitHandler<BuyOrderCreationFormValues> = (data) => {
-    console.log(data)
     mutation.mutate(data)
   }
 

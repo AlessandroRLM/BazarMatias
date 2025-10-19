@@ -7,11 +7,13 @@ import ActiveUsersChart from "../../components/administracion/ActiveUsersChart/A
 import RecentUserTable from "../../components/administracion/RecentUserTable/RecentUserTable"
 import DashboardResponsiveDiv from "../../components/core/DashboardResponsiveDiv/DashboardResponsiveDiv"
 import { downloadUserReportPDF } from "../../services/reportsService"
+import { useSnackbar } from "../../hooks/core/useSnackbar"
 
 const DashboardAdministrationPage = () => {
-
   const query = useSuspenseQuery(administrationMetricsQueryOptions())
   const queryResponse = query.data
+
+  const { showSnackbar } = useSnackbar()
 
   // Función para descargar el PDF y lanzar descarga en navegador
   const handleDownloadReport = async () => {
@@ -25,9 +27,9 @@ const DashboardAdministrationPage = () => {
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
+      showSnackbar('Reporte descargado exitosamente.', 'success')
     } catch (error) {
-      console.error('Error descargando el reporte PDF:', error)
-      alert('Error al descargar el reporte.')
+      showSnackbar('Error al descargar el reporte.', 'danger')
     }
   }
 

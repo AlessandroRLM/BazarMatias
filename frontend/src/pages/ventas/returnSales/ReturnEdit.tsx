@@ -21,7 +21,7 @@ import {
   fetchReturn, 
   updateReturn,
 } from "../../../services/salesService";
-import { Return } from "../../../types/sales.types";
+import { ClientsReturn } from "../../../types/sales.types";
 
 export default function ReturnEdit() {
   const { id } = useParams({ from: '/_auth/ventas/gestiondedevoluciones/editar-devolucion/$id' });
@@ -29,15 +29,14 @@ export default function ReturnEdit() {
   const [error, setError] = useState<string | null>(null);
   
   // Fetch return details
-  const { data: returnData, isLoading } = useQuery<Return, Error>({
-    queryKey: ['return', id],
+  const { data: returnData, isLoading } = useQuery<ClientsReturn, Error>({
+    queryKey: ['clientReturn', id],
     queryFn: () => fetchReturn(id),
     enabled: !!id,
-    onError: (error: Error) => {
-      console.error('Error loading return:', error);
+    onError: (_: Error) => {
       setError('Error al cargar la devolución');
     }
-  } as UseQueryOptions<Return, Error>);
+  } as UseQueryOptions<ClientsReturn, Error>);
 
   const [form, setForm] = useState({
     quantity: "1",

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { requestPasswordReset } from '../../../services/authService' // Asegúrate de crear este servicio
-import { toast } from 'react-hot-toast'
+import { useSnackbar } from "../../../hooks/core/useSnackbar"
 import FormField from '../../../components/core/FormField/FormField'
 import { Button, Stack, Typography } from '@mui/joy'
 
@@ -16,6 +16,7 @@ type FormData = z.infer<typeof formSchema>
 
 function RequestPasswordResetPage() {
     const navigate = useNavigate()
+    const { showSnackbar } = useSnackbar()
 
     const {
         handleSubmit,
@@ -32,10 +33,10 @@ function RequestPasswordResetPage() {
     const mutation = useMutation({
         mutationFn: requestPasswordReset,
         onSuccess: () => {
-            toast.success('Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña.')
+            showSnackbar('Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña.', 'success')
         },
         onError: () => {
-            toast.error('Error al enviar el correo electrónico de restablecimiento de contraseña.')
+            showSnackbar('Error al enviar el correo electrónico de restablecimiento de contraseña.', 'danger')
         },
     })
 

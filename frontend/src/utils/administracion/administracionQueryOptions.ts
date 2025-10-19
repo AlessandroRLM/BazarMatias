@@ -5,6 +5,7 @@ import { CustomPagination } from "../../types/core.types";
 import { administrationMetrics, UserActivity } from "../../types/administration.types";
 import { AxiosResponse } from "axios";
 import { User } from "../../types/auth.types";
+import { UserSearchType } from "../../schemas/administracion/userSearchSchema";
 
 export const administrationMetricsQueryOptions = () => {
     return queryOptions({
@@ -16,15 +17,30 @@ export const administrationMetricsQueryOptions = () => {
     })
 }
 
-export const userDetailQueryOptions = (rut: string) => {
-    return queryOptions({
-        queryKey: ['user', {rut}],
+// Query options para la lista de usuarios
+export const usersQueryOptions = (opts: UserSearchType) =>
+    queryOptions({
+        queryKey: ['users', opts],
         queryFn: async () => {
-            const response: AxiosResponse<User> = await AxiosInstance.get(`/api/users/users/${rut}/`)
+            const response: AxiosResponse<CustomPagination<User>> = await AxiosInstance.get('/api/users/users/', {
+            params: opts,
+            })
+            return response ?? {}
+        } ,
+        staleTime: 1000 * 60 * 5, // 5 minutos
+    });
+
+// Query options para un usuario específico
+export const userDetailQueryOptions = (nationalId: string) =>
+    queryOptions({
+        queryKey: ['users', nationalId],
+        queryFn: async () => {
+            const response: AxiosResponse<User> = await AxiosInstance.get(`/api/users/users/${nationalId}/`)
             return response
-        }
-    })
-}
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
 
 export const usersSelectQueryOptions = () => {
     return queryOptions({

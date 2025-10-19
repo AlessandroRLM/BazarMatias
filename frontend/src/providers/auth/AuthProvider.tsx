@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import AxiosInstance from '../../helpers/AxiosInstance'
 import { AuthContext } from '../../contexts/auth/AuthContext'
 import { AuthProviderProps, LoginProps, User } from '../../types/auth.types'
+import { useSnackbar } from '../../hooks/core/useSnackbar'
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null)
     const [token, setToken] = useState<string | null>(localStorage.getItem("Token"))
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token)
+    const { showSnackbar } = useSnackbar()
 
     useEffect(() => {
         if (token) {
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await AxiosInstance.get("/api/users/users/me/")
             setUser(response.data)
         } catch (error) {
-            console.error("Error fetching user data:", error)
+            showSnackbar("Error al obtener los datos del usuario:", 'danger')
             logout()
         }
     }
@@ -36,8 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await AxiosInstance.post("/api/auth/login/", { email, password })
             setToken(response.data.token)
         } catch (error) {
-            console.error("Login error:", error)
-            throw error
+            showSnackbar("Error al iniciar sesión", 'danger')
         }
     }
 

@@ -15,11 +15,14 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { useAuth } from '../../hooks/auth/useAuth';
 import { toggleSidebar } from '../../utils/sidebar.utils';
 import { fetchLowStockProducts, fetchLowStockSupplies } from '../../services/inventoryService';
+import { useSnackbar } from '../../hooks/core/useSnackbar';
 
 const HomePage = () => {
   const { user } = useAuth();
   const [lowStockProducts, setLowStockProducts] = useState([]);
   const [lowStockSupplies, setLowStockSupplies] = useState([]);
+  const { showSnackbar } = useSnackbar()
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -31,7 +34,7 @@ const HomePage = () => {
         setLowStockProducts(productsRes.results || productsRes);
         setLowStockSupplies(suppliesRes.results || suppliesRes);
       } catch (error) {
-        console.error("Error al cargar productos/insumos con bajo stock", error);
+        showSnackbar("Error al cargar productos/insumos con bajo stock", 'danger')
       }
     };
     loadData();

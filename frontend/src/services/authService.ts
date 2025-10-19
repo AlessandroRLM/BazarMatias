@@ -7,7 +7,6 @@ export const requestPasswordReset = async (data: {email: string}) => {
     const response = await AxiosInstance.post('/api/auth/reset-password/', data )
     return response.data
   } catch (error) {
-    console.error('Error requesting password reset:', error)
     throw error
   }
 }
@@ -19,7 +18,6 @@ export const confirmPasswordReset = async (data: ResetPasswordConfirmSchemaType)
     )
     return response.data
   } catch (error) {
-    console.error('Error confirming password reset:', error)
     throw error
   }
 }

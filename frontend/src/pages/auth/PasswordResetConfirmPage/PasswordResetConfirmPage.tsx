@@ -7,10 +7,12 @@ import { useMutation } from "@tanstack/react-query"
 import { confirmPasswordReset } from "../../../services/authService"
 import toast from "react-hot-toast"
 import FormField from "../../../components/core/FormField/FormField"
+import { useSnackbar } from "../../../hooks/core/useSnackbar"
 
 const PasswordResetConfirmPage = () => {
     const {token, uid} = useParams({from: '/confirmar-contrasena/$uid/$token/'})
     const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
 
     const { 
         handleSubmit,
@@ -27,16 +29,14 @@ const PasswordResetConfirmPage = () => {
         mode: 'onBlur',
     })
 
-    console.log(`token: ${token}, uid: ${uid}`)
-
     const mutation = useMutation({
         mutationFn: confirmPasswordReset,
         onSuccess: () => {
-            toast.success('Contraseña restablecida correctamente')
+            showSnackbar('Contraseña restablecida correctamente', 'success')
             navigate({to: '/login'})
         },
         onError: () => {
-            toast.error('Error al restablecer la contraseña, intentalo nuevamente')
+            showSnackbar('Error al restablecer la contraseña, intentalo nuevamente', 'danger')
         }
     })
 

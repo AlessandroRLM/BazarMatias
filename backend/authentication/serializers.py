@@ -7,28 +7,65 @@ from users.models import User
 
 logger = logging.getLogger(__name__)
 
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.CharField()
-    password = serializers.CharField(style={'input_type': 'password'}, trim_whitespace=False)
-    
+    password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
+
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        
+
         if not email or not password:
-            raise serializers.ValidationError('Correo y contraseña son requeridos.')
-        
+            raise serializers.ValidationError(
+                'Correo y contraseña son requeridos.')
+
         if not User.objects.filter(email=email).exists():
-            raise serializers.ValidationError('El correo no existe.')    
-        
-        user = authenticate(request=self.context.get('request'), email=email, password=password)
+            raise serializers.ValidationError('El correo no existe.')
+
+        user = authenticate(request=self.context.get(
+            'request'), email=email, password=password)
 
         if not user:
-            raise serializers.ValidationError('Correo y/o contraseña son incorrectos')
+            raise serializers.ValidationError(
+                'Correo y/o contraseña son incorrectos')
 
         attrs['user'] = user
 
         return attrs
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
+    new_password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
+    confirm_password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
+
+    def validate(self, attrs):
+        old_password = attrs.get('old_password')
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+
+        if not old_password:
+            raise serializers.ValidationError(
+                'La contraseña actual es requerida.')
+
+        if not self.context.get('request').user.check_password(old_password):
+            raise serializers.ValidationError(
+                'La contraseña actual es incorrecta.')
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError(
+                'Hubo un error al cambiar la contraseña.')
+
+        user = self.context.get('request').user
+        
+        attrs['user'] = user
+        return attrs
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -38,11 +75,14 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError('El correo no existe.')
         return value
 
+
 class ResetPasswordConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
-    new_password = serializers.CharField(style={'input_type': 'password'}, trim_whitespace=False)
-    confirm_password = serializers.CharField(style={'input_type': 'password'}, trim_whitespace=False)
+    new_password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
+    confirm_password = serializers.CharField(
+        style={'input_type': 'password'}, trim_whitespace=False)
 
     def validate(self, attrs):
         new_password = attrs.get('new_password')
@@ -56,12 +96,13 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
             user = User.objects.get(id=uid)
 
         except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-            raise serializers.ValidationError('El enlace de restablecimiento de contraseña no es válido.' + str(e))
-        
+            raise serializers.ValidationError(
+                'El enlace de restablecimiento de contraseña no es válido.' + str(e))
+
         token_generator = PasswordResetTokenGenerator()
         if not token_generator.check_token(user, attrs.get('token')):
-            raise serializers.ValidationError('El enlace de restablecimiento de contraseña no es válido.')
+            raise serializers.ValidationError(
+                'El enlace de restablecimiento de contraseña no es válido.')
 
         attrs['user'] = user
         return attrs
-

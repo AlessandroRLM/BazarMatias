@@ -12,6 +12,7 @@ import { fetchProducts } from '../../../services/supplierService'
 import { Button, Divider, Grid, IconButton, Sheet, Stack, Table, Typography, Avatar, Card, CardContent } from '@mui/joy'
 import { Add, ArrowBack, Delete, Send } from '@mui/icons-material'
 import FormField from '../../../components/core/FormField/FormField'
+import { useSnackbar } from '../../../hooks/core/useSnackbar'
 
 
 const QuoteCreationPage = () => {
@@ -133,37 +134,35 @@ const QuoteCreationPage = () => {
         })
     }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
 
+    const { showSnackbar } = useSnackbar()
+    
     const mutation = useMutation({
         mutationFn: createQuote,
         onSuccess: () => {
-            alert('Cotización creada con éxito!')
+            showSnackbar('Cotización creada con éxito!', 'success')
             navigate({ to: '/ventas/cotizaciones' })
         },
         onError: (error) => {
-            console.error(error)
-            alert(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+            showSnackbar(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error'}`, 'danger')
         },
     })
 
     const sendEmailMutation = useMutation({
         mutationFn: sendQuoteEmail,
         onSuccess: () => {
-            alert('Cotización creada y enviada con éxito!')
+            showSnackbar('Cotización creada y enviada con éxito!', 'success')
             navigate({ to: '/ventas/cotizaciones' })
         },
         onError: (error) => {
-            console.error(error)
-            alert(`Error al enviar el email: ${error instanceof Error ? error.message : 'Ocurrió un error'}`)
+            showSnackbar(`Error al enviar el email: ${error instanceof Error ? error.message : 'Ocurrió un error'}`, 'danger')
         },
     })
 
     const onSubmit: SubmitHandler<QuoteCreationFormValues> = (data) => {
-        console.log(data)
         mutation.mutate(data)
     }
 
     const handleSaveAndSend: SubmitHandler<QuoteCreationFormValues> = (data) => {
-        console.log(data)
         mutation.mutate(data, {
             onSuccess: (newQuote) => {
                 // Enviar email después de crear la cotización

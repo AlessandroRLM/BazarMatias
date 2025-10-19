@@ -3,8 +3,22 @@ import { AxiosResponse } from "axios"
 import AxiosInstance from "../../helpers/AxiosInstance"
 import { BuyOrderSearchType } from "../../schemas/proveedores/buyOrderSearchSchema"
 import { CustomPagination } from "../../types/core.types"
-import { BuyOrder, ReturnSupplierList } from "../../types/suppliers.types"
+import { BuyOrder, ReturnSupplierList, Supplier } from "../../types/suppliers.types"
 import { ReturnSupplierSearchType } from "../../schemas/proveedores/returnSupplierSearchSchema"
+import { SupplierSearchType } from "../../schemas/proveedores/supplierSearchSchema"
+
+
+export const suppliersQueryOptions = (opts: SupplierSearchType) => {
+    return queryOptions({
+        queryKey: ['suppliers', opts],
+        queryFn: async () => {
+            const response: AxiosResponse<CustomPagination<Supplier>> = await AxiosInstance.get('/api/suppliers/suppliers', {
+            params: opts,
+            })
+            return response ?? {}
+        } 
+    })
+}
 
 export const buyOrderQueryOptions = (opts: BuyOrderSearchType) => {
     return queryOptions({

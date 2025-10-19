@@ -22,8 +22,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchClients, deleteClient } from "../../../services/salesService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Client, CustomPagination } from "../../../types/sales.types";
+import { Client } from "../../../types/sales.types";
 import ConfirmDialog from "../../../components/administracion/ConfirmDialog/ConfirmDialog";
+import { CustomPagination } from "../../../types/core.types";
 
 interface Filters {
   search?: string;
@@ -67,11 +68,10 @@ export default function ClientsManagement() {
       setSnackbar({
         open: true,
         message: 'Cliente eliminado correctamente',
-        color: 'success'
+        color: 'danger'
       });
     },
-    onError: (error) => {
-      console.error("Error deleting client:", error);
+    onError: (_) => {
       setSnackbar({
         open: true,
         message: 'Error al eliminar el cliente',

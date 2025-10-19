@@ -12,11 +12,12 @@ import { AuthProvider } from './providers/auth/AuthProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Box, CircularProgress } from '@mui/joy'
 
+// Date picker imports
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
-// 🔥 Toast imports
-import { Toaster } from 'react-hot-toast'
+// Snackbar imports
+import { SnackbarProvider } from './providers/core/SnackbarProvider'
 
 export const queryClient = new QueryClient()
 
@@ -51,11 +52,10 @@ function App() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <InnerApp />
-          <TanStackRouterDevtools router={router} />
-
-          {/* Toaster para los mensajes toast */}
-          <Toaster position="top-right" />
+          <SnackbarProvider>
+            <InnerApp />
+            <TanStackRouterDevtools router={router} />
+          </SnackbarProvider>
         </AuthProvider>
       </QueryClientProvider>
     </LocalizationProvider>

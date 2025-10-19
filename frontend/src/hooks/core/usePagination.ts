@@ -79,7 +79,6 @@ export function usePagination<T>(
         setIsDemoMode(false);
         setConnectionStatus('idle');
       } catch (error) {
-        console.error("Error connecting to backend:", error);
         setConnectionStatus('error');
         throw error;
       }

@@ -6,12 +6,14 @@ import { Typography, Avatar, Box, CircularProgress } from "@mui/joy";
 import { fetchClient } from '../../../services/salesService';
 import { Client } from '../../../types/sales.types';
 import FormUserCreation from "../../../components/clientes/FormClientCreation";
+import { useSnackbar } from '../../../hooks/core/useSnackbar';
 
 const ClientView = () => {
   const params = Route.useParams();
   const id = params.id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const loadClient = async () => {
@@ -19,8 +21,8 @@ const ClientView = () => {
         const clientData = await fetchClient(id);
         setClient(clientData);
       } catch (error) {
-        console.error("Error loading client:", error);
         setClient(null);
+        showSnackbar('Error al cargar el cliente', 'danger');
       } finally {
         setLoading(false);
       }

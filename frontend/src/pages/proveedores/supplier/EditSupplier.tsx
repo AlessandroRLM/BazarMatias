@@ -11,6 +11,7 @@ import Information from "../../../components/core/Information/Information";
 import { useEffect, useState } from "react";
 import { fetchSupplier, updateSupplier } from "../../../services/inventoryService";
 import { useNavigate, useParams } from "@tanstack/react-router";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 export default function EditarProveedor() {
   const { id } = useParams({ strict: false });
@@ -22,6 +23,7 @@ export default function EditarProveedor() {
   const [categoria, setCategoria] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar()
 
   useEffect(() => {
     if (!id) return;
@@ -37,7 +39,7 @@ export default function EditarProveedor() {
 
   const handleSubmit = async () => {
     if (!id) {
-      alert("ID de proveedor no encontrado.");
+      showSnackbar("ID de proveedor no encontrado.", 'danger')
       return;
     }
     setLoading(true);
@@ -51,8 +53,9 @@ export default function EditarProveedor() {
         category: categoria,
       });
       navigate({ to: "/proveedores" });
+      showSnackbar('Proveedor actualizado exitosamente.', 'success')
     } catch (e) {
-      alert("Error al actualizar proveedor");
+      showSnackbar(`No se pudo actualizar el proveedor. Motivo: ${e || "Error desconocido"}`, 'danger')
     } finally {
       setLoading(false);
     }

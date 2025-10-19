@@ -73,7 +73,6 @@ export default function OrderManagementPage() {
       });
     },
     onError: (error) => {
-      console.error("Error deleting work order:", error);
       setSnackbar({
         open: true,
         message: 'Error al eliminar la orden de trabajo',

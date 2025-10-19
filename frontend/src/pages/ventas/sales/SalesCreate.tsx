@@ -33,6 +33,7 @@ import { fetchProducts } from "../../../services/supplierService"
 import { createSale, getNextSaleFolio } from "../../../services/salesService"
 import FormField from "../../../components/core/FormField/FormField"
 import FormSelect from "../../../components/core/FormSelect/FormSelect"
+import { useSnackbar } from "../../../hooks/core/useSnackbar"
 
 const SalesCreate = () => {
   const navigate = useNavigate()
@@ -172,6 +173,8 @@ const SalesCreate = () => {
     })
   }, [details.length])
 
+  const { showSnackbar } = useSnackbar()
+
   /**
    * Mutación para crear una nueva venta
    * Incluye manejo detallado de errores
@@ -181,11 +184,11 @@ const SalesCreate = () => {
     onSuccess: () => {
       // Limpiar mensajes de error en caso de éxito
       setErrorMessage(null)
-      alert('Venta creada con éxito!')
+      showSnackbar('Venta creada con éxito!', 'success')
       navigate({ to: '/ventas/gestiondeventas' })
     },
     onError: (error) => {
-      console.error('Error al crear venta:', error)
+      showSnackbar('Ocurrió un error al crear la venta', 'danger')
       
       // Manejo específico para errores de stock
       if (typeof error === 'object' && error !== null && 'response' in error) {

@@ -13,6 +13,7 @@ import FormField from "../../../components/core/FormField/FormField"
 import type { Product } from "../../../types/inventory.types"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
+import { useSnackbar } from "../../../hooks/core/useSnackbar"
 
 const BuyOrderCreation = () => {
   const navigate = useNavigate()
@@ -111,20 +112,20 @@ const BuyOrderCreation = () => {
     })
   }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
 
+  const { showSnackbar } = useSnackbar()
+
   const mutation = useMutation({
     mutationFn: createBuyOrder,
     onSuccess: () => {
-      alert("Orden creada con éxito!")
+      showSnackbar("Orden creada con éxito!", "success")
       navigate({ to: "/proveedores/ordenes-de-compra" })
     },
     onError: (error) => {
-      console.error(error)
-      alert(`Error: ${error instanceof Error ? error.message : "Ocurrió un error"}`)
+      showSnackbar(`Error: ${error instanceof Error ? error.message : "Ocurrió un error"}`, "danger")
     },
   })
 
   const onSubmit: SubmitHandler<BuyOrderCreationFormValues> = (data) => {
-    console.log(data)
     mutation.mutate(data)
   }
 

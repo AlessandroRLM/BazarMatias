@@ -15,10 +15,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { fetchWorkOrder, updateWorkOrder } from "../../../services/salesService";
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus, WorkOrderUpdatePayload } from "../../../types/sales.types";
-import { getUsers } from "../../../services/userService";
 import { User } from "../../../types/auth.types";
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import AxiosInstance from "../../../helpers/AxiosInstance";
 
 export default function EditWorkOrder() {
     const { id } = useParams({ from: '/_auth/ventas/ordenesdetrabajo/editar-orden-trabajo/$id' });
@@ -36,7 +36,7 @@ export default function EditWorkOrder() {
             try {
                 setLoading(true);
                 const [users, order] = await Promise.all([
-                    getUsers(),
+                    AxiosInstance.get('/api/users/users/'),
                     fetchWorkOrder(id)
                 ]);
                 
@@ -45,7 +45,6 @@ export default function EditWorkOrder() {
                 setWorkOrder(order);
                 setErrorMessage(null);
             } catch (error) {
-                console.error("Error loading data:", error);
                 setErrorMessage("Error al cargar los datos");
                 setOpenErrorSnackbar(true);
                 setWorkers([]);
@@ -98,7 +97,6 @@ export default function EditWorkOrder() {
             window.location.href = '/ventas/ordenesdetrabajo';
             }, 1500);
         } catch (error) {
-            console.error("Error updating work order:", error);
             setErrorMessage("Error al actualizar la orden de trabajo");
             setOpenErrorSnackbar(true);
         }
@@ -200,9 +198,7 @@ export default function EditWorkOrder() {
                                 <FormControl>
                                     <FormLabel>Detalle</FormLabel>
                                     <Input 
-                                        placeholder="Descripción detallada del trabajo" 
-                                        multiline 
-                                        minRows={3} 
+                                        placeholder="Descripción detallada del trabajo"
                                         fullWidth 
                                         value={workOrder.descripcion}
                                         onChange={(e) => handleInputChange('descripcion', e.target.value)}

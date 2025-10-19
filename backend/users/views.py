@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.contrib.auth import login
 from .filters import UserActivityFilter
+from django_filters.rest_framework import DjangoFilterBackend
 import django_filters.rest_framework
 from django_filters import UnknownFieldBehavior
 from .models import User, UserActivity
@@ -20,13 +20,13 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'national_id'
 
     # Filtros y búsqueda
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     # Aquí los campos para filtrar
-    filterset_fields = ['is_active', 'is_staff']
-    search_fields = ['username', 'email', 'first_name',
+    filterset_fields = ['is_active']
+    search_fields = ['national_id', 'email', 'first_name',
                      'last_name']  # Campos para búsqueda
-    ordering_fields = ['id', 'username', 'email']
-    ordering = ['id']
+    ordering_fields = ['national_id', 'last_name','email', 'last_login']
+    ordering = ['last_name']
 
     def get_serializer_context(self):
         """Pasa el request al serializador para generar URLs absolutas"""

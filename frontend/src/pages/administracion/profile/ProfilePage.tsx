@@ -7,10 +7,13 @@ import CommonPageLayout from "../../../components/core/layout/components/CommonP
 import { Typography, Avatar, Box } from "@mui/joy";
 import { useAuth } from "../../../hooks/auth/useAuth";
 import HeaderUserCreation from "../../../components/administracion/ProfileHeader/ProfileHeader";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 const ProfilePage = () => {
   const { isProfile, isChangePassword, setIsProfile, setIsChangePassword, setIsEditMode, isEditMode } =
     useUserProfileFormContext();
+  const { showSnackbar } = useSnackbar()
+
 
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -25,13 +28,13 @@ const ProfilePage = () => {
         position: formData.role
       });
       setSubmitSuccess(true);
+      showSnackbar('Perfil actualizado exitosamente.', 'success')
       setTimeout(() => {
         setIsEditMode(false);
         setSubmitSuccess(false);
       }, 1500);
     } catch (error) {
-      console.error("Error al actualizar perfil:", error);
-      throw error;
+      showSnackbar(`No se pudo actualizar el perfil.`, 'danger')
     }
   };
 

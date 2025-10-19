@@ -12,6 +12,7 @@ import IconButton from '@mui/joy/IconButton';
 import { Link } from "@tanstack/react-router";
 import { fetchSupplies, deleteSupply } from "../../../services/inventoryService";
 import ConfirmDialog from "../../../components/administracion/ConfirmDialog/ConfirmDialog";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 interface SupplyItem {
   id: string;
@@ -37,6 +38,7 @@ export default function SupplyManagementPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [currentDeleteId, setCurrentDeleteId] = useState<string | null>(null);
   const [currentDeleteName, setCurrentDeleteName] = useState<string>("");
+  const { showSnackbar } = useSnackbar();
 
   // Definición de columnas dentro del componente para acceder a las funciones
   const columns: ColumnDef<SupplyItem>[] = [
@@ -129,8 +131,9 @@ export default function SupplyManagementPage() {
       });
       setData(res.results || []);
       setRowCount(res.count || 0);
+      showSnackbar(`Insumo eliminado exitosamente.`, 'danger')
     } catch (error) {
-      console.error("Error al eliminar insumo:", error);
+      showSnackbar("Error al eliminar insumo.", 'danger')
     } finally {
       setDeleteLoading(false);
       setDeleteDialogOpen(false);

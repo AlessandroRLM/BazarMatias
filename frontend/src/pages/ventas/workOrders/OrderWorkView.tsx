@@ -9,10 +9,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { fetchWorkOrder } from "../../../services/salesService";
 import { WorkOrder } from "../../../types/sales.types";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 export default function OrderView() {
     const { id } = useParams({ from: '/_auth/ventas/ordenesdetrabajo/ver-orden-trabajo/$id' });
     const [orderData, setOrderData] = useState<WorkOrder | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         const loadOrder = async () => {
@@ -20,7 +22,7 @@ export default function OrderView() {
                 const order = await fetchWorkOrder(id!);
                 setOrderData(order);
             } catch (error) {
-                console.error("Error loading work order:", error);
+                showSnackbar("Error al cargar la orden de trabajo:", 'danger');
             }
         };
         loadOrder();

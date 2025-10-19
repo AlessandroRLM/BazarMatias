@@ -1,3 +1,4 @@
+from multiprocessing import context
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,15 +6,15 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.core.mail import EmailMultiAlternatives, send_mail
-from django.template.loader import get_template, render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
 from django.contrib.auth import login
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from datetime import timedelta
 from knox import views as kv
 
 
-from .serializers import LoginSerializer, ResetPasswordSerializer, ResetPasswordConfirmSerializer
+from .serializers import LoginSerializer, ChangePasswordSerializer, ResetPasswordSerializer, ResetPasswordConfirmSerializer
 from .models import FailedLoginAttempt
 from users.models import User
 
@@ -81,6 +82,21 @@ class LoginApiView(kv.LoginView):
         response = super().post(request, format=None)
         return Response(response.data, status=status.HTTP_200_OK)
 
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            new_password = serializer.validated_data['new_password']
+            
+            user.set_password(new_password)
+            user.save()
+
+            return Response({'detail': 'Contraseña cambiada exitosamente.'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetPasswordView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -114,7 +130,7 @@ class ResetPasswordView(APIView):
             except Exception as e:
                 return Response({'detail': f'Error al enviar el correo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            return Response({'detail': f'Correo de restablecimiento enviado.'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Correo de restablecimiento enviado.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

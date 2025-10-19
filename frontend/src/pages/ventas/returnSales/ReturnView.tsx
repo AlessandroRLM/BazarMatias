@@ -5,29 +5,26 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Alert,
   Box
 } from "@mui/joy";
 import Information from "../../../components/core/Information/Information";
 import dayjs from "dayjs";
 import { fetchReturn } from "../../../services/salesService";
-import { Return } from "../../../types/sales.types";
+import { ClientsReturn } from "../../../types/sales.types";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 export default function ReturnView() {
   const { id } = useParams({ from: '/_auth/ventas/gestiondedevoluciones/ver-devolucion/$id' });
-  
-  const { data: returnData, isLoading, error } = useQuery<Return, Error>({
+  const { showSnackbar } = useSnackbar();
+
+  const { data: returnData, isLoading, error } = useQuery<ClientsReturn, Error>({
     queryKey: ['return', id],
     queryFn: () => fetchReturn(id),
-    onError: (err: Error) => console.error('Error fetching return:', err)
-  } as UseQueryOptions<Return, Error>);
+    onError: (err: Error) => showSnackbar(`Error cargando la devolución: ${err.message}`, 'danger')
+  } as UseQueryOptions<ClientsReturn, Error>);
 
   if (!id) {
-    return (
-      <Alert color="danger">
-        No se ha proporcionado un ID de devolución válido
-      </Alert>
-    );
+    showSnackbar('No se ha proporcionado un ID de devolución válido', 'danger');
   }
 
   if (isLoading) {
@@ -39,11 +36,7 @@ export default function ReturnView() {
   }
 
   if (error || !returnData) {
-    return (
-      <Alert color="danger">
-        Error al cargar los detalles de la devolución
-      </Alert>
-    );
+    showSnackbar('Error al cargar los detalles de la devolución', 'danger');
   }
 
   return (
@@ -67,46 +60,46 @@ export default function ReturnView() {
         <Stack spacing={1}>
           <Typography level="title-md">Cliente</Typography>
           <Typography>
-            {returnData.client.first_name} {returnData.client.last_name}
+            {returnData?.client.first_name} {returnData?.client.last_name}
           </Typography>
           <Typography level="body-sm">
-            {returnData.client.national_id}
+            {returnData?.client.national_id}
           </Typography>
         </Stack>
 
         {/* Product information */}
         <Stack spacing={1}>
           <Typography level="title-md">Producto</Typography>
-          <Typography>{returnData.product.name}</Typography>
+          <Typography>{returnData?.product.name}</Typography>
         </Stack>
 
-        {/* Return details */}
+        {/* ClientsReturn details */}
         <Stack direction="row" spacing={2}>
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Cantidad</Typography>
-            <Typography>{returnData.quantity}</Typography>
+            <Typography>{returnData?.quantity}</Typography>
           </Stack>
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Estado</Typography>
             <Typography color={
-              returnData.status === 'completed' ? 'success' : 
-              returnData.status === 'refused' ? 'danger' : 'warning'
+              returnData?.status === 'completed' ? 'success' : 
+              returnData?.status === 'refused' ? 'danger' : 'warning'
             }>
-              {returnData.status === 'completed' ? 'Completado' : 
-              returnData.status === 'refused' ? 'Rechazado' : 'Pendiente'}
+              {returnData?.status === 'completed' ? 'Completado' : 
+              returnData?.status === 'refused' ? 'Rechazado' : 'Pendiente'}
             </Typography>
           </Stack>
         </Stack>
 
         <Stack spacing={1}>
           <Typography level="title-md">Motivo</Typography>
-          <Typography>{returnData.reason}</Typography>
+          <Typography>{returnData?.reason}</Typography>
         </Stack>
 
         <Stack spacing={1}>
           <Typography level="title-md">Fecha de Devolución</Typography>
           <Typography>
-            {dayjs(returnData.created_at).format('DD/MM/YYYY HH:mm')}
+            {dayjs(returnData?.created_at).format('DD/MM/YYYY HH:mm')}
           </Typography>
         </Stack>
 
@@ -115,12 +108,12 @@ export default function ReturnView() {
         <Stack direction="row" spacing={2}>
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Número de Venta</Typography>
-            <Typography>#{returnData.sale.folio}</Typography>
+            <Typography>#{returnData?.sale.folio}</Typography>
           </Stack>
           <Stack spacing={1} sx={{ width: '50%' }}>
             <Typography level="title-md">Fecha de Venta</Typography>
             <Typography>
-              {dayjs(returnData.sale.date).format('DD/MM/YYYY HH:mm')}
+              {dayjs(returnData?.sale.date).format('DD/MM/YYYY HH:mm')}
             </Typography>
           </Stack>
         </Stack>

@@ -5,6 +5,7 @@ import FormUserCreation from "../../../components/clientes/FormClientCreation";
 import { useNavigate } from "@tanstack/react-router";
 import { createClient } from "../../../services/salesService";
 import { Client } from "../../../types/sales.types";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 interface FormClientData {
   rut: string;
@@ -16,6 +17,7 @@ interface FormClientData {
 
 const ClientCreatePage = () => {
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const handleSubmitForm = async (formData: FormClientData) => {
     try {
@@ -29,10 +31,10 @@ const ClientCreatePage = () => {
       };
 
       await createClient(clientData);
+      showSnackbar("Cliente creado con éxito.", 'success');
       return Promise.resolve();
     } catch (error) {
-      console.error("Error creating client:", error);
-      return Promise.reject(error);
+      showSnackbar(`Error: ${error instanceof Error ? error.message : 'Ocurrió un error al crear el cliente'}`, 'danger');
     }
   };
 

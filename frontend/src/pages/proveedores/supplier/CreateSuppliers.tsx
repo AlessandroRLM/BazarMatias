@@ -11,6 +11,7 @@ import Information from "../../../components/core/Information/Information";
 import { useState } from "react";
 import { createSupplier } from "../../../services/inventoryService";
 import { useNavigate } from "@tanstack/react-router";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 export default function AñadirProveedor() {
   const [nombre, setNombre] = useState("");
@@ -21,6 +22,7 @@ export default function AñadirProveedor() {
   const [categoria, setCategoria] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar()
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -34,8 +36,9 @@ export default function AñadirProveedor() {
         category: categoria,
       });
       navigate({ to: "/proveedores" });
+      showSnackbar('Proveedor creado exitosamente.', 'success')
     } catch (e) {
-      alert(`No se pudo crear el proveedor. Motivo: ${e || "Error desconocido"}`);
+      showSnackbar(`No se pudo crear el proveedor. Motivo: ${e || "Error desconocido"}`, 'danger')
     } finally {
       setLoading(false);
     }

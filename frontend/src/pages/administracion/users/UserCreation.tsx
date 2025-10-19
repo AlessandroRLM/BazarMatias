@@ -3,11 +3,14 @@ import HeaderUserCreation from "../../../components/administracion/ProfileHeader
 import FormUserCreation from "../../../components/administracion/FormUserCreation/FormUserCreation";
 import CommonPageLayout from "../../../components/core/layout/components/CommonPageLayout";
 import { Typography } from "@mui/joy";
-import { createUser } from "../../../services/userService";
 import { useNavigate } from "@tanstack/react-router";
+import AxiosInstance from "../../../helpers/AxiosInstance";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 const UserCreation = () => {
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+  
 
   const handleSubmitForm = async (formData: any) => {
     try {
@@ -20,26 +23,24 @@ const UserCreation = () => {
         position: formData.role,
       };
 
-      await createUser(userData);
+      await AxiosInstance.post("/api/users/users/", userData);
       
-      // Redirigir usando @tanstack/react-router
+      showSnackbar( "Usuario creado exitosamente", "success");
+      
       navigate({
         to: "/administracion/usuarios",
-        search: { success: "Usuario creado con éxito" },
       });
       
     } catch (error: any) {
-      console.error("Error al crear usuario:", error);
-      
       let errorMessage = "Error al crear usuario";
       if (error.response?.data) {
         // Manejar errores de validación del backend
         errorMessage = Object.entries(error.response.data)
-          .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
-          .join('\n');
+        .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+        .join('\n');
       }
       
-      throw new Error(errorMessage);
+      showSnackbar( "Error al crear usuario: " + errorMessage, "danger");
     }
   };
 

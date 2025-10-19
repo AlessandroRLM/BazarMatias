@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { fetchReturnSupplier, updateReturnSupplier, fetchSuppliers, fetchSupplier, fetchProducts } from "../../../services/inventoryService";
 import { useParams, useNavigate } from "@tanstack/react-router";
+import { useSnackbar } from "../../../hooks/core/useSnackbar";
 
 interface ReturnProduct {
   id: string;
@@ -44,6 +45,7 @@ export default function ReturnEdit() {
   const [isLoading, setIsLoading] = useState(true);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     fetchSuppliers().then(data => setSuppliers(data.results || []));
@@ -88,7 +90,7 @@ export default function ReturnEdit() {
           setIsLoading(false);
         })
         .catch(() => {
-          toast.error('Error al cargar la devolución');
+          showSnackbar('Error al cargar la devolución', 'danger');
           setIsLoading(false);
         });
     }
@@ -144,17 +146,10 @@ export default function ReturnEdit() {
 
     try {
       await updateReturnSupplier(id, payload);
-      toast.success('¡Devolución actualizada con éxito!', {
-        style: {
-          borderRadius: '8px',
-          background: '#333',
-          color: '#fff',
-        },
-        icon: '✅',
-      });
+      showSnackbar('¡Devolución actualizada con éxito!', 'success');
       navigate({ to: "/proveedores/devoluciones" });
     } catch (error) {
-      toast.error('Error al actualizar la devolución');
+      showSnackbar('Error al actualizar la devolución', 'danger');
     }
   };
 

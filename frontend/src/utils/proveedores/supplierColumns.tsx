@@ -12,20 +12,28 @@ export const SUPPLIERS_COLUMNS = (handleDeleteClick: (id: string) => void) => [
         header: () => 'Nombre',
         cell: info => info.getValue<string>(),
     }),
+    columnHelper.accessor('rut', {
+        id: 'rut',
+        header: () => 'RUT',
+        cell: info => info.getValue<string>(),
+    }),
     columnHelper.accessor('address', {
         id: 'address',
         header: () => 'Dirección',
         cell: info => info.getValue<string>(),
+        enableSorting: false,
+    }),
+    columnHelper.accessor('email', {
+        id: 'email',
+        header: () => 'Correo',
+        cell: info => info.getValue<string>(),
+        enableSorting: false,
     }),
     columnHelper.accessor('phone', {
         id: 'phone',
         header: () => 'Teléfono',
         cell: info => info.getValue<string>(),
-    }),
-    columnHelper.accessor('category', {
-        id: 'category',
-        header: () => 'Categoría',
-        cell: info => info.getValue<string>(),
+        enableSorting: false,
     }),
     columnHelper.accessor('id', {
         id: 'actions',

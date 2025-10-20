@@ -50,15 +50,15 @@ export default function AñadirProveedor() {
       sectionTitle="Informacion del Proveedor"
       footerContent={
         <>
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             color="neutral"
             onClick={() => window.history.back()}
           >
             Cancelar
           </Button>
-          <Button 
-            variant="solid" 
+          <Button
+            variant="solid"
             color="primary"
             loading={loading}
             onClick={handleSubmit}
@@ -95,9 +95,14 @@ export default function AñadirProveedor() {
       <FormControl>
         <FormLabel>Categoría</FormLabel>
         <Select value={categoria} onChange={(_, v) => setCategoria(v ?? "")} placeholder="Selecciona una categoría">
-          <Option value="utiles">Útiles escolares</Option>
-          <Option value="oficina">Oficina</Option>
-          <Option value="otros">Otros</Option>
+          <Option value="Accesorios">Accesorios</Option>
+          <Option value="Arte">Arte</Option>
+          <Option value="Electronica">Electrónica</Option>
+          <Option value="Escolar">Escolar</Option>
+          <Option value="Manualidades">Manualidades</Option>
+          <Option value="Oficina">Oficina</Option>
+          <Option value="Papeleria">Papelería</Option>
+          <Option value="Otros">Otros</Option>
         </Select>
       </FormControl>
     </Information>

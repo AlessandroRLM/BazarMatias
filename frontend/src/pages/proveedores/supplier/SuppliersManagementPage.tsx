@@ -20,7 +20,7 @@ import { SUPPLIERS_COLUMNS } from "../../../utils/proveedores/supplierColumns";
 const SuppliersManagementPage = () => {
   const navigate = useNavigate()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [userToDelete, setUserToDelete] = useState<string | null>(null)
+  const [supplierToDelete, setSupplierToDelete] = useState<string | null>(null)
   const { filters, setFilters } = useFilters('/_auth/proveedores/')
   const loaderDeps = useLoaderDeps({ from: '/_auth/proveedores/' })
   const supplierQuery = useSuspenseQuery(suppliersQueryOptions(loaderDeps))
@@ -40,7 +40,7 @@ const SuppliersManagementPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setDeleteModalOpen(false);
-      setUserToDelete(null);
+      setSupplierToDelete(null);
       showSnackbar('Usuario eliminado con éxito', 'danger');
     },
     onError: () => {
@@ -49,13 +49,13 @@ const SuppliersManagementPage = () => {
   });
 
   const handleOpenDeleteModal = (id: string) => {
-    setUserToDelete(id);
+    setSupplierToDelete(id);
     setDeleteModalOpen(true);
   };
 
   const handleDelete = () => {
-    if (userToDelete) {
-      deleteMutation.mutate(userToDelete);
+    if (supplierToDelete) {
+      deleteMutation.mutate(supplierToDelete);
     }
   };
 
@@ -68,11 +68,11 @@ const SuppliersManagementPage = () => {
         onConfirm={handleDelete}
         onClose={() => {
           setDeleteModalOpen(false);
-          setUserToDelete(null);
+          setSupplierToDelete(null);
         }}
       />
       <PageHeader
-        title="Gestión de Usuarios"
+        title="Gestión de Proveedores"
         buttons={[
           {
             onClick: () => navigate({ to: '/proveedores/crear-proveedor' }),
@@ -88,9 +88,14 @@ const SuppliersManagementPage = () => {
             placeholder: "Categoría",
             options: [
               { value: "", label: "Todas" },
-              { value: "Electrónicos", label: "Electrónica" },
-              { value: "Papelería", label: "Papelería" },
-              { value: "Cotillón", label: "Cotillón" },
+              { value: "Accesorios", label: "Accesorios" },
+              { value: "Arte", label: "Arte" },
+              { value: "Electronica", label: "Electrónica" },
+              { value: "Escolar", label: "Escolar" },
+              { value: "Oficina", label: "Oficina" },
+              { value: "Manualidades", label: "Manualidades" },
+              { value: "Papeleria", label: "Papelería" },
+              { value: "Otros", label: "Otros" },
             ],
           },
         ]}

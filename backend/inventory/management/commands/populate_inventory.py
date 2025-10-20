@@ -56,7 +56,7 @@ class Command(BaseCommand):
     def create_products(self):
         self.stdout.write('📦 Creando productos...')
 
-        categories = ["Papelería", "Oficina", "Electrónica", "Escolar", "Arte", "Manualidades"]
+        categories = ["Papelería", "Oficina", "Electronica", "Escolar", "Arte", "Manualidades"]
         suppliers = list(Supplier.objects.all())
 
         products = []

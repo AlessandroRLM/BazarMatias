@@ -54,7 +54,7 @@ export default function EditarProducto() {
 
   const handleSubmit = async () => {
     if (!id) return;
-    
+
     setLoading(true);
     try {
       await updateProduct(id, {
@@ -80,15 +80,15 @@ export default function EditarProducto() {
       sectionTitle="Información del Producto"
       footerContent={
         <>
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             color="neutral"
             onClick={() => window.history.back()}
           >
             Cancelar
           </Button>
-          <Button 
-            variant="solid" 
+          <Button
+            variant="solid"
             color="primary"
             loading={loading}
             onClick={handleSubmit}
@@ -119,18 +119,20 @@ export default function EditarProducto() {
       <FormControl>
         <FormLabel>Categoría</FormLabel>
         <Select value={categoria} onChange={(_, v) => setCategoria(v ?? "")} placeholder="Selecciona una categoría">
-          <Option value="Electronicos">Electrónicos</Option>
-            <Option value="Accesorios">Accesorios</Option>
-            <Option value="Ropa">Ropa</Option>
-            <Option value="Oficina">Oficina</Option>
-            <Option value="Utiles escolares">Útiles escolares</Option>
-            <Option value="Otros">Otros</Option>
+          <Option value="Accesorios">Accesorios</Option>
+          <Option value="Arte">Arte</Option>
+          <Option value="Electronica">Electrónica</Option>
+          <Option value="Escolar">Escolar</Option>
+          <Option value="Manualidades">Manualidades</Option>
+          <Option value="Oficina">Oficina</Option>
+          <Option value="Papeleria">Papelería</Option>
+          <Option value="Otros">Otros</Option>
         </Select>
       </FormControl>
       <FormControl>
         <FormLabel>Proveedor</FormLabel>
-        <Select 
-          value={proveedor} 
+        <Select
+          value={proveedor}
           onChange={(_, v) => setProveedor(v || null)}
         >
           <Option value={null}>Ninguno</Option>

@@ -43,12 +43,14 @@ export default function InventoryManagementPage() {
       placeholder: "Categoría",
       options: [
         { value: "", label: "Todas" },
-        { value: "Electrónicos", label: "Electrónicos" },
         { value: "Accesorios", label: "Accesorios" },
-        { value: "Ropa", label: "Ropa" },
+        { value: "Arte", label: "Arte" },
+        { value: "Electronica", label: "Electrónica" },
+        { value: "Escolar", label: "Escolar" },
         { value: "Oficina", label: "Oficina" },
-        { value: "utiles", label: "utiles" },
-        { value: "otros", label: "otros" },
+        { value: "Manualidades", label: "Manualidades" },
+        { value: "Papeleria", label: "Papelería" },
+        { value: "Otros", label: "Otros" },
       ],
     },
     {

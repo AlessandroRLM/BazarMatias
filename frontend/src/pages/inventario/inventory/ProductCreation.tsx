@@ -49,7 +49,7 @@ export default function AñadirProducto() {
       });
       navigate({ to: "/inventario/productos" });
     } catch (e) {
-      setError(`No se pudo crear el producto. Motivo: ${e.message || "Error desconocido"}`);
+      setError(`No se pudo crear el producto. Motivo: ${e || "Error desconocido"}`);
     } finally {
       setLoading(false);
     }
@@ -113,11 +113,13 @@ export default function AñadirProducto() {
             value={categoria} 
             onChange={(_, v) => setCategoria(v || "")}
           >
-            <Option value="Electronicos">Electrónicos</Option>
             <Option value="Accesorios">Accesorios</Option>
-            <Option value="Ropa">Ropa</Option>
+            <Option value="Arte">Arte</Option>
+            <Option value="Electronica">Electrónica</Option>
+            <Option value="Escolar">Escolar</Option>
+            <Option value="Manualidades">Manualidades</Option>
             <Option value="Oficina">Oficina</Option>
-            <Option value="Utiles escolares">Útiles escolares</Option>
+            <Option value="Papeleria">Papelería</Option>
             <Option value="Otros">Otros</Option>
           </Select>
         </FormControl>

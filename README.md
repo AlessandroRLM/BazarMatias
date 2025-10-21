@@ -1,7 +1,7 @@
 # BazarMatias
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-0.1.0-green.svg)
 
 ## 📋 Descripción
 
@@ -58,13 +58,15 @@ El proyecto sigue una arquitectura de tres capas con los siguientes componentes:
 
 ### Pasos de Instalación
 
-1. Clonar el repositorio:
+#### 1. Clonar el repositorio
+Para clonar el repositorio es recomendable crear una carpeta dedicada, para luego ejecutar el siguiente comando en la terminal:
    ```bash
    git clone https://github.com/AlessandroRLM/BazarMatias
    cd BazarMatias
    ```
 
-2. Configurar variables de entorno:
+#### 2. Configurar variables de entorno
+Una vez clonado el repositorio deberás configurar las variables de entorno del proyecto:
    ```bash
    # Copiar el archivo de ejemplo
    cp .env.example .env
@@ -72,12 +74,13 @@ El proyecto sigue una arquitectura de tres capas con los siguientes componentes:
    # Editar el archivo .env con tus configuraciones
    ```
 
-3. Iniciar los servicios con Docker Compose:
+#### 3. Iniciar los servicios con Docker Compose
+Como ultimo paso ya podremos correr la aplicación usando el siguiente comando en la terminal:
    ```bash
    docker-compose up -d
    ```
 
-4. Acceder a las aplicaciones:
+### 4. Acceder a las aplicaciones
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:4000/api
    - Documentación API: http://localhost:4000/api/schema/swagger-ui/
@@ -112,7 +115,7 @@ BazarMatias/
 #### Backend
 ```bash
 # Entrar al contenedor del backend
-docker exec -it backend bash
+docker-compose exec -it backend sh
 
 # Crear migraciones
 python manage.py makemigrations
@@ -127,7 +130,7 @@ python manage.py createcustomsuperuser
 #### Frontend
 ```bash
 # Entrar al contenedor del frontend
-docker exec -it frontend sh
+docker-compose exec -it frontend sh
 
 # Instalar nuevas dependencias
 bun add nombre-paquete

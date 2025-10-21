@@ -60,7 +60,7 @@ El proyecto sigue una arquitectura de tres capas con los siguientes componentes:
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/BazarMatias.git
+   git clone https://github.com/AlessandroRLM/BazarMatias
    cd BazarMatias
    ```
 

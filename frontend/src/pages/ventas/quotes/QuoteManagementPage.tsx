@@ -32,23 +32,6 @@ const QuoteManagementPage = () => {
         page_size: loaderDeps?.page_size
     })
 
-    const clientsQueries = useQueries({
-        queries: quoteResponse?.data?.results.map((quote, index) => ({
-            queryKey: ['quoteClient', quote.client, index],
-            queryFn: async () => {
-                const response: AxiosResponse<Client> = await AxiosInstance.get(`/api/sales/clients/${quote.client}`)
-                return response
-            },
-        }))
-    })
-
-    const quotesWithClientNames = quoteResponse?.data?.results.map((quote, index) => {
-        const clientData = clientsQueries[index]?.data?.data;
-        return {
-            ...quote,
-            client: clientData ? `${clientData.first_name} ${clientData.last_name}` : quote.client
-        };
-    });
     const deleteMutation = useMutation({
         mutationFn: deleteQuote,
         onSuccess: () => {
@@ -100,7 +83,7 @@ const QuoteManagementPage = () => {
             />
 
             <CustomTable
-                data={quotesWithClientNames ?? []}
+                data={quoteResponse?.data?.results ?? []}
                 columns={QUOTE_COLUMNS(handleOpenDeleteModal) as ColumnDef<Quote>[]}
                 pagination={paginationState}
                 paginationOptions={{

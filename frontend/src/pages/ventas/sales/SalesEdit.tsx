@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useNavigate, useParams } from "@tanstack/react-router" 
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query"
-import { ArrowBack, Delete, Add, Edit } from "@mui/icons-material" 
+import { ArrowBack, Delete, Add, Edit } from "@mui/icons-material"
 import { Stack, IconButton, Typography, Grid, Sheet, Table, Button, Divider, Card, CardContent, Avatar, Input, FormControl, FormLabel, CircularProgress } from "@mui/joy"
 import dayjs from "dayjs"
 
-import { SaleCreationFormValues, saleCreationSchema } from "../../../schemas/ventas/ventas/saleCreationSchema" 
+import { SaleCreationFormValues, saleCreationSchema } from "../../../schemas/ventas/ventas/saleCreationSchema"
 import { fetchClientsForSelect } from "../../../services/saleService"
-import { Client, Sale, SaleDetail } from "../../../types/sales.types" 
+import { Client, Sale, SaleDetail } from "../../../types/sales.types"
 import AutocompleteFormField, { SelectOption } from "../../../components/core/AutocompleteFormField/AutocompleteFormField"
 import { Product } from "../../../types/inventory.types"
 import { fetchProducts } from "../../../services/supplierService"
-import { fetchSaleById, updateSale } from "../../../services/salesService" 
+import { fetchClient, fetchSaleById, updateSale } from "../../../services/salesService"
 import FormField from "../../../components/core/FormField/FormField"
 import FormSelect from "../../../components/core/FormSelect/FormSelect"
 import { useSnackbar } from "../../../hooks/core/useSnackbar"
@@ -21,7 +21,7 @@ import { useSnackbar } from "../../../hooks/core/useSnackbar"
 const SalesEdit = () => {
   const navigate = useNavigate()
   const { showSnackbar } = useSnackbar()
-  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' }) 
+  const { id } = useParams({ from: '/_auth/ventas/gestiondeventas/editar-venta/$id' })
 
   const {
     handleSubmit,
@@ -29,9 +29,9 @@ const SalesEdit = () => {
     formState: { errors },
     watch,
     setValue,
-    reset, 
+    reset,
   } = useForm<SaleCreationFormValues>({
-    resolver: zodResolver(saleCreationSchema), 
+    resolver: zodResolver(saleCreationSchema),
     defaultValues: {
       client_id: '',
       document_type: 'BOL' as const,
@@ -46,7 +46,7 @@ const SalesEdit = () => {
   const { data: existingSale, isLoading: isLoadingSale, error: saleError } = useQuery<Sale>({
     queryKey: ['sale', id],
     queryFn: () => fetchSaleById(id as string),
-    enabled: !!id, 
+    enabled: !!id,
   })
 
   useEffect(() => {
@@ -68,6 +68,13 @@ const SalesEdit = () => {
   // const folio = watch('folio') // If folio is managed by react-hook-form
   // If folio is not part of the form state, you can get it directly from existingSale for display
 
+  // Consulta específica para el cliente de la venta
+  const { data: saleClient } = useQuery({
+    queryKey: ['sale-client', existingSale?.client?.id],
+    queryFn: () => fetchClient(existingSale?.client?.id as string),
+    enabled: !!existingSale?.client?.id,
+  })
+
   const { data: clients, isLoading: isLoadingClients } = useQuery({
     queryKey: ['clients'],
     queryFn: ({ queryKey }: { queryKey: unknown[] }) => {
@@ -81,28 +88,37 @@ const SalesEdit = () => {
   })
 
 
+  // Combinar clientes de búsqueda con el cliente específico de la venta
   const clientsToOptions = (clients?: Client[]): SelectOption[] => {
-    return (
-      clients?.map((client) => ({
-        value: client.id,
-        label: client.first_name + ' ' + client.last_name,
-      })) ?? []
-    )
+    const baseOptions = clients?.map((client) => ({
+      value: client.id,
+      label: client.first_name + ' ' + client.last_name,
+    })) ?? []
+
+    // Agregar el cliente específico de la venta si existe y no está en la lista
+    if (saleClient && !baseOptions.find(opt => opt.value === saleClient.id)) {
+      baseOptions.push({
+        value: saleClient.id,
+        label: saleClient.first_name + ' ' + saleClient.last_name,
+      })
+    }
+
+    return baseOptions
   }
 
   const clientsOptions = clientsToOptions(clients?.results)
 
-  const selectedClient = clients?.results.find((client: Client) => client.id === watch('client_id'))
+  const selectedClient = clients?.results.find((client: Client) => client.id === watch('client_id')) ?? saleClient
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   }
 
   const details = watch('details') || []
-  
+
   // Estado para almacenar los términos de búsqueda de productos para cada detalle
   const [productSearchTerms, setProductSearchTerms] = useState<string[]>(Array(details.length).fill(''))
-  
+
   // Actualizar el array de términos de búsqueda cuando cambia el número de detalles
   useEffect(() => {
     if (productSearchTerms.length !== details.length) {
@@ -120,8 +136,8 @@ const SalesEdit = () => {
 
   const queriesForUseQueries = useMemo(() => {
     return details.map((_, index) => ({
-      queryKey: ['products', index, productSearchTerms[index]], 
-      queryFn: () => fetchProducts(productSearchTerms[index] || ''), 
+      queryKey: ['products', index, productSearchTerms[index]],
+      queryFn: () => fetchProducts(productSearchTerms[index] || ''),
       staleTime: 1000 * 60 * 2,
     }))
 
@@ -155,7 +171,7 @@ const SalesEdit = () => {
             setValue(unitPricePath, selectedProduct.price_clp)
           }
         }
-              
+
       } else {
         if (currentUnitPrice !== 0) {
           setValue(unitPricePath, 0)
@@ -173,7 +189,7 @@ const SalesEdit = () => {
       const payload = {
         ...data,
         // Ensure client_id is just the ID string if your backend expects that
-        client_id: data.client_id, 
+        client_id: data.client_id,
         details: data.details.map(detail => ({
           product_id: detail.product_id,
           quantity: detail.quantity,
@@ -208,7 +224,7 @@ const SalesEdit = () => {
     const currentDetails = [...watch('details')]
     currentDetails.splice(index, 1)
     setValue('details', currentDetails)
-    
+
     // Eliminar el término de búsqueda correspondiente
     const newSearchTerms = [...productSearchTerms]
     newSearchTerms.splice(index, 1)
@@ -222,10 +238,10 @@ const SalesEdit = () => {
       if (selectedProduct && typeof selectedProduct.price_clp === 'number') {
         setValue(`details.${index}.unit_price`, selectedProduct.price_clp)
       } else {
-        setValue(`details.${index}.unit_price`, 0) 
+        setValue(`details.${index}.unit_price`, 0)
       }
     } else {
-      setValue(`details.${index}.unit_price`, 0) 
+      setValue(`details.${index}.unit_price`, 0)
     }
   }
 
@@ -239,12 +255,12 @@ const SalesEdit = () => {
   if (isLoadingSale) return <CircularProgress />;
   if (saleError) return <Typography color="danger">Error al cargar la venta: {saleError.message}</Typography>;
   // Make sure existingSale is checked before trying to access its properties
-  if (!existingSale) return <Typography>Cargando datos de la venta...</Typography>; 
+  if (!existingSale) return <Typography>Cargando datos de la venta...</Typography>;
 
   return (
     <>
       <Stack spacing={1} direction={'row'} justifyContent={'flex-start'} alignItems={'center'}>
-        <IconButton onClick={() => navigate({ to: '/ventas/gestiondeventas' })}> 
+        <IconButton onClick={() => navigate({ to: '/ventas/gestiondeventas' })}>
           <ArrowBack />
         </IconButton>
         <Typography level='h4'>Editar Venta {existingSale?.folio ? ` #${existingSale.folio}` : ''}</Typography> {/* Display folio in title */}
@@ -256,7 +272,7 @@ const SalesEdit = () => {
             <Sheet variant='outlined' sx={{ p: 2, borderRadius: 'md', flex: 2 }}>
               <Stack spacing={3}>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <FormSelect
+                  <FormSelect
                     name='document_type'
                     control={control}
                     label='Tipo de Documento'
@@ -264,7 +280,7 @@ const SalesEdit = () => {
                       { value: 'FAC', label: 'Factura' },
                       { value: 'BOL', label: 'Boleta' },
                     ]}
-                    error={errors.document_type} 
+                    error={errors.document_type}
                     fullWidth={true}
                   />
                   <FormControl>
@@ -334,11 +350,11 @@ const SalesEdit = () => {
                       }}
                       >
                         <Table
-                          stickyHeader 
+                          stickyHeader
                           sx={{
                             '& thead th': { fontWeight: 'lg' },
                             '& tr > *:not(:first-of-type)': { textAlign: 'right' },
-                            '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' }, 
+                            '& td': { verticalAlign: 'top', paddingTop: '12px', paddingBottom: '12px' },
                           }}
                         >
                           <thead>
@@ -377,7 +393,7 @@ const SalesEdit = () => {
                                         const newSearchTerms = [...productSearchTerms]
                                         newSearchTerms[index] = value
                                         setProductSearchTerms(newSearchTerms)
-                                        
+
                                         if (value && value.length > 2) {
                                           productQueries[index].refetch()
                                         }
@@ -401,7 +417,7 @@ const SalesEdit = () => {
                                       type='number'
                                       error={errors.details?.[index]?.unit_price}
                                       transform={Number}
-                                      disabled={!!watch(`details.${index}.product_id`)} 
+                                      disabled={!!watch(`details.${index}.product_id`)}
                                       size='sm'
                                     />
                                   </td>
@@ -411,7 +427,7 @@ const SalesEdit = () => {
                                       color='danger'
                                       size='sm'
                                       onClick={() => removeDetail(index)}
-                                      disabled={details.length <= 1} 
+                                      disabled={details.length <= 1}
                                     >
                                       <Delete />
                                     </IconButton>
@@ -452,7 +468,7 @@ const SalesEdit = () => {
                   borderRadius: 'md',
                   display: 'flex',
                   flexDirection: 'column',
-                  flexGrow: 1, 
+                  flexGrow: 1,
                   height: '100%'
                 }}
               >

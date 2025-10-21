@@ -1,22 +1,18 @@
-import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Client } from '../../../types/sales.types'
-import { Product } from '../../../types/inventory.types'
 import { Button, Divider, Grid, IconButton, Sheet, Stack, Table, Typography, Avatar, Card, CardContent, CircularProgress, Chip, Box } from '@mui/joy'
 import { ArrowBack } from '@mui/icons-material'
 import AxiosInstance from '../../../helpers/AxiosInstance'
 import dayjs from 'dayjs'
+import { Quote } from '../../../types/sales.types'
 
 const QuoteViewPage = () => {
     const navigate = useNavigate()
     const { id } = useParams({ from: '/_auth/ventas/cotizaciones/ver-cotizacion/$id' })
-    const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-    const [productDetails, setProductDetails] = useState<Array<{ product: Product, quantity: number, unit_price: number }>>([])
 
     // Consulta para obtener la cotización existente
-    const { data: quote, isLoading: isLoadingQuote, isError: isErrorQuote } = useQuery({
-        queryKey: ['quote', id],
+    const { data: quote, isLoading: isLoadingQuote, isError: isErrorQuote } = useQuery<Quote>({
+        queryKey: ['quote?', id],
         queryFn: async () => {
             const response = await AxiosInstance.get(`/api/sales/quotes/${id}/`)
             return response.data
@@ -24,70 +20,20 @@ const QuoteViewPage = () => {
         enabled: !!id,
     })
 
-    // Consulta para obtener los datos del cliente
-    const { data: clientData, isLoading: isLoadingClient } = useQuery({
-        queryKey: ['client', quote?.client],
-        queryFn: async () => {
-            const response = await AxiosInstance.get(`/api/sales/clients/${quote?.client}/`)
-            return response.data
-        },
-        enabled: !!quote?.client,
-    })
-
-    // Efecto para establecer el cliente seleccionado cuando se cargan los datos
-    useEffect(() => {
-        if (clientData) {
-            setSelectedClient(clientData)
-        }
-    }, [clientData])
-
-    // Consultas para obtener los datos de los productos
-    const { data: productsData, isLoading: isLoadingProducts } = useQuery({
-        queryKey: ['products-for-quote', id],
-        queryFn: async () => {
-            if (!quote?.details || quote.details.length === 0) return []
-
-            // Obtener IDs únicos de productos
-            const productIds = [...new Set(quote.details.map((detail: { product: Product, quantity: number, unit_price: number }) => detail.product))]
-
-            // Obtener datos de cada producto
-            const productPromises = productIds.map(productId =>
-                AxiosInstance.get(`/api/inventory/products/${productId}/`).then(res => res.data)
-            )
-
-            return Promise.all(productPromises)
-        },
-        enabled: !!quote?.details,
-    })
-
-    // Efecto para combinar los detalles de la cotización con los datos de los productos
-    useEffect(() => {
-        if (quote?.details && productsData) {
-            const details = quote.details.map((detail: { product: Product, quantity: number, unit_price: number }) => {
-                const product = productsData.find(p => p.id === detail.product)
-                return {
-                    product: product || { id: detail.product, name: 'Producto no encontrado' },
-                    quantity: detail.quantity,
-                    unit_price: detail.unit_price
-                }
-            })
-            setProductDetails(details)
-        }
-    }, [quote, productsData])
 
     const getInitials = (firstName: string, lastName: string) => {
         return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
     }
 
-    const totalAmount = productDetails.reduce((sum, item) => {
+    const totalAmount = quote?.details.reduce((sum, item) => {
         return sum + Number(item.quantity) * Number(item.unit_price)
-    }, 0)
+    }, 0) || 0
 
     const iva = Math.round(totalAmount * 0.19)
     const netAmount = totalAmount - iva
 
     // Mostrar carga mientras se obtienen los datos
-    if (isLoadingQuote || isLoadingClient || isLoadingProducts) {
+    if (isLoadingQuote ) {
         return (
             <Stack direction="row" justifyContent="center" alignItems="center" sx={{ height: '50vh' }}>
                 <CircularProgress />
@@ -134,11 +80,11 @@ const QuoteViewPage = () => {
                 </IconButton>
                 <Typography level='h4'>Ver Cotización</Typography>
                 <Chip
-                    color={getStatusColor(quote.status)}
+                    color={getStatusColor(quote?.status || 'PE')}
                     size="sm"
                     sx={{ ml: 'auto' }}
                 >
-                    {getStatusText(quote.status)}
+                    {getStatusText(quote?.status || 'PE')}
                 </Chip>
             </Stack>
 
@@ -151,14 +97,14 @@ const QuoteViewPage = () => {
                                     <Stack direction="row" justifyContent="space-between">
                                         <Typography level="body-md">Cliente:</Typography>
                                         <Typography level="body-md" fontWeight='lg'>
-                                            {selectedClient ? `${selectedClient.first_name} ${selectedClient.last_name}` : 'Cargando...'}
+                                            {quote?.client ? `${quote?.client.first_name} ${quote?.client.last_name}` : 'Cargando...'}
                                         </Typography>
                                     </Stack>
 
                                     <Stack direction="row" justifyContent="space-between">
                                         <Typography level="body-md">Fecha de creación:</Typography>
                                         <Typography level="body-md" fontWeight="lg">
-                                            {dayjs(quote.created_at).format('DD/MM/YYYY - HH:mm:ss')}
+                                            {dayjs(quote?.created_at).format('DD/MM/YYYY - HH:mm:ss')}
                                         </Typography>
                                     </Stack>
 
@@ -185,7 +131,7 @@ const QuoteViewPage = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {productDetails.map((detail, index) => {
+                                        {quote?.details.map((detail, index) => {
                                             return (
                                                 <tr key={index}>
                                                     <td>{detail.product.name}</td>
@@ -236,7 +182,7 @@ const QuoteViewPage = () => {
                             sx={{ p: 2, borderRadius: 'md' }}
                         >
                             <Typography level='title-md' sx={{ mb: 2 }}>Cliente</Typography>
-                            {selectedClient ? (
+                            {quote?.client ? (
                                 <Card variant='outlined' sx={{ p: 2 }}>
                                     <CardContent>
                                         <Stack spacing={2} alignItems='center' direction={'row'}>
@@ -249,20 +195,20 @@ const QuoteViewPage = () => {
                                                     fontWeight: 'bold'
                                                 }}
                                             >
-                                                {getInitials(selectedClient.first_name, selectedClient.last_name)}
+                                                {getInitials(quote?.client.first_name, quote?.client.last_name)}
                                             </Avatar>
                                             <Stack spacing={1} alignItems={'flex-start'} justifyContent={'center'}>
                                                 <Typography level='title-sm' textAlign='center' overflow={'clip'}>
-                                                    {selectedClient.first_name} {selectedClient.last_name}
+                                                    {quote?.client.first_name} {quote?.client.last_name}
                                                 </Typography>
                                                 <Typography level='body-sm' textAlign='center' overflow={'clip'}>
-                                                    {selectedClient.national_id}
+                                                    {quote?.client.national_id}
                                                 </Typography>
                                                 <Typography level='body-sm' textAlign='center' overflow={'clip'}>
-                                                    {selectedClient.email}
+                                                    {quote?.client.email}
                                                 </Typography>
                                                 <Typography level='body-sm' textAlign='center' overflow={'clip'}>
-                                                    {selectedClient.phone_number}
+                                                    {quote?.client.phone_number}
                                                 </Typography>
                                             </Stack>
                                         </Stack>

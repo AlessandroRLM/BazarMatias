@@ -86,7 +86,7 @@ export interface ReturnCreationPayload {
 
 export interface QuoteDetail {
     id: string
-    product: string
+    product: Product
     quantity: number
     unit_price: number
     discount: number
@@ -95,7 +95,7 @@ export interface QuoteDetail {
 
 export interface Quote {
     id: string
-    client: string
+    client: Client
     details: QuoteDetail[]
     status: string
     created_at: Date

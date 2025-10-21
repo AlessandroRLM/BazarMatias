@@ -17,6 +17,8 @@ import { useSnackbar } from '../../../hooks/core/useSnackbar'
 
 const QuoteCreationPage = () => {
     const navigate = useNavigate()
+    const [clientName, setClientName] = useState<string | null>(null)
+
 
     const {
         handleSubmit,
@@ -27,14 +29,14 @@ const QuoteCreationPage = () => {
     } = useForm<QuoteCreationFormValues>({
         resolver: zodResolver(quoteCreationSchema),
         defaultValues: {
-            client: '',
+            client_id: '',
             status: 'PE' as const,
-            details: [{ product: '', quantity: 0, unit_price: 0 }],
+            details: [{ product_id: '', quantity: 0, unit_price: 0, discount: 0 }],
         }
     })
 
     const { data: clients, isLoading: isLoadingClients } = useQuery({
-        queryKey: ['clients'],
+        queryKey: ['clients', clientName],
         queryFn: ({ queryKey }: { queryKey: unknown[] }) => {
             const searchTerm = queryKey[1] as string | undefined
             if (searchTerm) {
@@ -42,7 +44,7 @@ const QuoteCreationPage = () => {
             }
             return fetchClientsForSelect('')
         },
-        staleTime: Infinity,
+        staleTime: 1000 * 60 * 2, // Los datos se consideran frescos por 2 minutos
     })
 
 
@@ -57,7 +59,7 @@ const QuoteCreationPage = () => {
 
     const clientsOptions = clientsToOptions(clients?.results)
 
-    const selectedClient = clients?.results.find((client: Client) => client.id === watch('client'))
+    const selectedClient = clients?.results.find((client: Client) => client.id === watch('client_id'))
 
     const getInitials = (firstName: string, lastName: string) => {
         return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
@@ -67,7 +69,7 @@ const QuoteCreationPage = () => {
 
     // Estado para almacenar los términos de búsqueda de productos para cada detalle
     const [productSearchTerms, setProductSearchTerms] = useState<string[]>(Array(details.length).fill(''))
-    
+
     // Actualizar el array de términos de búsqueda cuando cambia el número de detalles
     useEffect(() => {
         if (productSearchTerms.length !== details.length) {
@@ -118,8 +120,8 @@ const QuoteCreationPage = () => {
     useEffect(() => {
         const currentFindProductById = findProductById
         details.forEach((detail, index) => {
-            if (detail.product) {
-                const selectedProduct = currentFindProductById(detail.product)
+            if (detail.product_id) {
+                const selectedProduct = currentFindProductById(detail.product_id)
                 if (selectedProduct && selectedProduct.price_clp) {
                     // Actualizar el precio unitario con el precio del producto
                     // Check if the current unit_price is different before setting to avoid infinite loops if not careful
@@ -135,7 +137,7 @@ const QuoteCreationPage = () => {
     }, [details, setValue, watch, findProductById]) // Adjusted dependencies for robustness
 
     const { showSnackbar } = useSnackbar()
-    
+
     const mutation = useMutation({
         mutationFn: createQuote,
         onSuccess: () => {
@@ -159,21 +161,22 @@ const QuoteCreationPage = () => {
     })
 
     const onSubmit: SubmitHandler<QuoteCreationFormValues> = (data) => {
+        console.log(data)
         mutation.mutate(data)
     }
 
     const handleSaveAndSend: SubmitHandler<QuoteCreationFormValues> = (data) => {
         mutation.mutate(data, {
             onSuccess: (newQuote) => {
-                // Enviar email después de crear la cotización
+                showSnackbar('Cotización creada y enviada con éxito!', 'success')
                 sendEmailMutation.mutate(newQuote.id)
             }
         })
     }
-    
+
     // Agregar nuevo detalle
     const addDetail = () => {
-        setValue('details', [...watch('details'), { product: '', quantity: 1, unit_price: 0 }])
+        setValue('details', [...watch('details'), { product_id: '', quantity: 1, unit_price: 0, discount: 0 }])
         // Agregar un término de búsqueda vacío para el nuevo detalle
         setProductSearchTerms([...productSearchTerms, ''])
     }
@@ -183,7 +186,7 @@ const QuoteCreationPage = () => {
         const currentDetails = [...watch('details')]
         currentDetails.splice(index, 1)
         setValue('details', currentDetails)
-        
+
         // Eliminar el término de búsqueda correspondiente
         const newSearchTerms = [...productSearchTerms]
         newSearchTerms.splice(index, 1)
@@ -233,11 +236,14 @@ const QuoteCreationPage = () => {
                                         label='Cliente'
                                         placeholder='Buscar cliente'
                                         control={control}
-                                        name='client'
+                                        name='client_id'
                                         fullWidth={true}
+                                        onInputChange={(_, value) => {
+                                            setClientName(value)
+                                        }}
                                         options={clientsOptions}
                                         loading={isLoadingClients}
-                                        error={errors?.client}
+                                        error={errors?.client_id}
                                         freeSolo={false}
                                     />
                                     <AutocompleteFormField
@@ -293,10 +299,10 @@ const QuoteCreationPage = () => {
                                                                 <tr key={index}>
                                                                     <td>
                                                                         <AutocompleteFormField
-                                                                            name={`details.${index}.product`}
+                                                                            name={`details.${index}.product_id`}
                                                                             control={control}
                                                                             options={currentProductOptions}
-                                                                            error={errors.details?.[index]?.product}
+                                                                            error={errors.details?.[index]?.product_id}
                                                                             onChange={(value) => handleProductChange(index, value as string)}
                                                                             placeholder='Buscar producto'
                                                                             size='sm'
@@ -307,7 +313,7 @@ const QuoteCreationPage = () => {
                                                                                 const newSearchTerms = [...productSearchTerms]
                                                                                 newSearchTerms[index] = value
                                                                                 setProductSearchTerms(newSearchTerms)
-                                                                                
+
                                                                                 if (value && value.length > 2) {
                                                                                     // Refetch con el término de búsqueda
                                                                                     productQueries[index].refetch()
@@ -332,7 +338,7 @@ const QuoteCreationPage = () => {
                                                                             type='number'
                                                                             error={errors.details?.[index]?.unit_price}
                                                                             transform={Number}
-                                                                            disabled={!!watch(`details.${index}.product`)} // Disable if product is selected
+                                                                            disabled={!!watch(`details.${index}.product_id`)} // Disable if product is selected
                                                                             size='sm'
                                                                         />
                                                                     </td>

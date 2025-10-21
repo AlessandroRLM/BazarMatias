@@ -24,7 +24,7 @@ function statusMapper(statusType: string): ReactNode {
 const columnHelper = createColumnHelper<Quote>()
 
 export const QUOTE_COLUMNS = (handleDeleteClick: (id: string) => void) => [
-    columnHelper.accessor('client', {
+    columnHelper.accessor( row => `${row.client.first_name} ${row.client.last_name}`, {
         id: 'client',
         header: 'Cliente',
         cell: (info) => info.getValue(),

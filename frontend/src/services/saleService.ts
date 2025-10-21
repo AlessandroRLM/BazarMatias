@@ -1,4 +1,5 @@
 import AxiosInstance from "../helpers/AxiosInstance"
+import { QuoteCreationFormValues } from "../schemas/ventas/cotizaciones/quoteCreationSchema"
 
 export const fetchClientsForSelect = async (search: string) => {
     try {
@@ -14,7 +15,8 @@ export const fetchClientsForSelect = async (search: string) => {
     }
 }
 
-export const createQuote = async (data: any) => {
+export const createQuote = async (data: QuoteCreationFormValues) => {
+    console.log(data)
     try {
         const response = await AxiosInstance.post('/api/sales/quotes/', data)
         return response.data
@@ -23,7 +25,7 @@ export const createQuote = async (data: any) => {
     }
 }
 
-export const editQuote = async (quoteId: string, data: any) => {
+export const editQuote = async (quoteId: string, data: QuoteCreationFormValues) => {
     try{
         const response = await AxiosInstance.put(`/api/sales/quotes/${quoteId}/`, data)
         return response.data
@@ -38,6 +40,7 @@ export const deleteQuote = async (quoteId: string) => {
 }
 
 export const sendQuoteEmail = async (quoteId: string) => {
+    console.log(quoteId)
     try {
         const response = await AxiosInstance.post(`/api/sales/quotes/${quoteId}/send-email/`);
         return response.data;

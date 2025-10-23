@@ -1195,6 +1195,11 @@ paths:
     get:
       operationId: sales_returns_list
       parameters:
+      - in: query
+        name: created_at
+        schema:
+          type: string
+          format: date-time
       - name: ordering
         required: false
         in: query
@@ -1213,20 +1218,24 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
-      - in: query
-        name: product__name
-        schema:
-          type: string
-      - in: query
-        name: sale__folio
-        schema:
-          type: integer
       - name: search
         required: false
         in: query
         description: A search term.
         schema:
           type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - AP
+          - PE
+          - RE
+        description: |-
+          * `PE` - Pendiente
+          * `AP` - Aprovada
+          * `RE` - Rechazado
       tags:
       - sales
       security:
@@ -1236,7 +1245,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedReturnList'
+                $ref: '#/components/schemas/PaginatedClientReturnList'
           description: ''
     post:
       operationId: sales_returns_create
@@ -1246,13 +1255,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
         required: true
       security:
       - knoxApiToken: []
@@ -1261,7 +1270,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Return'
+                $ref: '#/components/schemas/ClientReturn'
           description: ''
   /api/sales/returns/{id}/:
     get:
@@ -1282,7 +1291,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Return'
+                $ref: '#/components/schemas/ClientReturn'
           description: ''
     put:
       operationId: sales_returns_update
@@ -1299,13 +1308,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Return'
+              $ref: '#/components/schemas/ClientReturn'
         required: true
       security:
       - knoxApiToken: []
@@ -1314,7 +1323,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Return'
+                $ref: '#/components/schemas/ClientReturn'
           description: ''
     patch:
       operationId: sales_returns_partial_update
@@ -1331,13 +1340,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
       security:
       - knoxApiToken: []
       responses:
@@ -1345,7 +1354,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Return'
+                $ref: '#/components/schemas/ClientReturn'
           description: ''
     delete:
       operationId: sales_returns_destroy
@@ -1379,13 +1388,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedReturn'
+              $ref: '#/components/schemas/PatchedClientReturn'
       security:
       - knoxApiToken: []
       responses:
@@ -1393,7 +1402,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Return'
+                $ref: '#/components/schemas/ClientReturn'
           description: ''
   /api/sales/sales/:
     get:
@@ -1559,9 +1568,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/sales/sales/{id}/cambiar-estado/:
+  /api/sales/sales/{id}/update-status/:
     patch:
-      operationId: sales_sales_cambiar_estado_partial_update
+      operationId: sales_sales_update_status_partial_update
       parameters:
       - in: path
         name: id
@@ -2802,6 +2811,90 @@ components:
       - id
       - last_name
       - national_id
+    ClientReturn:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: string
+          writeOnly: true
+        sale:
+          allOf:
+          - $ref: '#/components/schemas/Sale'
+          readOnly: true
+        sale_id:
+          type: string
+          writeOnly: true
+        reason:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientReturnDetail'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_amount:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ClientReturnStatusEnum'
+      required:
+      - client
+      - client_id
+      - created_at
+      - details
+      - id
+      - reason
+      - sale
+      - sale_id
+      - total_amount
+    ClientReturnDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        product:
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        product_id:
+          type: string
+          writeOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        unit_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - product
+      - product_id
+      - quantity
+      - unit_price
+    ClientReturnStatusEnum:
+      enum:
+      - PE
+      - AP
+      - RE
+      type: string
+      description: |-
+        * `PE` - Pendiente
+        * `AP` - Aprovada
+        * `RE` - Rechazado
     DocumentTypeEnum:
       enum:
       - FAC
@@ -2866,6 +2959,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Client'
+    PaginatedClientReturnList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientReturn'
     PaginatedProductList:
       type: object
       required:
@@ -2912,29 +3028,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Quote'
-    PaginatedReturnList:
-      type: object
-      required:
-      - count
-      - results
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Return'
     PaginatedReturnSupplierListList:
       type: object
       required:
@@ -3147,6 +3240,41 @@ components:
           type: string
           nullable: true
           maxLength: 12
+    PatchedClientReturn:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        client_id:
+          type: string
+          writeOnly: true
+        sale:
+          allOf:
+          - $ref: '#/components/schemas/Sale'
+          readOnly: true
+        sale_id:
+          type: string
+          writeOnly: true
+        reason:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientReturnDetail'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_amount:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ClientReturnStatusEnum'
     PatchedProduct:
       type: object
       properties:
@@ -3215,55 +3343,6 @@ components:
         total:
           type: integer
           readOnly: true
-    PatchedReturn:
-      type: object
-      properties:
-        id:
-          type: string
-          readOnly: true
-        client:
-          allOf:
-          - $ref: '#/components/schemas/Client'
-          readOnly: true
-        client_id:
-          type: integer
-          writeOnly: true
-        cliente_nombre:
-          type: string
-          readOnly: true
-        sale:
-          type: string
-          readOnly: true
-        sale_id:
-          type: integer
-          writeOnly: true
-        fecha_venta:
-          type: string
-          format: date-time
-          readOnly: true
-        product:
-          allOf:
-          - $ref: '#/components/schemas/Product'
-          readOnly: true
-        product_id:
-          type: integer
-          writeOnly: true
-        producto_nombre:
-          type: string
-          readOnly: true
-        quantity:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
-        reason:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        status:
-          $ref: '#/components/schemas/ReturnStatusEnum'
     PatchedReturnSupplier:
       type: object
       properties:
@@ -3627,79 +3706,6 @@ components:
       - product_id
       - quantity
       - unit_price
-    Return:
-      type: object
-      properties:
-        id:
-          type: string
-          readOnly: true
-        client:
-          allOf:
-          - $ref: '#/components/schemas/Client'
-          readOnly: true
-        client_id:
-          type: integer
-          writeOnly: true
-        cliente_nombre:
-          type: string
-          readOnly: true
-        sale:
-          type: string
-          readOnly: true
-        sale_id:
-          type: integer
-          writeOnly: true
-        fecha_venta:
-          type: string
-          format: date-time
-          readOnly: true
-        product:
-          allOf:
-          - $ref: '#/components/schemas/Product'
-          readOnly: true
-        product_id:
-          type: integer
-          writeOnly: true
-        producto_nombre:
-          type: string
-          readOnly: true
-        quantity:
-          type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
-        reason:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        status:
-          $ref: '#/components/schemas/ReturnStatusEnum'
-      required:
-      - client
-      - client_id
-      - cliente_nombre
-      - created_at
-      - fecha_venta
-      - id
-      - product
-      - product_id
-      - producto_nombre
-      - quantity
-      - reason
-      - sale
-      - sale_id
-    ReturnStatusEnum:
-      enum:
-      - pending
-      - completed
-      - refused
-      type: string
-      description: |-
-        * `pending` - Pendiente
-        * `completed` - Completado
-        * `refused` - Rechazado
     ReturnSupplier:
       type: object
       properties:

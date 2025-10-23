@@ -199,26 +199,35 @@ class Quote(models.Model):
     created_at = models.DateField(auto_now_add=True)
     total = models.PositiveIntegerField()
 
+class ClientReturnDetail(models.Model):
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    unit_price = models.PositiveIntegerField()
+    clients_return = models.ForeignKey(
+        'ClientReturn', on_delete=models.CASCADE, related_name='details')
+    
 
-class Return(models.Model):
+class ClientReturn(models.Model):
 
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pendiente'
-        COMPLETED = 'completed', 'Completado'
-        REJECTED = 'refused', 'Rechazado'
+        PENDING = 'PE', 'Pendiente'
+        COMPLETED = 'AP', 'Aprovada'
+        REJECTED = 'RE', 'Rechazado'
     
     status = models.CharField(
-        max_length=10,
+        max_length=2,
         choices=Status.choices,
         default=Status.PENDING
     )
 
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
-    sale = models.ForeignKey(Sale, on_delete=models.PROTECT, verbose_name='Venta Asociada')
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField()
+    client_id = models.ForeignKey(Client, on_delete=models.PROTECT)
+    sale_id = models.ForeignKey(Sale, on_delete=models.PROTECT, verbose_name='Venta Asociada')
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def get_total_amount(self):
+        return sum(item.quantity * item.unit_price for item in self.details.all())
 
     class Meta:
         verbose_name = 'Devolución'

@@ -1,10 +1,10 @@
 from bson import ObjectId
 from rest_framework import serializers
-from django.db.models import Sum
+from django.db import transaction
 from inventory.models import Product
 from inventory.serializers import ProductSerializer
 from users.models import User
-from .models import SaleDetail, Sale, Client, Quote, QuoteDetail, Return, WorkOrder, DocumentCounter
+from .models import SaleDetail, Sale, Client, Quote, QuoteDetail, ClientReturnDetail, ClientReturn, WorkOrder, DocumentCounter
 
 
 class ObjectIdField(serializers.Field):
@@ -110,9 +110,10 @@ class SaleSerializer(serializers.ModelSerializer):
             # Crear detalle vinculado a la venta
             detail = SaleDetail.objects.create(sale=sale, **detail_data)
 
-            # Actualizar stock
-            product.stock -= detail.quantity
-            product.save()
+            if validated_data.status != Sale.Status.CANCELLED:
+                # Actualizar stock
+                product.stock -= detail.quantity
+                product.save()
 
             # Calcular montos
             net_price = detail.net_price * detail.quantity
@@ -131,6 +132,7 @@ class SaleSerializer(serializers.ModelSerializer):
 
         # Actualiza campos de la venta
         instance = super().update(instance, validated_data)
+
 
         if details_data is not None:
             # Eliminar detalles anteriores y restaurar stock
@@ -240,98 +242,205 @@ class QuoteSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ReturnSerializer(serializers.ModelSerializer):
+class ClientReturnDetailSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    client = ClientSerializer(read_only=True)
-    client_id = serializers.PrimaryKeyRelatedField(
-        queryset=Client.objects.all(),
-        source='client',
-        write_only=True
-    )
-    sale = serializers.SerializerMethodField()
-    sale_id = serializers.PrimaryKeyRelatedField(
-        queryset=Sale.objects.all(),
-        source='sale',
-        write_only=True
-    )
     product = ProductSerializer(read_only=True)
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
-        source='product',
+        pk_field=ObjectIdField(),
         write_only=True
     )
 
-    producto_nombre = serializers.CharField(
-        source='product.name', read_only=True)
-    cliente_nombre = serializers.SerializerMethodField()
-    fecha_venta = serializers.DateTimeField(
-        source='sale.created_at', read_only=True)
+    class Meta:
+        model = ClientReturnDetail
+        fields = ['id', 'product', 'product_id',
+                  'quantity', 'unit_price']
+
+
+# CORRECCIONES PARA serializers.py
+
+class ClientReturnSerializer(serializers.ModelSerializer):
+    id = ObjectIdField(read_only=True)
+
+    client_id = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.all(),
+        pk_field=ObjectIdField(),
+        write_only=True
+    )
+    client = ClientSerializer(read_only=True, source='client_id')
+
+    sale_id = serializers.PrimaryKeyRelatedField(
+        queryset=Sale.objects.all(),
+        pk_field=ObjectIdField(),
+        write_only=True
+    )
+    sale = SaleSerializer(read_only=True, source='sale_id')
+
+    details = ClientReturnDetailSerializer(many=True)
+
+    total_amount = serializers.SerializerMethodField()
 
     class Meta:
-        model = Return
+        model = ClientReturn
         fields = [
             'id',
             'client',
             'client_id',
-            'cliente_nombre',
             'sale',
             'sale_id',
-            'fecha_venta',
-            'product',
-            'product_id',
-            'producto_nombre',
-            'quantity',
             'reason',
+            'details',
             'created_at',
+            'total_amount',
             'status'
         ]
 
-    def get_cliente_nombre(self, obj):
-        return f"{obj.client.first_name} {obj.client.last_name}"
-
-    def get_sale(self, obj):
-        return {
-            'id': str(obj.sale.id),
-            'folio': obj.sale.folio,
-            'date': obj.sale.created_at.strftime('%Y-%m-%d')
-        }
+    def get_total_amount(self, obj):
+        # CORREGIDO: Usar la propiedad correcta del modelo
+        return obj.get_total_amount
 
     def validate(self, data):
-        sale = data.get('sale') or getattr(self.instance, 'sale', None)
-        product = data.get('product') or getattr(
-            self.instance, 'product', None)
-        quantity = data.get('quantity')
+        client = data.get('client_id') or (
+            self.instance.client_id if self.instance else None)
+        sale = data.get('sale_id') or (
+            self.instance.sale_id if self.instance else None)
+        details = data.get('details') or (
+            list(self.instance.details.all()) if self.instance else None)
 
-        if not sale or not product:
+        if not client or not sale or not details:
             return data
 
-        # Verificar que el producto esté en la venta
-        if not sale.details.filter(product=product).exists():
+        # Verificar que venta pertenezca al cliente
+        if sale.client and sale.client.id != client.id:
+            raise serializers.ValidationError({
+                'sale': 'La venta seleccionada no pertenece al cliente autenticado.'
+            })
+
+        # Obtener ids de los productos en la devolución
+        product_ids = [item['product_id'].id for item in details]
+
+        # Verificar que los productos estén en la venta
+        if not sale.details.filter(product_id__in=product_ids).exists():
             raise serializers.ValidationError({
                 'product': 'El producto no pertenece a la venta seleccionada.'
             })
 
-        # Calcular cantidad máxima devolvable
-        total_sold = sale.details.filter(product=product).aggregate(
-            total=Sum('quantity')
-        )['total'] or 0
+        # Verificar precio de los productos
+        for item in details:
+            product_id = item['product_id'].id
+            unit_price = item['unit_price']
+            try:
+                product_in_sale = sale.details.get(product_id=product_id)
+                if product_in_sale.unit_price != unit_price:
+                    try:
+                        product = Product.objects.get(id=product_id)
+                        product_name = product.name
+                    except Product.DoesNotExist:
+                        product_name = "Producto"
 
-        total_returned = Return.objects.filter(
-            sale=sale,
-            product=product
-        ).exclude(
-            pk=getattr(self.instance, 'pk', None)
-        ).aggregate(
-            total=Sum('quantity')
-        )['total'] or 0
+                    raise serializers.ValidationError({
+                        'unit_price': f'El precio unitario para {product_name} no coincide con el precio en la venta ({product_in_sale.unit_price}).'
+                    })
+            except SaleDetail.DoesNotExist:
+                raise serializers.ValidationError({
+                    'product_id': f'El producto {product_id} no está en la venta seleccionada.'
+                })
 
-        max_returnable = total_sold - total_returned
-        if quantity > max_returnable:
-            raise serializers.ValidationError({
-                'quantity': f'No se pueden devolver más de {max_returnable} unidades.'
-            })
+        # Calcular cantidades vendidas por producto
+        products_sold = {}
+        for sale_detail in sale.details.all():
+            product_id = sale_detail.product.id
+            if product_id not in products_sold:
+                products_sold[product_id] = 0
+            products_sold[product_id] += sale_detail.quantity
+
+        # Calcular cantidades ya devueltas en otras devoluciones
+        products_already_returned = {}
+        existing_returns = ClientReturn.objects.filter(
+            sale_id=sale,
+            status__in=[ClientReturn.Status.PENDING, ClientReturn.Status.COMPLETED]
+        )
+        
+        # Si estamos actualizando, excluir la devolución actual del cálculo
+        if self.instance:
+            existing_returns = existing_returns.exclude(id=self.instance.id)
+        
+        for client_return in existing_returns:
+            for detail in client_return.details.all():
+                product_id = detail.product_id.id
+                if product_id not in products_already_returned:
+                    products_already_returned[product_id] = 0
+                products_already_returned[product_id] += detail.quantity
+
+        # Calcular cantidades a retornar en esta solicitud
+        products_to_return = {}
+        for item in details:
+            product_id = item['product_id'].id
+            quantity = item['quantity']
+            if product_id not in products_to_return:
+                products_to_return[product_id] = 0
+            products_to_return[product_id] += quantity
+
+        # Verificar que cantidad total devuelta no exceda la cantidad vendida
+        for product_id, new_return_quantity in products_to_return.items():
+            sold_quantity = products_sold.get(product_id, 0)
+            already_returned = products_already_returned.get(product_id, 0)
+            total_to_return = already_returned + new_return_quantity
+            
+            if total_to_return > sold_quantity:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    product_name = product.name
+                except Product.DoesNotExist:
+                    product_name = "Producto"
+
+                available_to_return = sold_quantity - already_returned
+                
+                raise serializers.ValidationError({
+                    'product': f'El producto "{product_name}" ya tiene {already_returned} unidades devueltas. '
+                               f'Solo puedes devolver {available_to_return} unidades adicionales de las {sold_quantity} vendidas.'
+                })
 
         return data
+
+    def create(self, validated_data):
+        details_data = validated_data.pop('details')
+        instance = super().create(validated_data)
+        with transaction.atomic():
+            # Creación de detalles
+            ClientReturnDetail.objects.bulk_create(
+                [ClientReturnDetail(**item, clients_return=instance) for item in details_data])
+            # Actualización de stock (AUMENTAR porque es una devolución)
+            for detail in instance.details.all():
+                product = detail.product_id
+                product.stock += detail.quantity
+                product.save()
+
+        return instance
+
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details', None)
+        
+        if details_data is not None:
+            with transaction.atomic():
+                for old_detail in instance.details.all():
+                    product = old_detail.product_id
+                    product.stock -= old_detail.quantity  # Restaurar (quitar lo que habíamos sumado)
+                    product.save()
+                
+                # Eliminar detalles antiguos
+                instance.details.all().delete()
+                
+                # Crear nuevos detalles y actualizar stock
+                ClientReturnDetail.objects.bulk_create(
+                    [ClientReturnDetail(**item, clients_return=instance) for item in details_data])
+                
+                for detail in instance.details.all():
+                    product = detail.product_id
+                    product.stock += detail.quantity  # Sumar el nuevo stock devuelto
+                    product.save()
+        
+        return super().update(instance, validated_data)
 
 
 class WorkOrderSerializer(serializers.ModelSerializer):

@@ -1,9 +1,7 @@
 from rest_framework import viewsets, status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.conf import settings
@@ -13,8 +11,8 @@ import datetime
 import os
 
 from users.pagination import CustomPagination
-from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer, ReturnSerializer, WorkOrderSerializer
-from .models import Client, Sale, DocumentCounter, Quote, Return, WorkOrder
+from .serializers import ClientSerializer, SaleSerializer, QuoteSerializer, ClientReturnSerializer, WorkOrderSerializer
+from .models import Client, Sale, DocumentCounter, Quote, ClientReturn, WorkOrder
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -127,8 +125,8 @@ class SaleViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    @action(detail=True, methods=['patch'], url_path='cambiar-estado')
-    def cambiar_estado(self, request, pk=None):
+    @action(detail=True, methods=['patch'], url_path='update-status')
+    def update_status(self, request, pk=None):
         sale = self.get_object()
         new_status = request.data.get('status')
 
@@ -255,9 +253,9 @@ class QuoteViewSet(viewsets.ModelViewSet):
             )
 
 
-class ReturnViewSet(viewsets.ModelViewSet):
-    queryset = Return.objects.all().select_related(
-        'client', 'sale', 'product'
+class ClientReturnViewSet(viewsets.ModelViewSet):
+    queryset = ClientReturn.objects.all().select_related(
+        'client_id', 'sale_id'
     ).order_by('-created_at')
     
     def get_queryset(self):
@@ -265,19 +263,19 @@ class ReturnViewSet(viewsets.ModelViewSet):
         
         # Filtrar por estado 
         status = self.request.query_params.get('status')
-        if status in ['pending', 'completed', 'refused']:
+        if status in ['PE', 'AP', 'RE']:
             queryset = queryset.filter(status=status)
             
         return queryset
     
-    serializer_class = ReturnSerializer
+    serializer_class = ClientReturnSerializer
     pagination_class = CustomPagination
 
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['sale__folio', 'product__name']
-    search_fields = ['reason', 'product__name']
-    ordering_fields = ['created_at']
+    filterset_fields = ['created_at', 'status']
+    search_fields = ['reason', 'client_id__last_name', 'client_id__first_name']
+    ordering_fields = ['created_at', 'client_id__last_name']
     ordering = ['-created_at']
 
     @action(detail=True, methods=['patch'], url_path='update-status')
@@ -285,9 +283,9 @@ class ReturnViewSet(viewsets.ModelViewSet):
         return_obj = self.get_object()
         new_status = request.data.get('status')
         
-        if new_status not in ['pending', 'completed', 'refused']:
+        if new_status not in ['PE', 'AP', 'RE']:
             return Response(
-                {"error": "Estado inválido. Usa 'pending', 'completed' o 'refused'."},
+                {"error": "Estado inválido. Usa 'Pendiente', 'Aprovada' o 'Rechazada'."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
